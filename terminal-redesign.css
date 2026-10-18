@@ -824,3 +824,12 @@ body:not(.is-loading) .composer{animation:inU .9s var(--lq-out) .12s both}
 :root[data-shell="mobile"] .top-right{gap:0!important}
 :root[data-shell="mobile"] .topbar .icon-btn{width:34px!important;height:34px!important}
 :root[data-shell="mobile"] .topbar{padding:0 4px 0 10px!important}
+
+/* Desktop: wider, easier-to-grab scrollbar for long conversations (#chat).
+   scrollbar-width/color must be auto, otherwise Chrome ignores ::-webkit-scrollbar. */
+:root[data-shell="desktop"] #chat{scrollbar-width:auto;scrollbar-color:auto}
+:root[data-shell="desktop"] #chat::-webkit-scrollbar{width:14px}
+:root[data-shell="desktop"] #chat::-webkit-scrollbar-track{background:rgba(255,255,255,.035);border-left:1px solid var(--bd)}
+:root[data-shell="desktop"] #chat::-webkit-scrollbar-thumb{min-height:80px;border-radius:8px;border:3px solid transparent;background:var(--bd-s) padding-box}
+:root[data-shell="desktop"] #chat::-webkit-scrollbar-thumb:hover{background:var(--ac) padding-box}
+:root[data-shell="desktop"] #chat::-webkit-scrollbar-thumb:active{background:var(--ac-deep) padding-box}
