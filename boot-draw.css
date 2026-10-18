@@ -14,6 +14,26 @@
 .bd-bp svg{display:block;width:100%;height:100%;}
 #loader.bd-mobile .bd-bp{left:-10px;top:40px;width:620px;height:auto;aspect-ratio:900/1640;}
 
+/* 描绘（全部只动 transform / opacity，走合成器，不掉帧）
+   --bd-k：首次 1，之后 0.62，和 boot-draw.js 的节奏一致 */
+/* ① 结构线：与 .bd-bp 同一坐标系，1px 墨线从起点伸展出来 */
+.bd-cl{position:absolute;left:0;top:0;width:1600px;height:1000px;pointer-events:none;}
+#loader.bd-mobile .bd-cl{left:-10px;top:40px;width:620px;height:auto;aspect-ratio:900/1640;}
+.bd-cl i{position:absolute;display:block;background:var(--tx-1);opacity:.4;will-change:transform;}
+.bd-cl i.h{height:1px;margin-top:-.5px;transform:scaleX(0);transform-origin:0 50%;}
+.bd-cl i.v{width:1px;margin-left:-.5px;transform:scaleY(0);transform-origin:50% 0;}
+#loader.bd-play .bd-cl i{animation-name:bdLine;animation-timing-function:cubic-bezier(.76,0,.24,1);animation-fill-mode:both;}
+@keyframes bdLine{to{transform:none;}}
+/* ③ 结构线收尾：整体淡出，留下淡色图纸 */
+#loader.bd-play .bd-cl{animation:bdFade calc(1000ms * var(--bd-k,1)) cubic-bezier(.4,0,.2,1) calc(1850ms * var(--bd-k,1)) both;}
+@keyframes bdFade{to{opacity:0;}}
+/* ② 显影：一张带 38vw 柔边的纸从左往右滑开，细节在柔边里渐渐浮现 */
+.bd-cover{position:absolute;top:0;bottom:0;left:0;width:138vw;pointer-events:none;will-change:transform;
+  background:linear-gradient(90deg,transparent 0,var(--bg-1) 38vw);transform:translateX(-38vw);}
+#loader.bd-play .bd-cover{animation:bdCover calc(1550ms * var(--bd-k,1)) cubic-bezier(.45,0,.2,1) calc(520ms * var(--bd-k,1)) both;}
+@keyframes bdCover{to{transform:translateX(100vw);}}
+#loader.bd-leave .bd-cover,#loader.bd-leave .bd-cl{opacity:0;transition:opacity .3s ease;}
+
 /* 标题 */
 .bd-head{position:absolute;left:max(7vw,24px);top:31%;right:24px;pointer-events:none;}
 .bd-title{margin:0;font-family:var(--disp);font-weight:800;color:var(--tx-1);
@@ -68,6 +88,19 @@
 #loader.bd-leave .bd-hud,#loader.bd-leave .bd-skip,#loader.bd-leave .bd-prog{opacity:0;transition:opacity .3s ease .05s;}
 #loader.bd-leave .bd-paper,#loader.bd-leave .bd-bp{opacity:0;transition:opacity .6s ease .42s;}
 #loader.bd-leave-fast{opacity:0;transition:opacity .26s ease;}
+
+/* 揭幕（对话区有内容）：标题逐字上收 → 黄绿线自上而下揭开纸面，纸面不做半透明 */
+#loader.bd-wipe .bd-sweep{display:none;}
+#loader.bd-wipe.bd-leave .bd-head{opacity:1;transform:none;filter:none;transition:none;}
+#loader.bd-wipe .bd-title span{opacity:0;transform:translateY(-.4em);filter:blur(3px);
+  transition-duration:.2s,.3s,.2s;transition-timing-function:ease,cubic-bezier(.5,0,.75,0),ease;}
+#loader.bd-wipe .bd-sub{opacity:0;transition:opacity .2s ease 0s!important;}
+#loader.bd-wipe.bd-leave .bd-paper{opacity:1;transition:none;}
+#loader.bd-wipe.bd-leave .bd-bp{opacity:.85;transition:none;}
+@keyframes bdWipe{from{clip-path:inset(0 0 0 0);}to{clip-path:inset(100% 0 0 0);}}
+.bd-edge{position:fixed;left:0;right:0;top:-1px;height:2px;z-index:1000;pointer-events:none;background:var(--ac);
+  box-shadow:0 0 14px 1px color-mix(in srgb,var(--ac) 60%,transparent);}
+@keyframes bdEdge{0%{transform:translateY(0);opacity:0;}6%{opacity:1;}94%{opacity:1;}100%{transform:translateY(100vh);opacity:0;}}
 
 /* 手机 */
 #loader.bd-mobile .bd-head{top:auto;bottom:calc(19% + env(safe-area-inset-bottom,0px));left:max(7vw,20px);}

@@ -57,53 +57,60 @@ loader.innerHTML=
 var bp=document.getElementById('bdBp');
 var tc=document.getElementById('bdTc'),prog=document.getElementById('bdProg');
 
-/* 4. 把图纸里每一笔排好：位置越靠左上越先画，像一支笔扫过整张图 */
-var plan=[];   /* [元素, 过渡] —— 初始状态先落地，再挂过渡，否则浏览器会把“藏起来”也当成动画 */
+/* 4. 描绘方式（为流畅重写）
+   旧做法让 400 多个 SVG 元素各自做描线动画，浏览器每帧都要重画整张图纸，
+   开屏时主程序还在解析，主线程一忙就掉帧。现在分三层，全部只动 transform / opacity，
+   交给合成器（显卡）跑，主线程再忙也不卡：
+   ① 结构线：从图纸里挑出横平竖直的长线和矩形边框，换成 1px 的 div，用 scaleX/scaleY 「画」出来；
+   ② 细节：整张图纸静态放好，上面盖一张纸，带柔边的纸面从左向右滑开，把细节「显影」出来；
+   ③ 收尾：结构线整体淡出，只剩和工作台背景完全一样的淡色图纸。 */
+var plan=[];          /* 保留给 start() 的兼容判断；新做法不再逐元素过渡 */
+var cl=null;
 function prepare(svg){
   var vb=(svg.getAttribute('viewBox')||'0 0 1600 1000').split(/[\s,]+/).map(Number);
   var W=vb[2]||1600,H=vb[3]||1000;
   svg.removeAttribute('width'); svg.removeAttribute('height');
   svg.setAttribute('preserveAspectRatio','xMinYMin meet');
-  var els=svg.querySelectorAll('line,circle,rect,path,polyline,polygon,ellipse,text');
-  for(var n=0;n<els.length;n++){
-    var el=els[n];
-    if(el.closest('defs,pattern')) continue;
-    var cx=W/2,cy=H/2;
-    try{ var b=el.getBBox(); cx=b.x+b.width/2; cy=b.y+b.height/2; }catch(e){}
-    var jit=((n*97)%13)*9;
-    var d=ms((cx/W)*820+(cy/H)*420+jit);
-    var fill=el.getAttribute('fill')||'';
-    var stroke=el.getAttribute('stroke')||'';
-    var tag=el.tagName.toLowerCase();
-
-    if(fill.indexOf('url(')===0){                        /* 底纹点阵：先淡入 */
-      el.style.opacity='0';
-      plan.push([el,'opacity '+ms(500)+'ms ease 0ms']);
-      continue;
-    }
-    if(tag==='text'||el.getAttribute('stroke-dasharray')||!stroke||stroke==='none'){
-      el.style.opacity='0';                               /* 文字、虚线、纯色块：落笔后浮现 */
-      plan.push([el,'opacity '+ms(420)+'ms ease '+(d+ms(260))+'ms']);
-      continue;
-    }
-    var len=80;
-    try{ len=Math.ceil(el.getTotalLength())+2; }catch(e){}
-    var dur=ms(Math.max(320,Math.min(1000,300+len*2.2)));
-    el.style.strokeDasharray=len+' '+len;
-    el.style.strokeDashoffset=String(len);
-    var tr='stroke-dashoffset '+dur+'ms cubic-bezier(.65,.02,.25,1) '+d+'ms';
-    if(fill&&fill!=='none'){ el.style.fillOpacity='0'; tr+=',fill-opacity '+ms(500)+'ms ease '+(d+dur-ms(120))+'ms'; }
-    plan.push([el,tr]);
+  var segs=[];
+  function num(el,k){ return parseFloat(el.getAttribute(k))||0; }
+  function ok(el){ return !el.closest('defs,pattern,[transform]')&&!el.getAttribute('stroke-dasharray'); }
+  var ls=svg.querySelectorAll('line');
+  for(var n=0;n<ls.length;n++){
+    var l=ls[n]; if(!ok(l)) continue;
+    var x1=num(l,'x1'),y1=num(l,'y1'),x2=num(l,'x2'),y2=num(l,'y2');
+    if(Math.abs(y2-y1)<.5&&Math.abs(x2-x1)>60) segs.push([Math.min(x1,x2),y1,Math.abs(x2-x1),0]);
+    else if(Math.abs(x2-x1)<.5&&Math.abs(y2-y1)>60) segs.push([x1,Math.min(y1,y2),0,Math.abs(y2-y1)]);
   }
-}
-function draw(){
-  for(var n=0;n<plan.length;n++){
-    var s=plan[n][0].style;
-    s.transition=plan[n][1];
-    s.opacity=''; s.fillOpacity='';
-    if(s.strokeDashoffset) s.strokeDashoffset='0';
+  var rs=svg.querySelectorAll('rect');
+  for(n=0;n<rs.length;n++){
+    var r=rs[n]; if(!ok(r)) continue;
+    var f=r.getAttribute('fill')||'';
+    if(f&&f!=='none') continue;
+    var x=num(r,'x'),y=num(r,'y'),w=num(r,'width'),h=num(r,'height');
+    if(w<90||h<90) continue;
+    segs.push([x,y,w,0],[x,y+h,w,0],[x,y,0,h],[x+w,y,0,h]);
   }
+  if(!segs.length) return;
+  cl=document.createElement('div');
+  cl.className='bd-cl';
+  var html='';
+  for(n=0;n<segs.length;n++){
+    var g=segs[n],hz=g[3]===0,len=hz?g[2]:g[3];
+    var cx=g[0]+g[2]/2,cy=g[1]+g[3]/2;
+    var d=ms(60+(cx/W)*560+(cy/H)*300+((n*53)%7)*24);
+    var dur=ms(Math.min(1150,620+len*.55));
+    html+='<i class="'+(hz?'h':'v')+'" style="left:'+(g[0]/W*100)+'%;top:'+(g[1]/H*100)+'%;'+
+      (hz?'width:'+(g[2]/W*100)+'%':'height:'+(g[3]/H*100)+'%')+
+      ';animation-duration:'+dur+'ms;animation-delay:'+d+'ms"></i>';
+  }
+  cl.innerHTML=html;
+  bp.parentNode.insertBefore(cl,bp.nextSibling);
+  var cover=document.createElement('div');
+  cover.className='bd-cover';
+  bp.parentNode.insertBefore(cover,cl);
+  loader.style.setProperty('--bd-k',String(K));
 }
+function draw(){ /* 动画全部由 CSS（#loader.bd-play）驱动 */ }
 
 /* 5. 时间线 */
 var DRAW_END=ms(2600),MAX_WAIT=4200,t0=0,state=0;    /* state：0 播放 1 揭幕 2 结束 */
@@ -144,11 +151,11 @@ function maybeReveal(){
 function fly(){
   var head=loader.querySelector('.bd-title');
   var tgt=document.querySelector('#chat .empty .em-t');
-  if(!head||!tgt) return;
+  if(!head||!tgt) return false;
   var A=head.getBoundingClientRect(),B=tgt.getBoundingClientRect();
-  if(!B.width||!B.height||B.bottom<0||B.top>window.innerHeight) return;
+  if(!B.width||!B.height||B.bottom<0||B.top>window.innerHeight) return false;
   var k=parseFloat(getComputedStyle(tgt).fontSize)/parseFloat(getComputedStyle(head).fontSize);
-  if(!(k>0)) return;
+  if(!(k>0)) return false;
   var land=ms(760);
   tgt.style.transition='none'; tgt.style.opacity='0';
   loader.classList.add('bd-fly');
@@ -161,20 +168,38 @@ function fly(){
     tgt.style.transition='opacity '+ms(200)+'ms ease'; tgt.style.opacity='';
     setTimeout(function(){ tgt.style.transition=''; },400);
   },land+ms(80));
+  return true;
+}
+/* 对话区已有内容时：标题逐字向上收走，再由一条黄绿线自上而下把纸面“揭”开。
+   纸面始终不透明，揭开处直接是主界面，不会出现半透明叠影。返回揭幕结束的时间。 */
+var edge=null;
+function wipe(){
+  loader.classList.add('bd-wipe');
+  var sp=loader.querySelectorAll('.bd-title span');
+  for(var i=0;i<sp.length;i++) sp[i].style.transitionDelay=ms(i*32)+'ms';
+  var at=ms(300),dur=ms(820),ease=' cubic-bezier(.65,0,.3,1) ';
+  loader.style.animation='bdWipe '+dur+'ms'+ease+at+'ms both';
+  edge=document.createElement('div');
+  edge.className='bd-edge';
+  edge.style.animation='bdEdge '+dur+'ms'+ease+at+'ms both';
+  document.body.appendChild(edge);
+  return {at:at,end:at+dur};
 }
 function fire(list){ while(list.length){ try{ list.shift()(); }catch(e){} } }
 function reveal(fast){
   if(state!==0) return;
   state=1;
   if(prog) prog.style.transform='scaleX(1)';
-  if(!fast) fly();
+  var w=null;
+  if(!fast&&!fly()) w=wipe();
   loader.classList.add(fast?'bd-leave-fast':'bd-leave');
-  setTimeout(function(){ fire(revealCbs); },fast?0:ms(220));
+  setTimeout(function(){ fire(revealCbs); },fast?0:(w?w.at:ms(220)));
   setTimeout(function(){
     state=2;
     loader.classList.add('done');
+    if(edge&&edge.parentNode) edge.parentNode.removeChild(edge);
     fire(doneCbs);
-  },fast?280:ms(1260));
+  },fast?280:(w?w.end+40:ms(1260)));
 }
 
 /* 6. 取图纸：优先用内置副本（boot-art-*.js，双击本地文件也能画）；
