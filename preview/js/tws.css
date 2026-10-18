@@ -894,3 +894,68 @@
 .mu-link:hover{ color: var(--ac); }
 .mu-st{ margin: 6px 0 0; font: 11px/1.6 var(--sans); color: var(--tx-3); }
 .mu-st.warn{ color: #e0a03c; }
+
+/* ---------- 音乐面板 · 三个来源（预览版） ---------- */
+.tws-mu{ width: 368px; max-height: min(680px, calc(100vh - 110px)); }
+.mu-tabs{ display: flex; gap: 6px; padding: 12px 16px 0; flex: none; }
+.mu-tabs button{ flex: 1; height: 32px; min-height: 0; font: 600 12px var(--sans); letter-spacing: .04em; cursor: pointer; }
+.mu-pane{ display: flex; flex-direction: column; min-height: 0; flex: 1; overflow-y: auto; padding-bottom: 4px; }
+.mu-pane[hidden]{ display: none; }
+.mu-pane .mu-list{ overflow: visible; flex: none; }
+.mu-tip{ margin: 10px 16px 0; font: 11px/1.7 var(--sans); color: var(--tx-3); }
+.mu-tip .mu-link{ margin-left: 6px; font-size: 11px; }
+.mu-f{ margin-top: 8px; padding: 10px 16px 12px; }
+.mu-f .mu-st{ margin: 0; }
+.mu-m{ font: 10px var(--mono); color: var(--tx-3); }
+.tws-mu.drag{ outline: 2px dashed var(--ac); outline-offset: -8px; }
+
+/* 正在播放：曲目序号换成跳动的小柱子；顶栏按钮右上角亮一个点 */
+.mu-it.cur .mu-t{ color: var(--ac); font-weight: 600; }
+:root[data-theme="light"] .mu-it.cur .mu-t{ color: var(--tx-1); }
+.eqi{ display: inline-flex; gap: 2px; align-items: flex-end; height: 11px; }
+.eqi b{ width: 3px; background: var(--ac); animation: muEq .9s ease-in-out infinite; height: 40%; }
+.eqi b:nth-child(2){ animation-delay: -.3s; } .eqi b:nth-child(3){ animation-delay: -.6s; }
+@keyframes muEq{ 50%{ height: 100%; } }
+#btnMusic{ position: relative; }
+#btnMusic .mu-dot{ position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--ac); box-shadow: 0 0 0 2px var(--bg-2); opacity: 0; transform: scale(0); transition: opacity .2s, transform .25s; }
+#btnMusic.mu-playing .mu-dot{ opacity: 1; transform: none; }
+
+/* 网易云外链播放器 */
+.ne-now{ margin: 10px 16px 0; font: 12px var(--sans); color: var(--tx-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ne-now:empty{ display: none; }
+.ne-player{ margin: 8px 16px 0; overflow: hidden; border: 1px solid var(--bd); background: #fff; }
+.ne-player:empty{ display: none; }
+.ne-player iframe{ display: block; width: 100%; border: 0; }
+.ne-player.is-song iframe{ height: 86px; }
+.ne-player.is-list iframe{ height: 300px; }
+
+/* 本地播放台 */
+.lp-deck{ margin: 12px 16px 0; padding: 12px 12px 10px; border: 1px solid var(--bd); background: color-mix(in srgb, var(--bg-1) 70%, transparent); }
+.lp-title{ display: flex; align-items: baseline; gap: 10px; }
+.lp-now{ flex: 1; min-width: 0; font: 600 13px var(--sans); color: var(--tx-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lp-time{ flex: none; font: 10px var(--mono); color: var(--tx-3); font-variant-numeric: tabular-nums; }
+.tws-mu input[type=range]{ -webkit-appearance: none; appearance: none; height: 16px; background: transparent; cursor: pointer; margin: 0; padding: 0; border: 0; }
+.tws-mu input[type=range]::-webkit-slider-runnable-track{ height: 3px; background: linear-gradient(90deg, var(--ac) var(--p,0%), var(--bd-s) var(--p,0%)); }
+.tws-mu input[type=range]::-moz-range-track{ height: 3px; background: var(--bd-s); }
+.tws-mu input[type=range]::-moz-range-progress{ height: 3px; background: var(--ac); }
+.tws-mu input[type=range]::-webkit-slider-thumb{ -webkit-appearance: none; width: 11px; height: 11px; margin-top: -4px; border-radius: 50%; background: var(--tx-1); border: 2px solid var(--ac); }
+.tws-mu input[type=range]::-moz-range-thumb{ width: 9px; height: 9px; border-radius: 50%; background: var(--tx-1); border: 2px solid var(--ac); }
+.lp-bar{ display: block; width: 100%; margin: 8px 0 4px !important; }
+.lp-ctl{ display: flex; align-items: center; gap: 4px; }
+.tws-mu .lp-b{
+  width: 34px; height: 34px; min-height: 0 !important; padding: 0 !important; display: grid; place-items: center; cursor: pointer;
+  color: var(--tx-2); background: none !important; border: 0 !important; box-shadow: none !important; border-radius: 50% !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important; font: 15px var(--sans);
+}
+.tws-mu .lp-b:hover{ color: var(--tx-1); background: color-mix(in srgb, var(--tx-1) 8%, transparent) !important; }
+.tws-mu .lp-b svg{ width: 16px; height: 16px; }
+.tws-mu .lp-main{ width: 40px; height: 40px; color: var(--lq-lime-ink, var(--ac-ink)); background: var(--lq-lime, var(--ac)) !important; }
+.tws-mu .lp-main:hover{ color: var(--lq-lime-ink, var(--ac-ink)); background: var(--lq-lime, var(--ac)) !important; filter: brightness(1.05); }
+.tws-mu .lp-main svg{ width: 18px; height: 18px; }
+.lp-vol{ flex: 1; min-width: 50px; margin-left: 8px !important; }
+.lp-drop{ display: flex; flex-direction: column; gap: 3px; margin: 10px 16px 0; padding: 12px; border: 1px dashed var(--bd-s); cursor: pointer; text-align: center; }
+.lp-drop b{ font: 600 12px var(--sans); color: var(--tx-1); }
+.lp-drop span{ font: 11px var(--sans); color: var(--tx-3); }
+.lp-drop:hover{ border-color: var(--ac); }
+.lp-drop:hover b{ color: var(--ac); }
+:root[data-theme="light"] .lp-drop:hover b{ color: var(--tx-1); }
