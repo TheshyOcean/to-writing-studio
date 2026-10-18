@@ -14,7 +14,7 @@
   var mobile = document.documentElement.getAttribute('data-shell') === 'mobile';
 
   /* ---------- 存储（歌单、最近搜索、上次的页签） ---------- */
-  var S = { list: [], recent: [], ne: [], tab: 'qq', vol: 0.8, mode: 'list', relay: { url: '', token: '' } };
+  var S = { list: [], recent: [], ne: [], tab: 'qq', vol: 0.8, mode: 'list', relay: { url: '', token: '' }, qqMode: mobile ? 'popup' : 'dock', dock: { x: -1, y: -1, min: false } };
   try {
     var raw = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (raw && typeof raw === 'object') {
@@ -24,6 +24,8 @@
       if (/^(qq|ne|local)$/.test(raw.tab)) S.tab = raw.tab;
       if (raw.vol >= 0 && raw.vol <= 1) S.vol = raw.vol;
       if (/^(list|one|shuffle)$/.test(raw.mode)) S.mode = raw.mode;
+      if (/^(dock|popup)$/.test(raw.qqMode)) S.qqMode = raw.qqMode;
+      if (raw.dock && typeof raw.dock === 'object') S.dock = { x: +raw.dock.x || -1, y: +raw.dock.y || -1, min: !!raw.dock.min };
       if (raw.relay && typeof raw.relay === 'object') S.relay = { url: String(raw.relay.url || ''), token: String(raw.relay.token || '') };
     }
   } catch (e) {}
@@ -63,7 +65,81 @@
     return { t: title.slice(0, 80), u: url };
   }
   var pop = null;
+  /* ---------- 播放器小窗：把 QQ 音乐官方网页播放器嵌在工作台上（可拖动、最小化） ---------- */
+  var dock = null, frame = null;
+  function buildDock() {
+    dock = document.createElement('section');
+    dock.className = 'tws-qqdock';
+    dock.setAttribute('aria-label', 'QQ 音乐播放器');
+    dock.innerHTML =
+      '<header class="qd-h"><span class="sq"></span><b>QQ 音乐</b><span class="en">PLAYER</span>' +
+        '<button type="button" class="qd-b" data-q="pop" title="改在独立窗口打开">↗</button>' +
+        '<button type="button" class="qd-b" data-q="min" title="最小化（继续播放）">—</button>' +
+        '<button type="button" class="qd-b" data-q="close" title="关闭（停止播放）">✕</button></header>' +
+      '<div class="qd-body"><iframe name="tws_qqframe" title="QQ 音乐官方网页播放器" allow="autoplay; encrypted-media; clipboard-write"></iframe>' +
+        '<p class="qd-tip">没显示出来？点右上角 ↗ 在独立窗口打开。听会员歌需要先在浏览器里登录过 QQ 音乐官网。</p></div>';
+    document.body.appendChild(dock);
+    frame = dock.querySelector('iframe');
+    dock.querySelector('.qd-h').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-q]');
+      if (!b) { if (S.dock.min) setMin(false); return; }
+      var q = b.getAttribute('data-q');
+      if (q === 'min') setMin(!S.dock.min);
+      if (q === 'close') closeDock();
+      if (q === 'pop') { var u = dock.getAttribute('data-url') || HOME; closeDock(); popQQ(u); }
+    });
+    /* 拖动标题栏 */
+    var h = dock.querySelector('.qd-h'), sx, sy, ox, oy, moved;
+    h.addEventListener('pointerdown', function (e) {
+      if (e.target.closest('[data-q]') || mobile) return;
+      var r = dock.getBoundingClientRect(); sx = e.clientX; sy = e.clientY; ox = r.left; oy = r.top; moved = false;
+      dock.classList.add('dragging'); h.setPointerCapture(e.pointerId);
+    });
+    h.addEventListener('pointermove', function (e) {
+      if (!dock.classList.contains('dragging')) return;
+      var dx = e.clientX - sx, dy = e.clientY - sy;
+      if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
+      placeDock(ox + dx, oy + dy);
+    });
+    function end() {
+      if (!dock.classList.contains('dragging')) return;
+      dock.classList.remove('dragging');
+      var r = dock.getBoundingClientRect(); S.dock.x = Math.round(r.left); S.dock.y = Math.round(r.top); save();
+    }
+    h.addEventListener('pointerup', end); h.addEventListener('pointercancel', end);
+    window.addEventListener('resize', function () { if (dock && !dock.hidden) placeDock(S.dock.x, S.dock.y); });
+  }
+  function placeDock(x, y) {
+    if (mobile) return;
+    var w = dock.offsetWidth, hh = dock.offsetHeight, vw = window.innerWidth, vh = window.innerHeight;
+    if (!(x >= 0) || !(y >= 0)) {
+      x = vw - w - 20; y = Math.max(70, vh - hh - 60);
+      if (!panel.hidden) { var pr = panel.getBoundingClientRect(); if (pr.left - w - 14 > 8) x = pr.left - w - 14; }
+    }
+    x = Math.max(8, Math.min(vw - w - 8, x)); y = Math.max(8, Math.min(vh - 40, y));
+    dock.style.left = x + 'px'; dock.style.top = y + 'px';
+  }
+  function setMin(m) { S.dock.min = m; save(); dock.classList.toggle('min', m); placeDock(S.dock.x, S.dock.y); }
+  function openDock(url) {
+    if (!dock) buildDock();
+    dock.hidden = false;
+    dock.setAttribute('data-url', url);
+    frame.src = url;
+    dock.classList.toggle('min', false); S.dock.min = false;
+    placeDock(S.dock.x, S.dock.y);
+    btn.classList.add('mu-playing');
+    status('已在播放器小窗打开 · 在歌曲页点「播放」就会进入官方播放器');
+  }
+  function closeDock() {
+    if (!dock) return;
+    frame.removeAttribute('src'); frame.src = 'about:blank';
+    dock.hidden = true; syncState();
+  }
   function openQQ(url) {
+    if (S.qqMode === 'dock') { if (LP.audio && !LP.audio.paused) LP.audio.pause(); openDock(url); return; }
+    popQQ(url);
+  }
+  function popQQ(url) {
     var feat = '';
     if (!mobile) {
       var w = 460, h = Math.min(820, (screen.availHeight || 900) - 80);
@@ -355,7 +431,8 @@
         '<input class="mu-in" name="a" type="text" placeholder="粘贴 QQ 音乐分享链接，或写「歌名 - 歌手」">' +
         '<button class="btn mu-go" type="submit">收藏</button>' +
       '</form>' +
-      '<p class="mu-tip">在 QQ 音乐官网的小窗口里播放，登录也在那边完成。<button class="mu-link" type="button" data-home>打开 QQ 音乐 ↗</button></p>' +
+      '<div class="qq-mode"><span>播放位置</span><div class="seg"><button type="button" data-qm="dock">工作台小窗</button><button type="button" data-qm="popup">独立窗口</button></div></div>' +
+      '<p class="mu-tip">用的是 QQ 音乐官网自己的播放器，登录和会员都由官网负责。<button class="mu-link" type="button" data-home>打开 QQ 音乐</button></p>' +
       '<details class="qq-relay"><summary><span class="qq-relay-st"></span><em>连接设置</em></summary>' +
         '<form class="qq-relay-form" autocomplete="off">' +
           '<label>中转地址<input class="mu-in" name="url" type="url" placeholder="http://127.0.0.1:17890" spellcheck="false"></label>' +
@@ -451,7 +528,7 @@
     var playing = !!(LP.audio && !LP.audio.paused);
     var m = $('.lp-main'); m.innerHTML = playing ? I.pause : I.play; m.title = playing ? '暂停' : '播放';
     var md = $('[data-a="mode"]'); md.textContent = MODE[S.mode][1]; md.title = MODE[S.mode][0];
-    btn.classList.toggle('mu-playing', playing || !!neCur);
+    btn.classList.toggle('mu-playing', playing || !!neCur || !!(dock && !dock.hidden));
     var cur = panel.querySelector('.lp-list .mu-it.cur');
     if (cur && !playing) renderLocalSoon();
     if (!cur && playing && LP.cur >= 0) renderLocalSoon();
@@ -510,6 +587,14 @@
     if (d) { S.list.splice(+d.getAttribute('data-d'), 1); save(); renderQQ(); }
   });
   $('[data-home]').addEventListener('click', function () { openQQ(HOME); });
+  function renderMode() {
+    panel.querySelectorAll('[data-qm]').forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-qm') === S.qqMode); });
+  }
+  $('.qq-mode').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-qm]'); if (!b) return;
+    S.qqMode = b.getAttribute('data-qm'); save(); renderMode();
+    status(S.qqMode === 'dock' ? '之后点歌会在工作台上的播放器小窗里打开' : '之后点歌会弹出独立的 QQ 音乐窗口');
+  });
   $('.qq-feeds').addEventListener('click', function (e) {
     var b = e.target.closest('[data-feed]'); if (!b) return;
     var f = b.getAttribute('data-feed');
@@ -615,7 +700,7 @@
     anchor.parentNode.insertBefore(btn, anchor);
     document.body.appendChild(panel);
     setTab(S.tab);
-    renderRecent(); renderQQ(); renderNE(); renderLocal(); renderRelay();
+    renderRecent(); renderQQ(); renderNE(); renderLocal(); renderRelay(); renderMode();
     loadLocal();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
