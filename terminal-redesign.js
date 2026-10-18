@@ -67,7 +67,7 @@
   focus.onclick=toggleFocus;
   var theme=document.getElementById('btnTheme');
   if(mobile&&theme){theme.classList.add('studio-mobile-theme');top.insertBefore(theme,focus);}
-  var version=document.createElement('span');version.className='studio-version';version.textContent='V2.2.0';version.style.cssText='font:9px var(--mono);color:var(--tx-3);margin-left:4px;white-space:nowrap';if(mobile){version.style.fontSize='8px';document.querySelector('#v-chat .sec-head').appendChild(version);}else{document.querySelector('.brand').appendChild(version);}
+  var version=document.createElement('span');version.className='studio-version';version.textContent='V2.3.0';version.style.cssText='font:9px var(--mono);color:var(--tx-3);margin-left:4px;white-space:nowrap';if(mobile){version.style.fontSize='8px';document.querySelector('#v-chat .sec-head').appendChild(version);}else{document.querySelector('.brand').appendChild(version);}
   var title=document.querySelector('#v-chat .sec-en');if(title)title.textContent='CREATIVE OPERATIONS / WRITING CONSOLE';
   var composer=document.querySelector('.composer');
   var meta=document.createElement('div');meta.className='studio-input-meta';meta.innerHTML='<span id="studioChars">0 字</span><span>'+(mobile?'写下灵感，或长按正文选择批注':'<kbd>ENTER</kbd> 发送 <i>/</i> <kbd>SHIFT + ENTER</kbd> 换行')+'</span>';
@@ -223,6 +223,4 @@
   document.addEventListener('keydown',function(e){
     if(e.key==='Escape')ctxPops.forEach(function(p){p.close();});
   });
-  /* The original skip handler is retained; cosmetic boot now takes less than a second. */
-  setTimeout(function(){var l=document.getElementById('loader');if(l&&!l.classList.contains('done'))click('skipBtn');},100);
 })();

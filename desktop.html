@@ -652,81 +652,8 @@ input,textarea,[contenteditable],.bub,.bub *,.think-b,.think-b *{-webkit-user-se
   background:radial-gradient(120% 90% at 50% 45%,transparent 50%,rgba(16,17,16,.12) 100%);
 }
 
-/* ---------- 04. 开屏三阶段 ---------- */
-#loader{position:fixed;inset:0;z-index:999;overflow:hidden;}
-#loader.done{display:none;}
-
-.ld-mask{
-  position:absolute;inset:0;background:var(--bg-1);
-  transform:translateX(0);will-change:transform;
-}
-.ld-mask.slide{transform:translateX(102%);transition:transform 780ms var(--ease-slide);}
-.ld-mask::after{
-  content:"";position:absolute;top:0;left:0;
-  width:3px;height:100%;background:var(--ac);
-  opacity:0;transition:opacity .18s linear;
-}
-.ld-mask.slide::after{opacity:1;}
-.ld-hud{position:absolute;inset:0;}
-
-.ld-bar{
-  position:absolute;top:0;left:0;width:8px;height:100%;
-  background:var(--ac);transform:scaleY(0);transform-origin:top;
-  transition:opacity .24s linear;
-}
-.ld-brand{
-  position:absolute;
-  top:calc(26px + var(--safe-top));left:calc(34px + var(--safe-left));
-  display:flex;align-items:center;gap:10px;
-}
-.ld-brand .bar{width:4px;height:20px;background:var(--ac);}
-.ld-brand .txt{font-family:var(--mono);font-size:13px;letter-spacing:.22em;text-transform:uppercase;}
-.ld-brand .sub{font-size:11px;color:var(--tx-3);letter-spacing:.3em;font-family:var(--mono);}
-
-.ld-rec{
-  position:absolute;
-  top:calc(26px + var(--safe-top));right:calc(34px + var(--safe-right));
-  display:flex;align-items:center;gap:8px;
-  font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--tx-2);
-}
-.ld-rec .dot{width:7px;height:7px;background:var(--sig-red);animation:blink 1s steps(1) infinite;}
-@keyframes blink{0%,50%{opacity:1}50.01%,100%{opacity:0}}
-
-.ld-bottom{
-  position:absolute;
-  left:calc(34px + var(--safe-left));right:calc(34px + var(--safe-right));
-  bottom:calc(30px + var(--safe-bottom));
-}
-.ld-pct{
-  font-family:var(--num);font-variant-numeric:tabular-nums;
-  font-size:clamp(56px,11vw,118px);
-  line-height:.85;font-weight:500;letter-spacing:-.01em;
-}
-.ld-pct .sign{font-size:.38em;color:var(--tx-3);margin-left:8px;}
-.ld-status{
-  margin-top:14px;
-  font-family:var(--mono);font-size:11px;letter-spacing:.2em;
-  color:var(--tx-2);text-transform:uppercase;
-  display:flex;gap:22px;flex-wrap:wrap;
-}
-.ld-status b{color:var(--ac);font-weight:500;}
-
-.ld-track{
-  position:absolute;
-  left:calc(34px + var(--safe-left));right:calc(34px + var(--safe-right));
-  bottom:calc(14px + var(--safe-bottom));
-  height:2px;background:var(--bd);
-}
-.ld-track i{display:block;height:100%;width:0;background:var(--ac);transition:width .18s linear;}
-
-.ld-skip{
-  position:absolute;
-  right:calc(34px + var(--safe-right));bottom:calc(96px + var(--safe-bottom));
-  font-family:var(--mono);font-size:11px;letter-spacing:.2em;
-  color:var(--tx-2);border:1px solid var(--bd-s);
-  padding:7px 16px;transition:all .2s;
-}
-.ld-skip:hover{color:var(--ac-ink);background:var(--ac);border-color:var(--ac);}
+/* ---------- 04. 开屏 ---------- */
+/* 样式见 boot-draw.css */
 
 /* ---------- 05. 应用骨架 ---------- */
 .app{
@@ -1485,7 +1412,6 @@ textarea.fld{resize:vertical;min-height:88px;font-size:14px;line-height:1.6;}
     animation-iteration-count:1 !important;
     transition-duration:.01ms !important;
   }
-  html:not(.force-motion) .ld-mask{display:none;}
   html:not(.force-motion) .app{opacity:1;}
   html:not(.force-motion) .view{transition:none;}
   html:not(.force-motion) .drawer{transition:none;}
@@ -1854,9 +1780,10 @@ html.kb-open .chat{padding-bottom:2px;}
   .anno-item i{max-width:110px;}
 }
 </style>
-<link rel="stylesheet" href="terminal-redesign.css?v=2.2.0">
-<script src="lq-glass.js?v=2.2.0"></script>
-<link rel="stylesheet" href="js/tws.css?v=2.2.0">
+<link rel="stylesheet" href="terminal-redesign.css?v=2.3.0">
+<link rel="stylesheet" href="boot-draw.css?v=2.3.0">
+<script src="lq-glass.js?v=2.3.0"></script>
+<link rel="stylesheet" href="js/tws.css?v=2.3.0">
 </head>
 <body class="is-loading">
 
@@ -1867,30 +1794,10 @@ html.kb-open .chat{padding-bottom:2px;}
 <div class="bg-layer bg-vignette"></div>
 <div class="bg-layer bg-scan"></div>
 
-<!-- ============ 开屏三阶段 ============ -->
-<div id="loader">
-  <div class="ld-mask">
-    <div class="ld-bar"></div>
-    <div class="ld-hud">
-      <div class="ld-brand">
-        <span class="bar"></span>
-        <span class="txt">TO WRITING STUDIO</span>
-        <span class="sub">To写作工作台</span>
-      </div>
-      <div class="ld-rec"><span class="dot"></span><span>SYS.BOOT / REC</span></div>
-      <button class="ld-skip" id="skipBtn">跳过 SKIP →</button>
-      <div class="ld-bottom">
-        <div class="ld-pct"><span id="ldNum">000</span><span class="sign">%</span></div>
-        <div class="ld-status">
-          <span>STATUS <b id="ldState">INITIALIZING</b></span>
-          <span>MODULE <b>04 / 04</b></span>
-          <span>BUILD <b>V2.2.0</b></span>
-        </div>
-      </div>
-      <div class="ld-track"><i id="ldFill"></i></div>
-    </div>
-  </div>
-</div>
+<!-- ============ 开屏：图纸显影 ============ -->
+<div id="loader"></div>
+<script src="boot-art-desktop.js?v=2.3.0"></script>
+<script src="boot-draw.js?v=2.3.0"></script>
 
 <!-- ============ 主应用 ============ -->
 <div class="app" id="app">
@@ -2121,7 +2028,7 @@ html.kb-open .chat{padding-bottom:2px;}
     <span class="sb hide-sm">MODEL <b id="sbModel">deepseek-chat</b></span>
     <span class="sp"></span>
     <span class="hz"></span>
-    <span class="sb hide-sm">BUILD <b>V2.2.0</b></span>
+    <span class="sb hide-sm">BUILD <b>V2.3.0</b></span>
     <span class="sb">© To写作工作台</span>
   </footer>
 </div>
@@ -3710,59 +3617,24 @@ document.addEventListener('focusout',function(){
 });
 
 /* ============================================================
-   开屏三阶段
+   开屏：图纸显影（动画本体在 boot-draw.js）
    ============================================================ */
 (function boot(){
-  var loader=$('loader'),ldNum=$('ldNum'),ldFill=$('ldFill'),ldState=$('ldState');
-  var ldBar=document.querySelector('.ld-bar'),ldMask=document.querySelector('.ld-mask');
+  var loader=$('loader');
   if(!loader){ return; }
-  var STATES=[[0,'INITIALIZING'],[26,'LINKING CORE'],[52,'SYNC ARCHIVE'],[76,'LOADING MODULES'],[97,'FINALIZING']];
-  var progress=0,bootDone=false,pageLoaded=document.hidden?true:false;
-
-  function setProgress(p){
-    progress=Math.min(p,100);
-    var v=Math.round(progress);
-    if(ldNum)ldNum.textContent=String(v).padStart(3,'0');
-    if(ldFill)ldFill.style.width=v+'%';
-    if(ldBar)ldBar.style.transform='scaleY('+(progress/100)+')';
-    for(var i=STATES.length-1;i>=0;i--){
-      if(progress>=STATES[i][0]){ if(ldState)ldState.textContent=STATES[i][1]; break; }
+  var B=window.TWSBoot;
+  /* 揭幕时就让顶栏、侧栏、输入框开始进场，和扫线衔接上 */
+  function enterApp(){ var app=$('app'); if(app)app.classList.add('enter'); document.body.classList.remove('is-loading'); }
+  function afterBoot(){
+    /* 静态模式要给出路，否则用户在别的电脑上一头雾水 */
+    if(sysReduced&&!S.forceMotion){
+      setTimeout(function(){ toast('系统开启了「减少动效」· 当前静态模式，点 ⊕ 可开启动效'); },900);
     }
   }
-  function finishBoot(){
-    if(bootDone) return;
-    bootDone=true;
-    setProgress(100);
-    var hold=reduced?0:320;
-    setTimeout(function(){
-      if(ldMask)ldMask.classList.add('slide');
-      if(ldBar)ldBar.style.opacity='0';
-      var app=$('app');
-      if(app)app.classList.add('enter');
-      setTimeout(function(){
-        loader.classList.add('done');
-        document.body.classList.remove('is-loading');
-        /* 静态模式要给出路，否则用户在别的电脑上一头雾水 */
-        if(sysReduced&&!S.forceMotion){
-          setTimeout(function(){ toast('系统开启了「减少动效」· 当前静态模式，点 ⊕ 可开启动效'); },900);
-        }
-      },reduced?0:1240);
-    },hold);
-  }
-  window.addEventListener('load',function(){ pageLoaded=true; });
-
-  if(reduced){ setProgress(100); finishBoot(); }
-  else{
-    var tick=setInterval(function(){
-      if(progress>=99&&!pageLoaded) return;
-      var step=progress<60?2.2:progress<88?1.1:0.42;
-      setProgress(progress+step);
-      if(progress>=100){ clearInterval(tick); finishBoot(); }
-    },26);
-  }
-  on('skipBtn','click',function(){ pageLoaded=true; setProgress(100); finishBoot(); });
-  /* 兜底：最多 2.6s 后强制进入 */
-  setTimeout(function(){ pageLoaded=true; finishBoot(); },2600);
+  if(!B){ enterApp(); loader.classList.add('done'); afterBoot(); return; }
+  B.onReveal(enterApp);
+  B.onDone(afterBoot);
+  if(reduced) B.instant();
 })();
 
 /* ============================================================
@@ -4253,9 +4125,9 @@ window.__ENDF__={S:S,save:save,renderDrawer:renderDrawer,renderChat:renderChat,g
 
 })();
 </script>
-<script src="terminal-redesign.js?v=2.2.0"></script>
-<script src="js/tws-data.js?v=2.2.0"></script>
-<script src="js/tws-features.js?v=2.2.0"></script>
-<script src="js/tws-views.js?v=2.2.0"></script>
+<script src="terminal-redesign.js?v=2.3.0"></script>
+<script src="js/tws-data.js?v=2.3.0"></script>
+<script src="js/tws-features.js?v=2.3.0"></script>
+<script src="js/tws-views.js?v=2.3.0"></script>
 </body>
 </html>

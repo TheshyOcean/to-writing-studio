@@ -332,12 +332,6 @@ body{letter-spacing:.005em}
 button,.chip,.mini-btn{transition:background .18s ease,border-color .18s ease,color .18s ease,transform .2s var(--studio-ease)}
 button:active{transform:translateY(1px)}
 #stage.parallax{will-change:auto;transition:transform .4s var(--studio-ease)}
-.ld-mask.slide{transition:transform .45s var(--studio-ease)}
-.ld-brand .txt{font-family:var(--disp)}
-.ld-mask{background:var(--bg-2)}
-.ld-rec{display:none}
-#loader .ld-pct{font-size:80px}
-#loader .ld-bottom{bottom:60px}
 .frame{display:none}
 :root.studio-focused[data-shell="desktop"] .viewport{grid-template-columns:0 minmax(0,1fr)}
 :root.studio-focused .rail{padding-left:0;padding-right:0;border:0;opacity:0;pointer-events:none}
@@ -606,7 +600,7 @@ button:active{transform:translateY(1px)}
 .sec-head::after{border-radius:3px}
 
 /* ---- 液态玻璃按钮：所有功能按钮统一成胶囊 ---- */
-button,.btn,.mini-btn,.icon-btn,.chip,.send,.res,#modelChip,.tws-btn,.tws-adopt,.tws-tpl-btn,.tws-temp-btn,.tws-pill,.tws-goal-chip,.tws-tag,.tws-ch-chip,.jump,.go,.ld-skip{
+button,.btn,.mini-btn,.icon-btn,.chip,.send,.res,#modelChip,.tws-btn,.tws-adopt,.tws-tpl-btn,.tws-temp-btn,.tws-pill,.tws-goal-chip,.tws-tag,.tws-ch-chip,.jump,.go{
   border-radius:999px!important;clip-path:none!important;
   background:var(--lq-glass)!important;border:1px solid var(--lq-edge)!important;color:var(--tx-1);
   -webkit-backdrop-filter:var(--lq-blur);backdrop-filter:var(--lq-blur);
