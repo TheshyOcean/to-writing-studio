@@ -959,3 +959,28 @@
 .lp-drop:hover{ border-color: var(--ac); }
 .lp-drop:hover b{ color: var(--ac); }
 :root[data-theme="light"] .lp-drop:hover b{ color: var(--tx-1); }
+
+/* QQ 音乐 · 官方接口结果（经 Cloudflare 中转） */
+.qq-feeds{ display: flex; gap: 6px; padding: 10px 16px 0; flex: none; }
+.qq-feeds[hidden]{ display: none; }
+.qq-res[hidden]{ display: none; }
+.qq-res .mu-sec .mu-link{ font: 500 10px var(--mono); letter-spacing: .1em; color: var(--tx-3); }
+.mu-t small{ font-size: 11px; color: var(--tx-3); }
+.tws-mu .mu-fav{
+  width: 34px; flex: none; display: grid; place-items: center; cursor: pointer; font-size: 15px; color: var(--tx-3);
+  background: none !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important; min-height: 0 !important;
+}
+.tws-mu .mu-fav:hover{ color: var(--tx-1); }
+.tws-mu .mu-fav.on{ color: var(--ac); }
+:root[data-theme="light"] .tws-mu .mu-fav.on{ color: #8a9a10; }
+.mu-more{ display: block; margin: 6px 16px 0; width: calc(100% - 32px); height: 32px; min-height: 0; font: 12px var(--sans); cursor: pointer; }
+.qq-relay{ margin: 12px 16px 0; border: 1px solid var(--bd); }
+.qq-relay summary{ display: flex; align-items: center; gap: 8px; padding: 8px 10px; cursor: pointer; list-style: none; font: 11px var(--sans); color: var(--tx-3); }
+.qq-relay summary::-webkit-details-marker{ display: none; }
+.qq-relay summary em{ margin-left: auto; font-style: normal; font: 500 10px var(--mono); letter-spacing: .12em; color: var(--tx-2); }
+.qq-relay-st::before{ content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 7px; border-radius: 50%; background: var(--tx-3); vertical-align: 1px; }
+.qq-relay-st.on{ color: var(--tx-1); }
+.qq-relay-st.on::before{ background: var(--ac); box-shadow: 0 0 6px var(--ac); }
+.qq-relay-form{ display: flex; flex-direction: column; gap: 8px; padding: 4px 10px 10px; }
+.qq-relay-form label{ display: flex; flex-direction: column; gap: 4px; font: 11px var(--sans); color: var(--tx-2); }

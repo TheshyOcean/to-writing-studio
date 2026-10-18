@@ -14,7 +14,7 @@
   var mobile = document.documentElement.getAttribute('data-shell') === 'mobile';
 
   /* ---------- 存储（歌单、最近搜索、上次的页签） ---------- */
-  var S = { list: [], recent: [], ne: [], tab: 'qq', vol: 0.8, mode: 'list' };
+  var S = { list: [], recent: [], ne: [], tab: 'qq', vol: 0.8, mode: 'list', relay: { url: '', token: '' } };
   try {
     var raw = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (raw && typeof raw === 'object') {
@@ -24,6 +24,7 @@
       if (/^(qq|ne|local)$/.test(raw.tab)) S.tab = raw.tab;
       if (raw.vol >= 0 && raw.vol <= 1) S.vol = raw.vol;
       if (/^(list|one|shuffle)$/.test(raw.mode)) S.mode = raw.mode;
+      if (raw.relay && typeof raw.relay === 'object') S.relay = { url: String(raw.relay.url || ''), token: String(raw.relay.token || '') };
     }
   } catch (e) {}
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
@@ -75,10 +76,66 @@
   }
   function searchQQ(q) {
     q = String(q || '').trim();
-    if (!q) { openQQ(HOME); return; }
+    if (!q) { if (!relayOn()) openQQ(HOME); return; }
     S.recent = [q].concat(S.recent.filter(function (x) { return x !== q; })).slice(0, 6);
     save(); renderRecent();
-    openQQ(searchUrl(q));
+    if (relayOn()) { RES.q = q; RES.page = 0; RES.songs = []; fetchRes('/discover/search', { keyword: q, page: 0 }, '搜索「' + q + '」'); }
+    else openQQ(searchUrl(q));
+  }
+
+  /* ---------- 官方接口（经你自己的 Cloudflare 中转） ---------- */
+  var RELAY_RE = /^(https:\/\/[^\s/]+|http:\/\/(127\.0\.0\.1|localhost)(:\d+)?)(\/|$)/;
+  function relayOn() { return RELAY_RE.test(S.relay.url) && (!!S.relay.token || /^http:/.test(S.relay.url)); }
+  var RES = { q: '', page: 0, songs: [], hasMore: false, title: '', busy: false };
+  function songPage(s) { return mobile ? (s.url || 'https://i2.y.qq.com/a/song/' + s.mid) : 'https://y.qq.com/n/ryqq/songDetail/' + s.mid; }
+  function fetchRes(path, params, title, more) {
+    if (RES.busy) return;
+    RES.busy = true; RES.title = title; renderRes(true);
+    var base = S.relay.url.replace(/\/+$/, '');
+    fetch(base + path, {
+      method: 'POST',
+      headers: S.relay.token ? { 'Content-Type': 'application/json', 'X-TWS-Token': S.relay.token } : { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ params: params })
+    }).then(function (r) {
+      return r.json().catch(function () { return { ok: false, msg: '中转返回了无法解析的内容（HTTP ' + r.status + '）' }; });
+    }).then(function (d) {
+      RES.busy = false;
+      if (!d || !d.ok) { RES.songs = more ? RES.songs : []; renderRes(); status((d && d.msg) || '请求失败', true); return; }
+      RES.songs = more ? RES.songs.concat(d.songs) : d.songs;
+      RES.hasMore = !!d.hasMore && path === '/discover/search';
+      renderRes();
+      status(RES.songs.length ? '点歌名在 QQ 音乐窗口里播放，点 ☆ 收藏' : '没有结果');
+    }).catch(function () {
+      RES.busy = false; renderRes();
+      status(/^http:/.test(S.relay.url) ? '连不上本机中转：先双击运行 qqmusic-relay.bat，窗口保持开着' : '连不上中转：检查中转地址是否正确', true);
+    });
+  }
+  function renderRes(loading) {
+    var box = $('.qq-res');
+    if (!RES.title) { box.hidden = true; return; }
+    box.hidden = false;
+    var h = '<div class="mu-sec"><span>/ ' + esc(RES.title) + '</span><button type="button" class="mu-link" data-rx>清除</button></div>';
+    if (loading && !RES.songs.length) h += '<p class="mu-empty">加载中…</p>';
+    else if (!RES.songs.length) h += '<p class="mu-empty">没有找到。</p>';
+    else {
+      h += '<ul class="mu-list">' + RES.songs.map(function (s, i) {
+        var fav = S.list.some(function (x) { return x.u === songPage(s); });
+        return '<li class="mu-it"><button type="button" class="mu-play" data-rp="' + i + '">' +
+          '<span class="mu-n">' + String(i + 1).padStart(2, '0') + '</span>' +
+          '<span class="mu-t">' + esc(s.name) + '<small> · ' + esc(s.singer) + '</small></span><span class="mu-k">PLAY</span></button>' +
+          '<button type="button" class="mu-fav' + (fav ? ' on' : '') + '" data-rf="' + i + '" title="' + (fav ? '已收藏' : '收藏') + '">' + (fav ? '★' : '☆') + '</button></li>';
+      }).join('') + '</ul>';
+      if (RES.hasMore) h += '<button type="button" class="mu-more" data-rm>' + (loading ? '加载中…' : '加载更多') + '</button>';
+    }
+    box.innerHTML = h;
+  }
+  function renderRelay() {
+    var on = relayOn();
+    $('.qq-feeds').hidden = !on;
+    $('.qq-relay-st').textContent = on ? '已连接中转 · 搜索结果直接显示在这里' : '未连接 · 搜索会打开 QQ 音乐官网';
+    $('.qq-relay-st').classList.toggle('on', on);
+    var f = $('.qq-relay-form');
+    f.url.value = S.relay.url; f.token.value = S.relay.token;
   }
 
   /* ================================================================
@@ -289,6 +346,8 @@
         '<button class="btn primary mu-go" type="submit">搜索</button>' +
       '</form>' +
       '<div class="mu-recent"></div>' +
+      '<div class="qq-feeds"><button type="button" class="mu-chip" data-feed="daily">✦ 每日推荐</button><button type="button" class="mu-chip" data-feed="radio">◎ 猜你喜欢</button></div>' +
+      '<div class="qq-res" hidden></div>' +
       '<div class="mu-sec"><span>/ QQ 音乐收藏</span><em class="qq-cnt"></em></div>' +
       '<ul class="mu-list qq-list"></ul>' +
       '<form class="mu-row mu-add qq-add" autocomplete="off">' +
@@ -296,6 +355,13 @@
         '<button class="btn mu-go" type="submit">收藏</button>' +
       '</form>' +
       '<p class="mu-tip">在 QQ 音乐官网的小窗口里播放，登录也在那边完成。<button class="mu-link" type="button" data-home>打开 QQ 音乐 ↗</button></p>' +
+      '<details class="qq-relay"><summary><span class="qq-relay-st"></span><em>连接设置</em></summary>' +
+        '<form class="qq-relay-form" autocomplete="off">' +
+          '<label>中转地址<input class="mu-in" name="url" type="url" placeholder="http://127.0.0.1:17890" spellcheck="false"></label>' +
+          '<label>访问密码<input class="mu-in" name="token" type="password" placeholder="本机中转不用填" autocomplete="new-password"></label>' +
+          '<div class="mu-row" style="padding:0"><button class="btn primary mu-go" type="submit">保存并测试</button><button class="btn mu-go" type="button" data-relay-clear>断开</button></div>' +
+          '<p class="mu-tip" style="margin:0">QQ 音乐的 API Key 只填在 Cloudflare 里，不要填在这里。</p>' +
+        '</form></details>' +
     '</div>' +
 
     /* ---- 网易云 ---- */
@@ -443,6 +509,37 @@
     if (d) { S.list.splice(+d.getAttribute('data-d'), 1); save(); renderQQ(); }
   });
   $('[data-home]').addEventListener('click', function () { openQQ(HOME); });
+  $('.qq-feeds').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-feed]'); if (!b) return;
+    var f = b.getAttribute('data-feed');
+    RES.q = ''; RES.songs = [];
+    fetchRes(f === 'daily' ? '/discover/daily-mix' : '/discover/radio', {}, f === 'daily' ? '每日推荐' : '猜你喜欢');
+  });
+  $('.qq-res').addEventListener('click', function (e) {
+    var p = e.target.closest('[data-rp]'), f = e.target.closest('[data-rf]');
+    if (p) openQQ(songPage(RES.songs[+p.getAttribute('data-rp')]));
+    if (f) {
+      var s = RES.songs[+f.getAttribute('data-rf')], u = songPage(s);
+      if (!S.list.some(function (x) { return x.u === u; })) {
+        S.list.unshift({ t: s.name + ' - ' + s.singer, u: u }); save(); renderQQ(); renderRes();
+        status('已收藏「' + s.name + '」');
+      }
+    }
+    if (e.target.closest('[data-rx]')) { RES.title = ''; RES.songs = []; renderRes(); }
+    if (e.target.closest('[data-rm]') && RES.q) { RES.page++; fetchRes('/discover/search', { keyword: RES.q, page: RES.page }, '搜索「' + RES.q + '」', true); }
+  });
+  $('.qq-relay-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var u = this.url.value.trim(), t = this.token.value.trim();
+    if (!RELAY_RE.test(u)) { status('中转地址不对：本机中转填 http://127.0.0.1:17890', true); return; }
+    if (!t && !/^http:/.test(u)) { status('云端中转需要填访问密码', true); return; }
+    S.relay = { url: u, token: t }; save(); renderRelay();
+    RES.q = ''; RES.songs = [];
+    fetchRes('/discover/daily-mix', {}, '每日推荐');
+  });
+  $('[data-relay-clear]').addEventListener('click', function () {
+    S.relay = { url: '', token: '' }; save(); renderRelay(); RES.title = ''; renderRes(); status('已断开中转');
+  });
 
   /* ---------- 网易云事件 ---------- */
   $('.ne-add').addEventListener('submit', function (e) {
@@ -517,7 +614,7 @@
     anchor.parentNode.insertBefore(btn, anchor);
     document.body.appendChild(panel);
     setTab(S.tab);
-    renderRecent(); renderQQ(); renderNE(); renderLocal();
+    renderRecent(); renderQQ(); renderNE(); renderLocal(); renderRelay();
     loadLocal();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
