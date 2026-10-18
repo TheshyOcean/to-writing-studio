@@ -985,47 +985,11 @@
 .qq-relay-form{ display: flex; flex-direction: column; gap: 8px; padding: 4px 10px 10px; }
 .qq-relay-form label{ display: flex; flex-direction: column; gap: 4px; font: 11px var(--sans); color: var(--tx-2); }
 
-/* QQ 音乐 · 播放位置切换 */
-.qq-mode{ display: flex; align-items: center; gap: 10px; margin: 12px 16px 0; font: 11px var(--sans); color: var(--tx-3); }
-.qq-mode .seg{ display: flex; gap: 4px; flex: 1; }
-.qq-mode .seg button{ flex: 1; height: 28px; min-height: 0; font: 600 11px var(--sans); cursor: pointer; }
-
-/* QQ 音乐 · 播放器小窗（嵌入官方网页播放器） */
-.tws-qqdock{
-  position: fixed; z-index: 7400; width: 440px; height: min(640px, calc(100vh - 100px));
-  display: flex; flex-direction: column;
-  background: var(--bg-2); border: 1px solid var(--bd-s); border-top: 2px solid var(--ac);
-  box-shadow: 0 22px 60px rgba(0,0,0,.42); clip-path: var(--chamfer-2);
-}
-.tws-qqdock[hidden]{ display: none; }
-.tws-qqdock.min{ height: auto; }
-.tws-qqdock.min .qd-body{ position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
-.qd-h{ display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 6px 0 14px; flex: none; cursor: grab; user-select: none; border-bottom: 1px solid var(--bd); touch-action: none; }
-.tws-qqdock.dragging .qd-h{ cursor: grabbing; }
-.tws-qqdock.dragging iframe{ pointer-events: none; }
-.qd-h .sq{ width: 4px; height: 13px; background: var(--ac); }
-.qd-h b{ font: 600 13px var(--sans); color: var(--tx-1); }
-.qd-h .en{ flex: 1; font: 500 9px var(--mono); letter-spacing: .18em; color: var(--tx-3); }
-.tws-qqdock .qd-b{
-  width: 30px; height: 30px; display: grid; place-items: center; cursor: pointer; font: 13px var(--sans); color: var(--tx-2);
-  background: none !important; border: 0 !important; border-radius: 6px !important; box-shadow: none !important; min-height: 0 !important;
-  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
-}
-.tws-qqdock .qd-b:hover{ color: var(--tx-1); background: color-mix(in srgb, var(--tx-1) 8%, transparent) !important; }
-.qd-body{ flex: 1; min-height: 0; display: flex; flex-direction: column; background: #fff; }
-/* QQ 音乐官网按大屏设计，小窗里整体缩到 62%，不用横向滚动 */
-.qd-view{ position: relative; flex: 1; min-height: 0; overflow: hidden; }
-.qd-view iframe{ position: absolute; left: 0; top: 0; width: calc(100% / .62); height: calc(100% / .62); border: 0; background: #fff; transform: scale(.62); transform-origin: 0 0; }
-:root[data-shell="mobile"] .qd-view iframe{ width: 100%; height: 100%; transform: none; }
-.qd-tip{ margin: 0; padding: 6px 12px; font: 10px/1.6 var(--sans); color: var(--tx-3); background: var(--bg-2); border-top: 1px solid var(--bd); flex: none; }
-:root[data-shell="mobile"] .tws-qqdock{ left: 0 !important; right: 0; bottom: 0; top: auto !important; width: auto; height: 72vh; clip-path: none; }
-:root[data-shell="mobile"] .tws-qqdock.min{ height: auto; }
-
 /* ---------- 迷你播放条（参考 Hush 群聊歌单）：胶囊 + 跳动音柱 + 细进度 ---------- */
 .tws-mini{
   position: fixed; z-index: 7300; right: 28px; bottom: calc(var(--status-h, 30px) + 168px);
   display: flex; align-items: center; gap: 12px; max-width: min(440px, calc(100vw - 32px));
-  padding: 8px 10px 8px 16px; border-radius: 999px; overflow: hidden;
+  padding: 7px 10px 7px 7px; border-radius: 999px; overflow: hidden;
   background: color-mix(in srgb, var(--bg-2) 88%, transparent);
   -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4);
   border: 1px solid var(--bd-s);
@@ -1036,14 +1000,24 @@
 @keyframes miIn{ from{ opacity: 0; transform: translateY(12px) scale(.96); } }
 :root[data-shell="mobile"] .tws-mini{ left: 12px; right: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 150px); max-width: none; }
 .tws-mini button{ background: none !important; border: 0 !important; box-shadow: none !important; min-height: 0 !important; padding: 0 !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; cursor: pointer; }
-.mi-eq{ display: flex; gap: 3px; align-items: flex-end; height: 22px; width: 22px; flex: none; }
-.mi-eq i{ width: 3.5px; height: 30%; border-radius: 2px; background: var(--ac); }
+/* 封面缩略图 + 叠在上面的跳动音柱 */
+.tws-mini .mi-art{ position: relative; width: 40px; height: 40px; flex: none; border-radius: 10px !important; overflow: hidden; }
+.mi-cover{ position: absolute; inset: 0; display: block; border-radius: 10px; overflow: hidden; view-transition-name: tws-cover; background: linear-gradient(135deg, color-mix(in srgb, var(--ac) 70%, #000), color-mix(in srgb, var(--ac) 25%, var(--bg-3))); }
+.mi-cover img, .xp-cover img{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.mi-cover img[hidden], .xp-cover img[hidden], .xp-bg img[hidden]{ display: none; }
+.mi-ph{ position: absolute; inset: 0; display: grid; place-items: center; font-style: normal; font-size: 18px; color: var(--ac-ink); opacity: .75; }
+.has-cover .mi-ph{ display: none; }
+.mi-eq{ position: absolute; left: 0; right: 0; bottom: 0; height: 18px; display: flex; gap: 2px; align-items: flex-end; justify-content: center; padding: 0 0 4px; background: linear-gradient(transparent, rgba(0,0,0,.55)); opacity: 0; transition: opacity .3s; }
+.tws-mini.playing .mi-eq{ opacity: 1; }
+.mi-eq i{ width: 3px; height: 30%; border-radius: 2px; background: #fff; }
 .tws-mini.playing .mi-eq i{ animation: miBar .8s ease-in-out infinite; }
 .tws-mini.playing .mi-eq i:nth-child(2){ animation-delay: -.3s; }
 .tws-mini.playing .mi-eq i:nth-child(3){ animation-delay: -.55s; }
 .tws-mini.playing .mi-eq i:nth-child(4){ animation-delay: -.15s; }
 @keyframes miBar{ 50%{ height: 100%; } }
-:root[data-theme="light"] .mi-eq i{ background: #9aae1a; }
+.tws-mini .mi-art:hover .mi-cover{ transform: scale(1.06); }
+.mi-cover{ transition: transform .3s; }
+.mi-song{ view-transition-name: tws-title; }
 .mi-meta{ display: flex; flex-direction: column; align-items: flex-start; min-width: 0; flex: 1; text-align: left; border-radius: 0 !important; }
 .mi-song{ max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 14px var(--sans); color: var(--tx-1); }
 .mi-by{ max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 11px var(--sans); color: var(--tx-3); margin-top: 1px; }
@@ -1060,5 +1034,95 @@
 .mi-prog{ position: absolute; left: 18px; right: 18px; bottom: 0; height: 6px; cursor: pointer; }
 .mi-prog::before{ content: ""; position: absolute; left: 0; right: 0; bottom: 2px; height: 2px; border-radius: 2px; background: color-mix(in srgb, var(--tx-1) 10%, transparent); }
 .mi-prog b{ position: absolute; left: 0; right: 0; bottom: 2px; height: 2px; border-radius: 2px; background: var(--ac); transform-origin: left; transform: scaleX(0); transition: transform .25s linear; }
-.tws-qqdock .qd-login{ width: auto; padding: 0 10px !important; font: 600 11px var(--sans); color: var(--ac-ink) !important; background: var(--ac) !important; border-radius: 999px !important; height: 24px; }
-.tws-qqdock .qd-login:hover{ filter: brightness(1.05); }
+
+
+/* ---------- 展开播放页：封面 + 滚动歌词 ---------- */
+.tws-xp{ position: fixed; inset: 0; z-index: 8600; display: flex; color: var(--tx-1); overflow: hidden; background: var(--bg-1); }
+.tws-xp[hidden]{ display: none; }
+html.tws-xp-open{ overflow: hidden; }
+.xp-bg{ position: absolute; inset: -12%; background: radial-gradient(60% 60% at 30% 40%, color-mix(in srgb, var(--ac) 30%, transparent), transparent 70%), var(--bg-1); }
+.xp-bg img{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(70px) saturate(1.5); transform: scale(1.15); opacity: .85; animation: xpDrift 40s ease-in-out infinite alternate; }
+@keyframes xpDrift{ to{ transform: scale(1.3) translate(-3%, 2%) rotate(3deg); } }
+.xp-shade{ position: absolute; inset: 0; background: linear-gradient(90deg, color-mix(in srgb, var(--bg-1) 55%, transparent), color-mix(in srgb, var(--bg-1) 78%, transparent)); }
+:root[data-theme="light"] .xp-shade{ background: linear-gradient(90deg, color-mix(in srgb, var(--bg-1) 50%, transparent), color-mix(in srgb, var(--bg-1) 80%, transparent)); }
+.tws-xp .xp-close{
+  position: absolute; z-index: 3; top: calc(env(safe-area-inset-top, 0px) + 18px); left: 50%; transform: translateX(-50%);
+  width: 52px; height: 30px; display: grid; place-items: center; cursor: pointer; color: var(--tx-2);
+  background: color-mix(in srgb, var(--tx-1) 8%, transparent) !important; border: 0 !important; border-radius: 999px !important; box-shadow: none !important; min-height: 0 !important;
+}
+.tws-xp .xp-close:hover{ color: var(--tx-1); background: color-mix(in srgb, var(--tx-1) 14%, transparent) !important; }
+.tws-xp .xp-close svg{ width: 20px; height: 20px; }
+.xp-stage{ position: relative; z-index: 2; flex: 1; display: grid; grid-template-columns: minmax(280px, 420px) minmax(0, 560px); justify-content: center; align-items: center; gap: clamp(32px, 7vw, 110px); padding: 72px clamp(24px, 5vw, 80px) 56px; }
+.xp-left{ display: flex; flex-direction: column; gap: 22px; }
+.xp-cover{
+  position: relative; width: 100%; aspect-ratio: 1; border-radius: 18px; overflow: hidden; view-transition-name: tws-cover;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--ac) 70%, #000), color-mix(in srgb, var(--ac) 25%, var(--bg-3)));
+  box-shadow: 0 30px 80px -24px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
+  transform: scale(.9); transition: transform .7s cubic-bezier(.22,.8,.22,1), box-shadow .7s;
+}
+.tws-xp.playing .xp-cover{ transform: none; box-shadow: 0 40px 100px -24px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.08); }
+.xp-cover .mi-ph{ font-size: 72px; }
+.xp-meta{ min-width: 0; }
+.xp-title{ margin: 0; font: 700 clamp(22px, 2.4vw, 30px)/1.25 var(--sans); color: var(--tx-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; view-transition-name: tws-title; width: fit-content; max-width: 100%; }
+.xp-by{ margin: 6px 0 0; font: 14px var(--sans); color: var(--tx-2); }
+.xp-progress{ display: flex; align-items: center; gap: 10px; font: 11px var(--mono); color: var(--tx-3); font-variant-numeric: tabular-nums; }
+.xp-progress .xp-bar{ flex: 1; }
+.tws-xp input[type=range]{ -webkit-appearance: none; appearance: none; height: 18px; background: transparent; cursor: pointer; margin: 0; padding: 0; border: 0; }
+.tws-xp input[type=range]::-webkit-slider-runnable-track{ height: 4px; border-radius: 4px; background: linear-gradient(90deg, var(--tx-1) var(--p,0%), color-mix(in srgb, var(--tx-1) 18%, transparent) var(--p,0%)); }
+.tws-xp input[type=range]::-moz-range-track{ height: 4px; border-radius: 4px; background: color-mix(in srgb, var(--tx-1) 18%, transparent); }
+.tws-xp input[type=range]::-moz-range-progress{ height: 4px; border-radius: 4px; background: var(--tx-1); }
+.tws-xp input[type=range]::-webkit-slider-thumb{ -webkit-appearance: none; width: 12px; height: 12px; margin-top: -4px; border-radius: 50%; background: var(--tx-1); opacity: 0; transition: opacity .2s; }
+.tws-xp .xp-progress:hover input[type=range]::-webkit-slider-thumb{ opacity: 1; }
+.xp-ctl{ display: flex; align-items: center; justify-content: space-between; padding: 0 6px; }
+.tws-xp .xp-b{
+  width: 44px; height: 44px; display: grid; place-items: center; cursor: pointer; color: var(--tx-2); font: 600 15px var(--sans);
+  background: none !important; border: 0 !important; border-radius: 50% !important; box-shadow: none !important; min-height: 0 !important; padding: 0 !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important; transition: transform .2s, color .2s;
+}
+.tws-xp .xp-b:hover{ color: var(--tx-1); transform: scale(1.08); }
+.tws-xp .xp-b:active{ transform: scale(.92); }
+.tws-xp .xp-b svg{ width: 22px; height: 22px; }
+.tws-xp .xp-main{ width: 64px; height: 64px; color: var(--lq-lime-ink, var(--ac-ink)); background: var(--lq-lime, var(--ac)) !important; box-shadow: 0 12px 30px -10px var(--lq-lime-glow, rgba(0,0,0,.4)) !important; }
+.tws-xp .xp-main:hover{ color: var(--lq-lime-ink, var(--ac-ink)); }
+.tws-xp .xp-main svg{ width: 26px; height: 26px; }
+/* 歌词：整列平移把当前句送到中间，上下渐隐 */
+.xp-right{ height: min(70vh, 640px); min-width: 0; }
+.xp-lyr{ position: relative; height: 100%; overflow: hidden; -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 78%, transparent); mask-image: linear-gradient(transparent, #000 18%, #000 78%, transparent); }
+.xp-lyr ol{ list-style: none; margin: 0; padding: 0; transition: transform .75s cubic-bezier(.22,.8,.22,1); will-change: transform; }
+.xp-lyr li{
+  padding: 9px 0; font: 600 clamp(18px, 1.9vw, 24px)/1.45 var(--sans); color: var(--tx-1); opacity: .32; cursor: pointer;
+  transform-origin: left center; transition: opacity .5s, transform .5s cubic-bezier(.22,.8,.22,1), filter .5s; filter: blur(.4px);
+}
+.xp-lyr li:hover{ opacity: .6; }
+.xp-lyr li.on{ opacity: 1; transform: scale(1.04); filter: none; }
+.xp-lyr.static{ overflow-y: auto; -webkit-mask-image: none; mask-image: none; }
+.xp-lyr.static li{ opacity: .85; cursor: default; filter: none; font-weight: 500; }
+.xp-lyr li.xp-nolrc{ opacity: .6; cursor: default; font-weight: 500; filter: none; padding-top: 30vh; }
+.xp-lyr li.xp-nolrc small{ display: block; margin-top: 8px; font-size: 13px; opacity: .8; font-weight: 400; }
+/* 进场：歌词逐行浮现（不支持 View Transitions 时整页再加一个缩放淡入） */
+.tws-xp:not([hidden]) .xp-lyr li{ animation: xpLine .7s cubic-bezier(.22,.8,.22,1) both; animation-delay: calc(var(--i, 0) * 35ms + 180ms); }
+@keyframes xpLine{ from{ opacity: 0; transform: translateY(14px); } }
+.tws-xp.enter .xp-stage{ animation: xpIn .55s cubic-bezier(.22,.8,.22,1) both; }
+.tws-xp.enter{ animation: xpFade .4s ease both; }
+@keyframes xpIn{ from{ opacity: 0; transform: translateY(24px) scale(.97); } }
+@keyframes xpFade{ from{ opacity: 0; } }
+/* View Transitions：封面和歌名从胶囊飞到播放页 */
+::view-transition-group(tws-cover), ::view-transition-group(tws-title){ animation-duration: .6s; animation-timing-function: cubic-bezier(.22,.8,.22,1); }
+::view-transition-image-pair(tws-cover){ isolation: auto; }
+::view-transition-old(tws-cover), ::view-transition-new(tws-cover){ height: 100%; object-fit: cover; }
+::view-transition-old(root), ::view-transition-new(root){ animation-duration: .45s; }
+/* 手机：上下排 */
+@media (max-width: 760px){
+  .xp-stage{ grid-template-columns: 1fr; grid-template-rows: auto 1fr; align-items: start; gap: 18px; padding: calc(env(safe-area-inset-top, 0px) + 64px) 22px calc(env(safe-area-inset-bottom, 0px) + 20px); }
+  .xp-left{ gap: 14px; }
+  .xp-cover{ width: min(62vw, 300px); margin: 0 auto; }
+  .xp-right{ height: auto; min-height: 0; order: 2; }
+  .xp-lyr{ height: 26vh; }
+  .xp-lyr li{ font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .xp-bg img, .tws-xp:not([hidden]) .xp-lyr li{ animation: none; }
+  .xp-lyr ol, .xp-cover{ transition: none; }
+}
+.xp-lyr.static ol{ padding-top: 22vh; }
+@media (max-width: 760px){ .xp-lyr.static ol{ padding-top: 2vh; } }
