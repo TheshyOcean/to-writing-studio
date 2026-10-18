@@ -104,7 +104,8 @@
       RES.songs = more ? RES.songs.concat(d.songs) : d.songs;
       RES.hasMore = !!d.hasMore && path === '/discover/search';
       renderRes();
-      status(RES.songs.length ? '点歌名在 QQ 音乐窗口里播放，点 ☆ 收藏' : '没有结果');
+      if (RES.songs.length) status('点歌名在 QQ 音乐窗口里播放，点 ☆ 收藏');
+      else status('没有结果' + (d.msg ? ' · ' + d.msg : '') + (d.debug ? ' · 诊断：' + JSON.stringify(d.debug).slice(0, 400) : ''), !!d.debug);
     }).catch(function () {
       RES.busy = false; renderRes();
       status(/^http:/.test(S.relay.url) ? '连不上本机中转：先双击运行 qqmusic-relay.bat，窗口保持开着' : '连不上中转：检查中转地址是否正确', true);

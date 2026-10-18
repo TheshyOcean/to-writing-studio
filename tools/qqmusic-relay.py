@@ -78,6 +78,66 @@ def upstream(path, params):
         return 502, {"msg": "连不上 QQ 音乐接口：%s" % e}
 
 
+SONG_KEYS = ("songMid", "songmid", "mid", "song_mid")
+
+
+def pick(d, *keys):
+    for k in keys:
+        if isinstance(d, dict) and d.get(k) not in (None, ""):
+            return d[k]
+    return None
+
+
+def find_songs(obj, depth=0):
+    """在返回数据里找「一串歌曲」：文档写的是 songs / songlist，但实际可能包了一层，所以递归找。"""
+    if depth > 5:
+        return []
+    if isinstance(obj, list) and obj and all(isinstance(x, dict) for x in obj[:3]):
+        if any(pick(x, *SONG_KEYS) for x in obj[:3]):
+            return obj
+        # 有的接口每项是 {"songInfo": {...}}
+        inner = [next((v for v in x.values() if isinstance(v, dict) and pick(v, *SONG_KEYS)), None) for x in obj]
+        if inner and all(inner[:3]):
+            return inner
+    if isinstance(obj, dict):
+        for k in ("songs", "songlist", "songList", "list", "data", "items"):
+            if k in obj:
+                r = find_songs(obj[k], depth + 1)
+                if r:
+                    return r
+        for v in obj.values():
+            if isinstance(v, (dict, list)):
+                r = find_songs(v, depth + 1)
+                if r:
+                    return r
+    return []
+
+
+def deep_get(obj, key, depth=0):
+    if depth > 4 or not isinstance(obj, dict):
+        return None
+    if key in obj:
+        return obj[key]
+    for v in obj.values():
+        r = deep_get(v, key, depth + 1)
+        if r is not None:
+            return r
+    return None
+
+
+def shape(obj, depth=0):
+    """数据的「形状」：字段名 + 类型 + 列表长度，不带任何内容，方便排查。"""
+    if depth > 3:
+        return "…"
+    if isinstance(obj, dict):
+        return {k: shape(v, depth + 1) for k, v in list(obj.items())[:20]}
+    if isinstance(obj, list):
+        return ["list[%d]" % len(obj)] + ([shape(obj[0], depth + 1)] if obj else [])
+    if isinstance(obj, (int, float)) and not isinstance(obj, bool):
+        return obj if obj in (0, 1, -1) else "number"
+    return type(obj).__name__
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "TWSRelay/1.0"
 
@@ -159,16 +219,27 @@ class Handler(BaseHTTPRequestHandler):
             if status in (401, 403):
                 msg += "（API Key 可能失效了：删掉 qqmusic-key.txt 重新运行，填新的 Key）"
             return self.send_json(502 if status < 400 else status, {"ok": False, "msg": msg}, o)
-        raw = data.get("songs") or data.get("songlist") or []
+        found = find_songs(data)
         songs = []
-        for s in raw[:50]:
-            mid, name = str(s.get("songMid") or ""), str(s.get("songName") or "")
+        for s in found[:50]:
+            mid = str(pick(s, "songMid", "songmid", "mid", "song_mid") or "")
+            name = str(pick(s, "songName", "songname", "name", "title", "song_name") or "")
+            singer = pick(s, "singerName", "singername", "singer", "artist")
+            if isinstance(singer, list):
+                singer = " / ".join(str(x.get("name") if isinstance(x, dict) else x) for x in singer)
+            elif isinstance(singer, dict):
+                singer = singer.get("name", "")
+            url = str(pick(s, "songH5Url", "h5Url", "url") or "")
             if mid and name:
-                songs.append({
-                    "mid": mid, "name": name, "singer": str(s.get("singerName") or ""),
-                    "url": str(s.get("songH5Url") or "https://i2.y.qq.com/a/song/" + mid),
-                })
-        self.send_json(200, {"ok": True, "songs": songs, "hasMore": bool(data.get("hasMore"))}, o)
+                songs.append({"mid": mid, "name": name, "singer": str(singer or ""),
+                              "url": url or "https://i2.y.qq.com/a/song/" + mid})
+        out = {"ok": True, "songs": songs, "hasMore": bool(deep_get(data, "hasMore"))}
+        if not songs:
+            out["debug"] = shape(data)  # 只有字段名和类型，不含内容
+            if isinstance(data.get("msg"), str) and data["msg"]:
+                out["msg"] = data["msg"][:120]
+        self.send_json(200, out, o)
+
 
 
 def main():
