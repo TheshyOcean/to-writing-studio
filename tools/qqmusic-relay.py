@@ -6,8 +6,8 @@ To写作工作台 · QQ 音乐本机中转
 
 用法：
   1. 第一次：双击 qqmusic-relay.bat（有窗口，用来粘贴 Key）
-     以后：双击 qqmusic-relay-hidden.vbs 就会隐藏运行（没有窗口）；
-     「开机自动运行.bat」让它开机自己在后台启动；「停止中转.bat」关掉它
+     以后：要用的时候双击 qqmusic-relay-hidden.vbs，隐藏运行（没有窗口）；
+     后台模式下 1 小时没人用会自己退出；想马上关掉就双击「停止中转.bat」
   2. 第一次运行会让你粘贴 QQ 音乐 API Key（qmk- 开头，输入时不显示），保存在本文件旁边的 qqmusic-key.txt
   3. 窗口开着就能用；写作工作台音乐面板里「连接设置」的中转地址填 http://127.0.0.1:17890
   想换 Key：删掉 qqmusic-key.txt 再运行一次。
@@ -16,6 +16,8 @@ To写作工作台 · QQ 音乐本机中转
 只用 Python 自带的库，不用装任何东西。
 """
 import getpass
+import threading
+import time
 import json
 import os
 import sys
@@ -32,6 +34,8 @@ ALLOWED_ORIGINS = {
     "http://localhost:8080",
     "http://127.0.0.1:8080",
 }
+IDLE_EXIT_SECONDS = 60 * 60  # 后台模式：这么久没有请求就自己退出
+LAST_USE = [time.time()]
 KEY_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "qqmusic-key.txt")
 
 
@@ -192,6 +196,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json(404, {"ok": False, "msg": "not found"})
 
     def do_POST(self):
+        LAST_USE[0] = time.time()
         o = self.origin()
         if not o:
             return self.send_json(403, {"ok": False, "msg": "来源网站不在允许列表里"})
@@ -258,6 +263,15 @@ def main():
         print("端口 %d 被占用了：中转可能已经在后台运行（可以直接用）。" % PORT)
         input("按回车退出…")
         sys.exit(1)
+    hidden = sys.stdin is None or sys.stdout is None
+    if hidden:
+        def watchdog():
+            while True:
+                time.sleep(60)
+                if time.time() - LAST_USE[0] > IDLE_EXIT_SECONDS:
+                    srv.shutdown()
+                    return
+        threading.Thread(target=watchdog, daemon=True).start()
     print()
     print("  QQ 音乐中转已启动  →  http://%s:%d" % (HOST, PORT))
     print("  在写作工作台音乐面板 → QQ 音乐 → 连接设置 里填这个地址。")

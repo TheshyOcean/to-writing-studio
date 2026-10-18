@@ -184,7 +184,7 @@
       else status('没有结果' + (d.msg ? ' · ' + d.msg : '') + (d.debug ? ' · 诊断：' + JSON.stringify(d.debug).slice(0, 400) : ''), !!d.debug);
     }).catch(function () {
       RES.busy = false; renderRes();
-      status(/^http:/.test(S.relay.url) ? '连不上本机中转：先双击运行 qqmusic-relay.bat，窗口保持开着' : '连不上中转：检查中转地址是否正确', true);
+      status(/^http:/.test(S.relay.url) ? '连不上本机中转：双击「QQ音乐中转」文件夹里的 qqmusic-relay-hidden.vbs 启动它（1 小时没用会自己关）' : '连不上中转：检查中转地址是否正确', true);
     });
   }
   function renderRes(loading) {
