@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1.6 -1.6 35.2 35.2" width="64" height="64" role="img" aria-label="To写作工作台">
+  <!-- To Work Studio · 品牌标记
+       切角方章 + T 字骨 + 信号环，构成 "To" 单体字标 -->
+  <path d="M0 0h25.5L32 6.5V32H6.5L0 25.5Z" fill="#101110"/>
+  <path d="M2.6 2.6h21.7l5.1 5.1v21.7H7.7L2.6 24.3Z" fill="none" stroke="#fff500" stroke-opacity=".32"/>
+  <rect x="5.1" y="8.2" width="15.2" height="3.8" fill="#fff500"/>
+  <rect x="10.8" y="8.2" width="3.8" height="14" fill="#fff500"/>
+  <circle cx="22.3" cy="19.2" r="3.4" fill="none" stroke="#00E5FF" stroke-width="2.4"/>
+</svg>

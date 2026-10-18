@@ -1,0 +1,119 @@
+/* ==========================================================================
+   boot-draw.css · 开屏「图纸显影」
+   纸是 --bg-1，墨是 --tx-1，信号是 --ac；深浅两套主题直接沿用工作台变量。
+   .bd-bp 的尺寸和位置必须与 .bg-grid 的背景图一致（见 terminal-redesign.css），
+   这样揭幕时线条原地不动，主界面像是直接长在图纸上。
+   ========================================================================== */
+#loader{position:fixed;inset:0;z-index:999;overflow:hidden;cursor:default;}
+#loader.done{display:none;}
+
+.bd-paper{position:absolute;inset:0;background:var(--bg-1);}
+
+/* 图纸：桌面 1600×1000 贴左上；手机 620 宽，偏移 -10 / 40 */
+.bd-bp{position:absolute;left:0;top:0;width:1600px;height:1000px;opacity:.85;pointer-events:none;}
+.bd-bp svg{display:block;width:100%;height:100%;}
+#loader.bd-mobile .bd-bp{left:-10px;top:40px;width:620px;height:auto;aspect-ratio:900/1640;}
+
+/* 描绘（全部只动 transform / opacity，走合成器，不掉帧）
+   --bd-k：首次 1，之后 0.62，和 boot-draw.js 的节奏一致 */
+/* ① 结构线：与 .bd-bp 同一坐标系，1px 墨线从起点伸展出来 */
+.bd-cl{position:absolute;left:0;top:0;width:1600px;height:1000px;pointer-events:none;}
+#loader.bd-mobile .bd-cl{left:-10px;top:40px;width:620px;height:auto;aspect-ratio:900/1640;}
+.bd-cl i{position:absolute;display:block;background:var(--tx-1);opacity:.4;will-change:transform;}
+.bd-cl i.h{height:1px;margin-top:-.5px;transform:scaleX(0);transform-origin:0 50%;}
+.bd-cl i.v{width:1px;margin-left:-.5px;transform:scaleY(0);transform-origin:50% 0;}
+#loader.bd-play .bd-cl i{animation-name:bdLine;animation-timing-function:cubic-bezier(.76,0,.24,1);animation-fill-mode:both;}
+@keyframes bdLine{to{transform:none;}}
+/* ③ 结构线收尾：整体淡出，留下淡色图纸 */
+#loader.bd-play .bd-cl{animation:bdFade calc(1000ms * var(--bd-k,1)) cubic-bezier(.4,0,.2,1) calc(1850ms * var(--bd-k,1)) both;}
+@keyframes bdFade{to{opacity:0;}}
+/* ② 显影：一张带 38vw 柔边的纸从左往右滑开，细节在柔边里渐渐浮现 */
+.bd-cover{position:absolute;top:0;bottom:0;left:0;width:138vw;pointer-events:none;will-change:transform;
+  background:linear-gradient(90deg,transparent 0,var(--bg-1) 38vw);transform:translateX(-38vw);}
+#loader.bd-play .bd-cover{animation:bdCover calc(1550ms * var(--bd-k,1)) cubic-bezier(.45,0,.2,1) calc(520ms * var(--bd-k,1)) both;}
+@keyframes bdCover{to{transform:translateX(100vw);}}
+#loader.bd-leave .bd-cover,#loader.bd-leave .bd-cl{opacity:0;transition:opacity .3s ease;}
+
+/* 标题 */
+.bd-head{position:absolute;left:max(7vw,24px);top:31%;right:24px;pointer-events:none;}
+.bd-title{margin:0;font-family:var(--disp);font-weight:800;color:var(--tx-1);
+  font-size:clamp(40px,6.2vw,112px);line-height:1.1;letter-spacing:.01em;white-space:nowrap;}
+.bd-title span{display:inline-block;opacity:0;transform:translateY(.08em);filter:blur(4px);
+  transition-property:opacity,transform,filter;transition-duration:.16s,.34s,.26s;
+  transition-timing-function:linear,cubic-bezier(.2,.8,.2,1),ease;}
+#loader.bd-play .bd-title span{opacity:1;transform:none;filter:none;}
+.bd-sub{margin:clamp(14px,1.6vw,26px) 0 0;font-family:var(--mono);font-size:clamp(10px,1vw,14px);
+  letter-spacing:.42em;color:var(--tx-2);opacity:0;transition:opacity .7s ease;}
+#loader.bd-play .bd-sub{opacity:1;}
+
+/* HUD */
+.bd-hud{position:absolute;font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--tx-2);
+  opacity:0;transition:opacity .5s ease .1s;white-space:nowrap;}
+#loader.bd-play .bd-hud{opacity:1;}
+.bd-hud b{color:var(--tx-1);font-weight:500;letter-spacing:.14em;}
+.bd-tl{top:calc(30px + env(safe-area-inset-top,0px));left:calc(36px + env(safe-area-inset-left,0px));display:flex;align-items:center;gap:10px;}
+.bd-mk{width:4px;height:16px;background:var(--ac);}
+.bd-tr{top:calc(30px + env(safe-area-inset-top,0px));right:calc(36px + env(safe-area-inset-right,0px));}
+.bd-bl{bottom:calc(36px + env(safe-area-inset-bottom,0px));left:calc(36px + env(safe-area-inset-left,0px));font-variant-numeric:tabular-nums;}
+.bd-prog{position:absolute;left:calc(36px + env(safe-area-inset-left,0px));bottom:calc(26px + env(safe-area-inset-bottom,0px));
+  width:min(560px,40vw);height:2px;background:color-mix(in srgb,var(--tx-1) 10%,transparent);overflow:hidden;}
+.bd-prog i{display:block;height:100%;background:var(--ac);transform:scaleX(0);transform-origin:left;}
+
+#loader .bd-skip{position:absolute;top:calc(56px + env(safe-area-inset-top,0px));right:calc(36px + env(safe-area-inset-right,0px));
+  font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--tx-3);
+  background:transparent!important;border:1px solid var(--bd);border-radius:0!important;padding:6px 12px;cursor:pointer;box-shadow:none!important;min-height:0!important;transform:none!important;
+  opacity:0;transition:opacity .4s ease .9s,color .2s,background-color .2s,border-color .2s;}
+#loader.bd-play .bd-skip{opacity:1;}
+#loader .bd-skip:hover{color:var(--ac-ink);background:var(--ac)!important;border-color:var(--ac);}
+
+/* 揭幕：黄绿扫线掠过 → 标题和纸面退去，线条留在原地 */
+.bd-sweep{position:absolute;inset:0;pointer-events:none;}
+.bd-sweep i{position:absolute;left:0;width:100%;background:var(--ac);transform:scaleX(0);transform-origin:left;}
+.bd-sweep i:nth-child(1){top:14%;height:5px;opacity:.8;}
+.bd-sweep i:nth-child(2){top:46%;height:2px;opacity:.55;}
+.bd-sweep i:nth-child(3){top:71%;height:9px;opacity:.45;}
+#loader.bd-leave .bd-sweep i{animation:bdSweep .6s cubic-bezier(.7,0,.2,1) forwards;}
+#loader.bd-leave .bd-sweep i:nth-child(2){animation-delay:.07s;}
+#loader.bd-leave .bd-sweep i:nth-child(3){animation-delay:.14s;}
+@keyframes bdSweep{
+  0%{transform:scaleX(0);transform-origin:left;}
+  48%{transform:scaleX(1);transform-origin:left;}
+  52%{transform:scaleX(1);transform-origin:right;}
+  100%{transform:scaleX(0);transform-origin:right;}
+}
+#loader.bd-leave .bd-head{opacity:0;transform:translateY(-6px);filter:blur(3px);
+  transition:opacity .38s ease .12s,transform .5s cubic-bezier(.4,0,.2,1) .12s,filter .38s ease .12s;}
+#loader.bd-fly.bd-leave .bd-head{opacity:1;transform:none;filter:none;transition:none;}
+#loader.bd-fly.bd-leave .bd-sub{opacity:0;transition:opacity .25s ease 0s!important;}
+#loader.bd-leave .bd-hud,#loader.bd-leave .bd-skip,#loader.bd-leave .bd-prog{opacity:0;transition:opacity .3s ease .05s;}
+#loader.bd-leave .bd-paper,#loader.bd-leave .bd-bp{opacity:0;transition:opacity .6s ease .42s;}
+#loader.bd-leave-fast{opacity:0;transition:opacity .26s ease;}
+
+/* 揭幕（对话区有内容）：标题逐字上收 → 黄绿线自上而下揭开纸面，纸面不做半透明 */
+#loader.bd-wipe .bd-sweep{display:none;}
+#loader.bd-wipe.bd-leave .bd-head{opacity:1;transform:none;filter:none;transition:none;}
+#loader.bd-wipe .bd-title span{opacity:0;transform:translateY(-.4em);filter:blur(3px);
+  transition-duration:.2s,.3s,.2s;transition-timing-function:ease,cubic-bezier(.5,0,.75,0),ease;}
+#loader.bd-wipe .bd-sub{opacity:0;transition:opacity .2s ease 0s!important;}
+#loader.bd-wipe.bd-leave .bd-paper{opacity:1;transition:none;}
+#loader.bd-wipe.bd-leave .bd-bp{opacity:.85;transition:none;}
+@keyframes bdWipe{from{clip-path:inset(0 0 0 0);}to{clip-path:inset(100% 0 0 0);}}
+.bd-edge{position:fixed;left:0;right:0;top:-1px;height:2px;z-index:1000;pointer-events:none;background:var(--ac);
+  box-shadow:0 0 14px 1px color-mix(in srgb,var(--ac) 60%,transparent);}
+@keyframes bdEdge{0%{transform:translateY(0);opacity:0;}6%{opacity:1;}94%{opacity:1;}100%{transform:translateY(100vh);opacity:0;}}
+
+/* 手机 */
+#loader.bd-mobile .bd-head{top:auto;bottom:calc(19% + env(safe-area-inset-bottom,0px));left:max(7vw,20px);}
+#loader.bd-mobile .bd-title{font-size:min(14.5vw,92px);line-height:1.12;}
+#loader.bd-mobile .bd-sub{letter-spacing:.3em;font-size:10px;}
+#loader.bd-mobile .bd-hud{font-size:10px;letter-spacing:.18em;}
+#loader.bd-mobile .bd-tl{top:calc(14px + env(safe-area-inset-top,0px));left:calc(20px + env(safe-area-inset-left,0px));}
+#loader.bd-mobile .bd-tr{display:none;}
+#loader.bd-mobile .bd-skip{top:calc(9px + env(safe-area-inset-top,0px));right:calc(16px + env(safe-area-inset-right,0px));}
+#loader.bd-mobile .bd-bl{left:calc(20px + env(safe-area-inset-left,0px));bottom:calc(30px + env(safe-area-inset-bottom,0px));}
+#loader.bd-mobile .bd-prog{left:calc(20px + env(safe-area-inset-left,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));width:44vw;}
+#loader.bd-mobile .bd-sweep i:nth-child(2){top:58%;}
+
+@media (prefers-reduced-motion:reduce){
+  html:not(.force-motion) #loader{display:none;}
+}
