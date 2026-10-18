@@ -76,7 +76,7 @@
         '<button type="button" class="qd-b" data-q="pop" title="改在独立窗口打开">↗</button>' +
         '<button type="button" class="qd-b" data-q="min" title="最小化（继续播放）">—</button>' +
         '<button type="button" class="qd-b" data-q="close" title="关闭（停止播放）">✕</button></header>' +
-      '<div class="qd-body"><iframe name="tws_qqframe" title="QQ 音乐官方网页播放器" allow="autoplay; encrypted-media; clipboard-write"></iframe>' +
+      '<div class="qd-body"><div class="qd-view"><iframe name="tws_qqframe" title="QQ 音乐官方网页播放器" allow="autoplay; encrypted-media; clipboard-write"></iframe></div>' +
         '<p class="qd-tip">没显示出来？点右上角 ↗ 在独立窗口打开。听会员歌需要先在浏览器里登录过 QQ 音乐官网。</p></div>';
     document.body.appendChild(dock);
     frame = dock.querySelector('iframe');

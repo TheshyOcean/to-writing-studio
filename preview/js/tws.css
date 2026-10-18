@@ -992,7 +992,7 @@
 
 /* QQ 音乐 · 播放器小窗（嵌入官方网页播放器） */
 .tws-qqdock{
-  position: fixed; z-index: 7400; width: 400px; height: min(640px, calc(100vh - 100px));
+  position: fixed; z-index: 7400; width: 440px; height: min(640px, calc(100vh - 100px));
   display: flex; flex-direction: column;
   background: var(--bg-2); border: 1px solid var(--bd-s); border-top: 2px solid var(--ac);
   box-shadow: 0 22px 60px rgba(0,0,0,.42); clip-path: var(--chamfer-2);
@@ -1013,7 +1013,10 @@
 }
 .tws-qqdock .qd-b:hover{ color: var(--tx-1); background: color-mix(in srgb, var(--tx-1) 8%, transparent) !important; }
 .qd-body{ flex: 1; min-height: 0; display: flex; flex-direction: column; background: #fff; }
-.qd-body iframe{ flex: 1; width: 100%; border: 0; background: #fff; }
+/* QQ 音乐官网按大屏设计，小窗里整体缩到 62%，不用横向滚动 */
+.qd-view{ position: relative; flex: 1; min-height: 0; overflow: hidden; }
+.qd-view iframe{ position: absolute; left: 0; top: 0; width: calc(100% / .62); height: calc(100% / .62); border: 0; background: #fff; transform: scale(.62); transform-origin: 0 0; }
+:root[data-shell="mobile"] .qd-view iframe{ width: 100%; height: 100%; transform: none; }
 .qd-tip{ margin: 0; padding: 6px 12px; font: 10px/1.6 var(--sans); color: var(--tx-3); background: var(--bg-2); border-top: 1px solid var(--bd); flex: none; }
 :root[data-shell="mobile"] .tws-qqdock{ left: 0 !important; right: 0; bottom: 0; top: auto !important; width: auto; height: 72vh; clip-path: none; }
 :root[data-shell="mobile"] .tws-qqdock.min{ height: auto; }
