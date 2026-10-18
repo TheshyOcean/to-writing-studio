@@ -1020,3 +1020,43 @@
 .qd-tip{ margin: 0; padding: 6px 12px; font: 10px/1.6 var(--sans); color: var(--tx-3); background: var(--bg-2); border-top: 1px solid var(--bd); flex: none; }
 :root[data-shell="mobile"] .tws-qqdock{ left: 0 !important; right: 0; bottom: 0; top: auto !important; width: auto; height: 72vh; clip-path: none; }
 :root[data-shell="mobile"] .tws-qqdock.min{ height: auto; }
+
+/* ---------- 迷你播放条（参考 Hush 群聊歌单）：胶囊 + 跳动音柱 + 细进度 ---------- */
+.tws-mini{
+  position: fixed; z-index: 7300; right: 28px; bottom: calc(var(--status-h, 30px) + 168px);
+  display: flex; align-items: center; gap: 12px; max-width: min(440px, calc(100vw - 32px));
+  padding: 8px 10px 8px 16px; border-radius: 999px; overflow: hidden;
+  background: color-mix(in srgb, var(--bg-2) 88%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid var(--bd-s);
+  box-shadow: 0 14px 40px -12px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);
+  animation: miIn .45s var(--studio-ease, cubic-bezier(.22,.8,.22,1)) both;
+}
+.tws-mini[hidden]{ display: none; }
+@keyframes miIn{ from{ opacity: 0; transform: translateY(12px) scale(.96); } }
+:root[data-shell="mobile"] .tws-mini{ left: 12px; right: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 150px); max-width: none; }
+.tws-mini button{ background: none !important; border: 0 !important; box-shadow: none !important; min-height: 0 !important; padding: 0 !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; cursor: pointer; }
+.mi-eq{ display: flex; gap: 3px; align-items: flex-end; height: 22px; width: 22px; flex: none; }
+.mi-eq i{ width: 3.5px; height: 30%; border-radius: 2px; background: var(--ac); }
+.tws-mini.playing .mi-eq i{ animation: miBar .8s ease-in-out infinite; }
+.tws-mini.playing .mi-eq i:nth-child(2){ animation-delay: -.3s; }
+.tws-mini.playing .mi-eq i:nth-child(3){ animation-delay: -.55s; }
+.tws-mini.playing .mi-eq i:nth-child(4){ animation-delay: -.15s; }
+@keyframes miBar{ 50%{ height: 100%; } }
+:root[data-theme="light"] .mi-eq i{ background: #9aae1a; }
+.mi-meta{ display: flex; flex-direction: column; align-items: flex-start; min-width: 0; flex: 1; text-align: left; border-radius: 0 !important; }
+.mi-song{ max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 14px var(--sans); color: var(--tx-1); }
+.mi-by{ max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 11px var(--sans); color: var(--tx-3); margin-top: 1px; }
+.mi-ctl{ display: flex; align-items: center; gap: 2px; flex: none; }
+.tws-mini .mi-b{ width: 32px; height: 32px; display: grid; place-items: center; color: var(--tx-2); border-radius: 50% !important; }
+.tws-mini .mi-b:hover{ color: var(--tx-1); background: color-mix(in srgb, var(--tx-1) 8%, transparent) !important; }
+.tws-mini .mi-b svg{ width: 15px; height: 15px; }
+.tws-mini .mi-main{ width: 38px; height: 38px; color: var(--lq-lime-ink, var(--ac-ink)); background: var(--lq-lime, var(--ac)) !important; }
+.tws-mini .mi-main:hover{ color: var(--lq-lime-ink, var(--ac-ink)); background: var(--lq-lime, var(--ac)) !important; filter: brightness(1.05); }
+.tws-mini .mi-main svg{ width: 17px; height: 17px; }
+.tws-mini .mi-x{ opacity: .55; }
+.tws-mini .mi-x svg{ width: 12px; height: 12px; }
+.tws-mini .mi-x:hover{ opacity: 1; }
+.mi-prog{ position: absolute; left: 18px; right: 18px; bottom: 0; height: 6px; cursor: pointer; }
+.mi-prog::before{ content: ""; position: absolute; left: 0; right: 0; bottom: 2px; height: 2px; border-radius: 2px; background: color-mix(in srgb, var(--tx-1) 10%, transparent); }
+.mi-prog b{ position: absolute; left: 0; right: 0; bottom: 2px; height: 2px; border-radius: 2px; background: var(--ac); transform-origin: left; transform: scaleX(0); transition: transform .25s linear; }

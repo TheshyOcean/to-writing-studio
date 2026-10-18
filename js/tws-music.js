@@ -477,6 +477,53 @@
     '<footer class="mu-f"><p class="mu-st">关掉面板音乐也会继续放。</p></footer>';
 
   var $ = function (s) { return panel.querySelector(s); };
+
+  /* ---------- 迷你播放条（参考 Hush 群聊歌单的胶囊播放条）：本地音乐播放时常驻，关掉面板也在 ---------- */
+  var mini = document.createElement('div');
+  mini.className = 'tws-mini';
+  mini.hidden = true;
+  mini.innerHTML =
+    '<button type="button" class="mi-eq" data-m="open" title="打开音乐面板"><i></i><i></i><i></i><i></i></button>' +
+    '<button type="button" class="mi-meta" data-m="open" title="打开音乐面板"><b class="mi-song"></b><span class="mi-by"></span></button>' +
+    '<div class="mi-ctl">' +
+      '<button type="button" class="mi-b" data-m="prev" title="上一首">' + I.prev + '</button>' +
+      '<button type="button" class="mi-b mi-main" data-m="toggle" title="播放 / 暂停">' + I.play + '</button>' +
+      '<button type="button" class="mi-b" data-m="next" title="下一首">' + I.next + '</button>' +
+      '<button type="button" class="mi-b mi-x" data-m="stop" title="停止并收起">' + X + '</button>' +
+    '</div>' +
+    '<div class="mi-prog"><b></b></div>';
+  mini.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-m]'); if (!b) return;
+    var m = b.getAttribute('data-m');
+    if (m === 'open') { show(true); setTab('local'); }
+    if (m === 'toggle') toggle();
+    if (m === 'prev') next(-1);
+    if (m === 'next') next(1);
+    if (m === 'stop') {
+      if (LP.audio) { LP.audio.pause(); LP.audio.removeAttribute('src'); LP.audio.load(); }
+      LP.cur = -1; renderLocal(); mini.hidden = true;
+    }
+  });
+  mini.querySelector('.mi-prog').addEventListener('click', function (e) {
+    var a = LP.audio; if (!a || !a.duration) return;
+    var r = this.getBoundingClientRect();
+    a.currentTime = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * a.duration;
+  });
+  function syncMini() {
+    var t = LP.tracks[LP.cur];
+    if (!t) { mini.hidden = true; return; }
+    var playing = !!(LP.audio && !LP.audio.paused);
+    var parts = t.name.split(/\s+-\s+/);
+    mini.hidden = false;
+    mini.classList.toggle('playing', playing);
+    mini.querySelector('.mi-song').textContent = parts.length > 1 ? parts.slice(1).join(' - ') : t.name;
+    mini.querySelector('.mi-by').textContent = (parts.length > 1 ? parts[0] + ' · ' : '') + '本地 · ' + MODE[S.mode][0];
+    var m = mini.querySelector('.mi-main'); m.innerHTML = playing ? I.pause : I.play; m.title = playing ? '暂停' : '播放';
+  }
+  function syncMiniBar() {
+    var a = LP.audio;
+    mini.querySelector('.mi-prog b').style.transform = 'scaleX(' + (a && a.duration ? a.currentTime / a.duration : 0) + ')';
+  }
   var st = $('.mu-st');
   function status(msg, warn) { st.textContent = msg; st.classList.toggle('warn', !!warn); }
 
@@ -519,6 +566,7 @@
   }
   function syncBar() {
     var a = LP.audio; if (!a) return;
+    syncMiniBar();
     var d = a.duration || 0;
     if (!dragging) $('.lp-bar').value = d ? Math.round(a.currentTime / d * 1000) : 0;
     $('.lp-bar').style.setProperty('--p', (d ? a.currentTime / d * 100 : 0) + '%');
@@ -528,6 +576,7 @@
     var playing = !!(LP.audio && !LP.audio.paused);
     var m = $('.lp-main'); m.innerHTML = playing ? I.pause : I.play; m.title = playing ? '暂停' : '播放';
     var md = $('[data-a="mode"]'); md.textContent = MODE[S.mode][1]; md.title = MODE[S.mode][0];
+    syncMini();
     btn.classList.toggle('mu-playing', playing || !!neCur || !!(dock && !dock.hidden));
     var cur = panel.querySelector('.lp-list .mu-it.cur');
     if (cur && !playing) renderLocalSoon();
@@ -699,6 +748,7 @@
     if (!anchor || !anchor.parentNode) return;
     anchor.parentNode.insertBefore(btn, anchor);
     document.body.appendChild(panel);
+    document.body.appendChild(mini);
     setTab(S.tab);
     renderRecent(); renderQQ(); renderNE(); renderLocal(); renderRelay(); renderMode();
     loadLocal();
