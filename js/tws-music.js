@@ -14,7 +14,7 @@
   var mobile = document.documentElement.getAttribute('data-shell') === 'mobile';
 
   /* ---------- 存储（歌单、最近搜索、上次的页签） ---------- */
-  var S = { list: [], recent: [], ne: [], tab: 'qq', vol: 0.8, mode: 'list', relay: { url: '', token: '' }, qqMode: mobile ? 'popup' : 'dock', dock: { x: -1, y: -1, min: false } };
+  var S = { list: [], recent: [], ne: [], tab: 'qq', vol: 0.8, mode: 'list', relay: { url: '', token: '' }, qqMode: 'popup', qqModeSet: false, dock: { x: -1, y: -1, min: false } };
   try {
     var raw = JSON.parse(localStorage.getItem(KEY) || 'null');
     if (raw && typeof raw === 'object') {
@@ -24,7 +24,7 @@
       if (/^(qq|ne|local)$/.test(raw.tab)) S.tab = raw.tab;
       if (raw.vol >= 0 && raw.vol <= 1) S.vol = raw.vol;
       if (/^(list|one|shuffle)$/.test(raw.mode)) S.mode = raw.mode;
-      if (/^(dock|popup)$/.test(raw.qqMode)) S.qqMode = raw.qqMode;
+      if (raw.qqModeSet && /^(dock|popup)$/.test(raw.qqMode)) { S.qqMode = raw.qqMode; S.qqModeSet = true; }
       if (raw.dock && typeof raw.dock === 'object') S.dock = { x: +raw.dock.x || -1, y: +raw.dock.y || -1, min: !!raw.dock.min };
       if (raw.relay && typeof raw.relay === 'object') S.relay = { url: String(raw.relay.url || ''), token: String(raw.relay.token || '') };
     }
@@ -73,11 +73,13 @@
     dock.setAttribute('aria-label', 'QQ 音乐播放器');
     dock.innerHTML =
       '<header class="qd-h"><span class="sq"></span><b>QQ 音乐</b><span class="en">PLAYER</span>' +
+        '<button type="button" class="qd-b qd-login" data-q="login" title="在独立窗口里登录 QQ 音乐">登录</button>' +
+        '<button type="button" class="qd-b" data-q="reload" title="登录后刷新小窗">↻</button>' +
         '<button type="button" class="qd-b" data-q="pop" title="改在独立窗口打开">↗</button>' +
         '<button type="button" class="qd-b" data-q="min" title="最小化（继续播放）">—</button>' +
         '<button type="button" class="qd-b" data-q="close" title="关闭（停止播放）">✕</button></header>' +
       '<div class="qd-body"><div class="qd-view"><iframe name="tws_qqframe" title="QQ 音乐官方网页播放器" allow="autoplay; encrypted-media; clipboard-write"></iframe></div>' +
-        '<p class="qd-tip">没显示出来？点右上角 ↗ 在独立窗口打开。听会员歌需要先在浏览器里登录过 QQ 音乐官网。</p></div>';
+        '<p class="qd-tip">小窗里不能扫码登录（浏览器会拦）：点上面「登录」在独立窗口登录，再点 ↻。还是不行就点 ↗ 用独立窗口。</p></div>';
     document.body.appendChild(dock);
     frame = dock.querySelector('iframe');
     dock.querySelector('.qd-h').addEventListener('click', function (e) {
@@ -87,6 +89,8 @@
       if (q === 'min') setMin(!S.dock.min);
       if (q === 'close') closeDock();
       if (q === 'pop') { var u = dock.getAttribute('data-url') || HOME; closeDock(); popQQ(u); }
+      if (q === 'login') { popQQ(HOME); status('在弹出的 QQ 音乐窗口里登录，登录好后点小窗上的 ↻。如果小窗还是没登录，说明浏览器拦了，请把「播放位置」换成独立窗口'); }
+      if (q === 'reload') { var cu = dock.getAttribute('data-url') || HOME; frame.src = 'about:blank'; setTimeout(function () { frame.src = cu; }, 50); }
     });
     /* 拖动标题栏 */
     var h = dock.querySelector('.qd-h'), sx, sy, ox, oy, moved;
@@ -431,7 +435,7 @@
         '<input class="mu-in" name="a" type="text" placeholder="粘贴 QQ 音乐分享链接，或写「歌名 - 歌手」">' +
         '<button class="btn mu-go" type="submit">收藏</button>' +
       '</form>' +
-      '<div class="qq-mode"><span>播放位置</span><div class="seg"><button type="button" data-qm="dock">工作台小窗</button><button type="button" data-qm="popup">独立窗口</button></div></div>' +
+      '<div class="qq-mode"><span>播放位置</span><div class="seg"><button type="button" data-qm="popup">独立窗口</button><button type="button" data-qm="dock">工作台小窗 β</button></div></div>' +
       '<p class="mu-tip">用的是 QQ 音乐官网自己的播放器，登录和会员都由官网负责。<button class="mu-link" type="button" data-home>打开 QQ 音乐</button></p>' +
       '<details class="qq-relay"><summary><span class="qq-relay-st"></span><em>连接设置</em></summary>' +
         '<form class="qq-relay-form" autocomplete="off">' +
@@ -641,8 +645,8 @@
   }
   $('.qq-mode').addEventListener('click', function (e) {
     var b = e.target.closest('[data-qm]'); if (!b) return;
-    S.qqMode = b.getAttribute('data-qm'); save(); renderMode();
-    status(S.qqMode === 'dock' ? '之后点歌会在工作台上的播放器小窗里打开' : '之后点歌会弹出独立的 QQ 音乐窗口');
+    S.qqMode = b.getAttribute('data-qm'); S.qqModeSet = true; save(); renderMode();
+    status(S.qqMode === 'dock' ? '小窗模式：先点小窗上的「登录」在独立窗口里登录，再点 ↻ 刷新小窗。登不上就换回独立窗口' : '之后点歌会弹出独立的 QQ 音乐窗口（最稳）');
   });
   $('.qq-feeds').addEventListener('click', function (e) {
     var b = e.target.closest('[data-feed]'); if (!b) return;

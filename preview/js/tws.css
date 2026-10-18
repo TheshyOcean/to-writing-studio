@@ -1060,3 +1060,5 @@
 .mi-prog{ position: absolute; left: 18px; right: 18px; bottom: 0; height: 6px; cursor: pointer; }
 .mi-prog::before{ content: ""; position: absolute; left: 0; right: 0; bottom: 2px; height: 2px; border-radius: 2px; background: color-mix(in srgb, var(--tx-1) 10%, transparent); }
 .mi-prog b{ position: absolute; left: 0; right: 0; bottom: 2px; height: 2px; border-radius: 2px; background: var(--ac); transform-origin: left; transform: scaleX(0); transition: transform .25s linear; }
+.tws-qqdock .qd-login{ width: auto; padding: 0 10px !important; font: 600 11px var(--sans); color: var(--ac-ink) !important; background: var(--ac) !important; border-radius: 999px !important; height: 24px; }
+.tws-qqdock .qd-login:hover{ filter: brightness(1.05); }
