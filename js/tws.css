@@ -824,3 +824,199 @@
   100%{ transform: scale(1) rotate(0); opacity: 1; }
 }
 .tws-temp-h .ic.pop{ animation: tws-emoji-pop .32s cubic-bezier(.34,1.5,.6,1); }
+
+/* ============================================================
+   音乐 · QQ 音乐遥控器（js/tws-music.js）
+   ============================================================ */
+.tws-mu{
+  position: fixed; z-index: 7500; width: 344px; max-height: min(620px, calc(100vh - 120px));
+  display: flex; flex-direction: column;
+  background: color-mix(in srgb, var(--bg-2) 96%, transparent);
+  -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+  border: 1px solid var(--bd-s); border-top: 2px solid var(--ac);
+  clip-path: var(--chamfer-2);
+  box-shadow: 0 18px 48px rgba(0,0,0,.32);
+  opacity: 0; transform: translateY(-6px);
+  transition: opacity .2s ease, transform .28s var(--studio-ease, cubic-bezier(.22,.8,.22,1));
+}
+.tws-mu.on{ opacity: 1; transform: none; }
+.tws-mu[hidden]{ display: none; }
+:root[data-shell="mobile"] .tws-mu{ width: auto; }
+.mu-h{ display: flex; align-items: center; gap: 9px; padding: 12px 10px 12px 16px; border-bottom: 1px solid var(--bd); flex: none; }
+.mu-h .sq{ width: 4px; height: 14px; background: var(--ac); }
+.mu-h b{ font-size: 14px; font-weight: 600; color: var(--tx-1); }
+.mu-h .en{ flex: 1; font: 500 9px var(--mono); letter-spacing: .18em; color: var(--tx-3); }
+.mu-h .icon-btn{ width: 30px; height: 30px; }
+.mu-row{ display: flex; gap: 8px; padding: 12px 16px 0; flex: none; }
+.mu-in{
+  flex: 1; min-width: 0; height: 36px; padding: 0 12px;
+  font: 13px var(--sans); color: var(--tx-1);
+  background: var(--bg-1); border: 1px solid var(--bd); border-radius: 0; outline: none;
+}
+.mu-in::placeholder{ color: var(--tx-3); }
+.mu-in:focus{ border-color: var(--ac); }
+.mu-go{ flex: none; height: 36px; min-height: 0; padding: 0 16px; font: 600 12px var(--sans); letter-spacing: .06em; cursor: pointer; }
+.mu-recent{ display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 16px 0; flex: none; }
+.mu-recent[hidden]{ display: none; }
+.mu-chip{
+  max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font: 11px var(--sans); color: var(--tx-2); background: var(--bg-3);
+  border: 1px solid var(--bd); padding: 4px 9px; cursor: pointer;
+}
+.mu-chip:hover{ color: var(--tx-1); border-color: var(--bd-s); }
+.mu-sec{ display: flex; justify-content: space-between; align-items: baseline; padding: 16px 16px 6px; font: 500 10px var(--mono); letter-spacing: .14em; color: var(--tx-3); flex: none; }
+.mu-sec em{ font-style: normal; color: var(--ac); }
+.mu-list{ list-style: none; margin: 0; padding: 0 8px; overflow-y: auto; flex: 1; min-height: 60px; }
+.mu-it{ display: flex; align-items: stretch; border-bottom: 1px solid color-mix(in srgb, var(--bd) 60%, transparent); }
+.mu-it:last-child{ border-bottom: 0; }
+/* 歌单行是列表，不要被全局玻璃按钮样式变成胶囊 */
+.tws-mu .mu-play, .tws-mu .mu-del{
+  background: none !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important; clip-path: none !important;
+  min-height: 0 !important; transform: none !important; }
+.mu-play{
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px;
+  padding: 9px 8px; background: none; border: 0; cursor: pointer; text-align: left; color: var(--tx-1);
+}
+.mu-it:hover{ background: color-mix(in srgb, var(--ac) 8%, transparent); }
+.mu-n{ font: 500 10px var(--mono); color: var(--tx-3); width: 18px; }
+.mu-t{ flex: 1; min-width: 0; font: 13px var(--sans); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mu-k{ font: 500 8px var(--mono); letter-spacing: .14em; color: var(--tx-3); border: 1px solid var(--bd); padding: 2px 5px; }
+.mu-it:hover .mu-k{ color: var(--ac-ink); background: var(--ac); border-color: var(--ac); }
+.mu-del{ width: 32px; flex: none; background: none; border: 0; color: var(--tx-3); cursor: pointer; opacity: 0; display: grid; place-items: center; }
+.mu-del svg{ width: 13px; height: 13px; }
+.mu-it:hover .mu-del, .mu-del:focus-visible{ opacity: 1; }
+.mu-del:hover{ color: var(--tx-1); }
+:root[data-shell="mobile"] .mu-del{ opacity: 1; }
+.mu-empty{ padding: 10px 8px 6px; font: 12px/1.7 var(--sans); color: var(--tx-3); }
+.mu-f{ padding: 12px 16px 14px; border-top: 1px solid var(--bd); margin-top: 12px; flex: none; }
+.mu-link{ background: none; border: 0; padding: 0; cursor: pointer; font: 600 12px var(--sans); color: var(--tx-1); }
+.mu-link:hover{ color: var(--ac); }
+.mu-st{ margin: 6px 0 0; font: 11px/1.6 var(--sans); color: var(--tx-3); }
+.mu-st.warn{ color: #e0a03c; }
+
+/* ---------- 音乐面板 · 三个来源（预览版） ---------- */
+.tws-mu{ width: 368px; max-height: min(680px, calc(100vh - 110px)); }
+.mu-tabs{ display: flex; gap: 6px; padding: 12px 16px 0; flex: none; }
+.mu-tabs button{ flex: 1; height: 32px; min-height: 0; font: 600 12px var(--sans); letter-spacing: .04em; cursor: pointer; }
+.mu-pane{ display: flex; flex-direction: column; min-height: 0; flex: 1; overflow-y: auto; padding-bottom: 4px; }
+.mu-pane[hidden]{ display: none; }
+.mu-pane .mu-list{ overflow: visible; flex: none; }
+.mu-tip{ margin: 10px 16px 0; font: 11px/1.7 var(--sans); color: var(--tx-3); }
+.mu-tip .mu-link{ margin-left: 6px; font-size: 11px; }
+.mu-f{ margin-top: 8px; padding: 10px 16px 12px; }
+.mu-f .mu-st{ margin: 0; }
+.mu-m{ font: 10px var(--mono); color: var(--tx-3); }
+.tws-mu.drag{ outline: 2px dashed var(--ac); outline-offset: -8px; }
+
+/* 正在播放：曲目序号换成跳动的小柱子；顶栏按钮右上角亮一个点 */
+.mu-it.cur .mu-t{ color: var(--ac); font-weight: 600; }
+:root[data-theme="light"] .mu-it.cur .mu-t{ color: var(--tx-1); }
+.eqi{ display: inline-flex; gap: 2px; align-items: flex-end; height: 11px; }
+.eqi b{ width: 3px; background: var(--ac); animation: muEq .9s ease-in-out infinite; height: 40%; }
+.eqi b:nth-child(2){ animation-delay: -.3s; } .eqi b:nth-child(3){ animation-delay: -.6s; }
+@keyframes muEq{ 50%{ height: 100%; } }
+#btnMusic{ position: relative; }
+#btnMusic .mu-dot{ position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: var(--ac); box-shadow: 0 0 0 2px var(--bg-2); opacity: 0; transform: scale(0); transition: opacity .2s, transform .25s; }
+#btnMusic.mu-playing .mu-dot{ opacity: 1; transform: none; }
+
+/* 网易云外链播放器 */
+.ne-now{ margin: 10px 16px 0; font: 12px var(--sans); color: var(--tx-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ne-now:empty{ display: none; }
+.ne-player{ margin: 8px 16px 0; overflow: hidden; border: 1px solid var(--bd); background: #fff; }
+.ne-player:empty{ display: none; }
+.ne-player iframe{ display: block; width: 100%; border: 0; }
+.ne-player.is-song iframe{ height: 86px; }
+.ne-player.is-list iframe{ height: 300px; }
+
+/* 本地播放台 */
+.lp-deck{ margin: 12px 16px 0; padding: 12px 12px 10px; border: 1px solid var(--bd); background: color-mix(in srgb, var(--bg-1) 70%, transparent); }
+.lp-title{ display: flex; align-items: baseline; gap: 10px; }
+.lp-now{ flex: 1; min-width: 0; font: 600 13px var(--sans); color: var(--tx-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lp-time{ flex: none; font: 10px var(--mono); color: var(--tx-3); font-variant-numeric: tabular-nums; }
+.tws-mu input[type=range]{ -webkit-appearance: none; appearance: none; height: 16px; background: transparent; cursor: pointer; margin: 0; padding: 0; border: 0; }
+.tws-mu input[type=range]::-webkit-slider-runnable-track{ height: 3px; background: linear-gradient(90deg, var(--ac) var(--p,0%), var(--bd-s) var(--p,0%)); }
+.tws-mu input[type=range]::-moz-range-track{ height: 3px; background: var(--bd-s); }
+.tws-mu input[type=range]::-moz-range-progress{ height: 3px; background: var(--ac); }
+.tws-mu input[type=range]::-webkit-slider-thumb{ -webkit-appearance: none; width: 11px; height: 11px; margin-top: -4px; border-radius: 50%; background: var(--tx-1); border: 2px solid var(--ac); }
+.tws-mu input[type=range]::-moz-range-thumb{ width: 9px; height: 9px; border-radius: 50%; background: var(--tx-1); border: 2px solid var(--ac); }
+.lp-bar{ display: block; width: 100%; margin: 8px 0 4px !important; }
+.lp-ctl{ display: flex; align-items: center; gap: 4px; }
+.tws-mu .lp-b{
+  width: 34px; height: 34px; min-height: 0 !important; padding: 0 !important; display: grid; place-items: center; cursor: pointer;
+  color: var(--tx-2); background: none !important; border: 0 !important; box-shadow: none !important; border-radius: 50% !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important; font: 15px var(--sans);
+}
+.tws-mu .lp-b:hover{ color: var(--tx-1); background: color-mix(in srgb, var(--tx-1) 8%, transparent) !important; }
+.tws-mu .lp-b svg{ width: 16px; height: 16px; }
+.tws-mu .lp-main{ width: 40px; height: 40px; color: var(--lq-lime-ink, var(--ac-ink)); background: var(--lq-lime, var(--ac)) !important; }
+.tws-mu .lp-main:hover{ color: var(--lq-lime-ink, var(--ac-ink)); background: var(--lq-lime, var(--ac)) !important; filter: brightness(1.05); }
+.tws-mu .lp-main svg{ width: 18px; height: 18px; }
+.lp-vol{ flex: 1; min-width: 50px; margin-left: 8px !important; }
+.lp-drop{ display: flex; flex-direction: column; gap: 3px; margin: 10px 16px 0; padding: 12px; border: 1px dashed var(--bd-s); cursor: pointer; text-align: center; }
+.lp-drop b{ font: 600 12px var(--sans); color: var(--tx-1); }
+.lp-drop span{ font: 11px var(--sans); color: var(--tx-3); }
+.lp-drop:hover{ border-color: var(--ac); }
+.lp-drop:hover b{ color: var(--ac); }
+:root[data-theme="light"] .lp-drop:hover b{ color: var(--tx-1); }
+
+/* QQ 音乐 · 官方接口结果（经 Cloudflare 中转） */
+.qq-feeds{ display: flex; gap: 6px; padding: 10px 16px 0; flex: none; }
+.qq-feeds[hidden]{ display: none; }
+.qq-res[hidden]{ display: none; }
+.qq-res .mu-sec .mu-link{ font: 500 10px var(--mono); letter-spacing: .1em; color: var(--tx-3); }
+.mu-t small{ font-size: 11px; color: var(--tx-3); }
+.tws-mu .mu-fav{
+  width: 34px; flex: none; display: grid; place-items: center; cursor: pointer; font-size: 15px; color: var(--tx-3);
+  background: none !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important; min-height: 0 !important;
+}
+.tws-mu .mu-fav:hover{ color: var(--tx-1); }
+.tws-mu .mu-fav.on{ color: var(--ac); }
+:root[data-theme="light"] .tws-mu .mu-fav.on{ color: #8a9a10; }
+.mu-more{ display: block; margin: 6px 16px 0; width: calc(100% - 32px); height: 32px; min-height: 0; font: 12px var(--sans); cursor: pointer; }
+.qq-relay{ margin: 12px 16px 0; border: 1px solid var(--bd); }
+.qq-relay summary{ display: flex; align-items: center; gap: 8px; padding: 8px 10px; cursor: pointer; list-style: none; font: 11px var(--sans); color: var(--tx-3); }
+.qq-relay summary::-webkit-details-marker{ display: none; }
+.qq-relay summary em{ margin-left: auto; font-style: normal; font: 500 10px var(--mono); letter-spacing: .12em; color: var(--tx-2); }
+.qq-relay-st::before{ content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 7px; border-radius: 50%; background: var(--tx-3); vertical-align: 1px; }
+.qq-relay-st.on{ color: var(--tx-1); }
+.qq-relay-st.on::before{ background: var(--ac); box-shadow: 0 0 6px var(--ac); }
+.qq-relay-form{ display: flex; flex-direction: column; gap: 8px; padding: 4px 10px 10px; }
+.qq-relay-form label{ display: flex; flex-direction: column; gap: 4px; font: 11px var(--sans); color: var(--tx-2); }
+
+/* QQ 音乐 · 播放位置切换 */
+.qq-mode{ display: flex; align-items: center; gap: 10px; margin: 12px 16px 0; font: 11px var(--sans); color: var(--tx-3); }
+.qq-mode .seg{ display: flex; gap: 4px; flex: 1; }
+.qq-mode .seg button{ flex: 1; height: 28px; min-height: 0; font: 600 11px var(--sans); cursor: pointer; }
+
+/* QQ 音乐 · 播放器小窗（嵌入官方网页播放器） */
+.tws-qqdock{
+  position: fixed; z-index: 7400; width: 440px; height: min(640px, calc(100vh - 100px));
+  display: flex; flex-direction: column;
+  background: var(--bg-2); border: 1px solid var(--bd-s); border-top: 2px solid var(--ac);
+  box-shadow: 0 22px 60px rgba(0,0,0,.42); clip-path: var(--chamfer-2);
+}
+.tws-qqdock[hidden]{ display: none; }
+.tws-qqdock.min{ height: auto; }
+.tws-qqdock.min .qd-body{ position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+.qd-h{ display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 6px 0 14px; flex: none; cursor: grab; user-select: none; border-bottom: 1px solid var(--bd); touch-action: none; }
+.tws-qqdock.dragging .qd-h{ cursor: grabbing; }
+.tws-qqdock.dragging iframe{ pointer-events: none; }
+.qd-h .sq{ width: 4px; height: 13px; background: var(--ac); }
+.qd-h b{ font: 600 13px var(--sans); color: var(--tx-1); }
+.qd-h .en{ flex: 1; font: 500 9px var(--mono); letter-spacing: .18em; color: var(--tx-3); }
+.tws-qqdock .qd-b{
+  width: 30px; height: 30px; display: grid; place-items: center; cursor: pointer; font: 13px var(--sans); color: var(--tx-2);
+  background: none !important; border: 0 !important; border-radius: 6px !important; box-shadow: none !important; min-height: 0 !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}
+.tws-qqdock .qd-b:hover{ color: var(--tx-1); background: color-mix(in srgb, var(--tx-1) 8%, transparent) !important; }
+.qd-body{ flex: 1; min-height: 0; display: flex; flex-direction: column; background: #fff; }
+/* QQ 音乐官网按大屏设计，小窗里整体缩到 62%，不用横向滚动 */
+.qd-view{ position: relative; flex: 1; min-height: 0; overflow: hidden; }
+.qd-view iframe{ position: absolute; left: 0; top: 0; width: calc(100% / .62); height: calc(100% / .62); border: 0; background: #fff; transform: scale(.62); transform-origin: 0 0; }
+:root[data-shell="mobile"] .qd-view iframe{ width: 100%; height: 100%; transform: none; }
+.qd-tip{ margin: 0; padding: 6px 12px; font: 10px/1.6 var(--sans); color: var(--tx-3); background: var(--bg-2); border-top: 1px solid var(--bd); flex: none; }
+:root[data-shell="mobile"] .tws-qqdock{ left: 0 !important; right: 0; bottom: 0; top: auto !important; width: auto; height: 72vh; clip-path: none; }
+:root[data-shell="mobile"] .tws-qqdock.min{ height: auto; }

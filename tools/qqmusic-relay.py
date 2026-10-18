@@ -5,7 +5,9 @@ To写作工作台 · QQ 音乐本机中转
 而 API Key 绑定你的账号，不能放进网页。这个小程序在你自己电脑上帮网页转发请求。
 
 用法：
-  1. 双击 qqmusic-relay.bat（或运行 python qqmusic-relay.py）
+  1. 第一次：双击 qqmusic-relay.bat（有窗口，用来粘贴 Key）
+     以后：双击 qqmusic-relay-hidden.vbs 就会隐藏运行（没有窗口）；
+     「开机自动运行.bat」让它开机自己在后台启动；「停止中转.bat」关掉它
   2. 第一次运行会让你粘贴 QQ 音乐 API Key（qmk- 开头，输入时不显示），保存在本文件旁边的 qqmusic-key.txt
   3. 窗口开着就能用；写作工作台音乐面板里「连接设置」的中转地址填 http://127.0.0.1:17890
   想换 Key：删掉 qqmusic-key.txt 再运行一次。
@@ -42,6 +44,9 @@ def load_key():
             key = f.read().strip()
         if key:
             return key
+    if sys.stdin is None or sys.stdout is None:
+        # 后台（无窗口）模式下没法输入 Key：直接退出，先用 qqmusic-relay.bat 运行一次
+        sys.exit(2)
     print("第一次运行：请粘贴你的 QQ 音乐 API Key（qmk- 开头，输入时不会显示），然后按回车。")
     print("获取地址：https://y.qq.com/n/ryqq_v2/qqmusic_skills")
     while True:
@@ -248,7 +253,9 @@ def main():
     try:
         srv = ThreadingHTTPServer((HOST, PORT), Handler)
     except OSError:
-        print("端口 %d 被占用了：可能中转已经在运行（看看有没有另一个窗口）。" % PORT)
+        if sys.stdin is None or sys.stdout is None:
+            sys.exit(0)  # 后台模式：已经有一个在运行，安静退出
+        print("端口 %d 被占用了：中转可能已经在后台运行（可以直接用）。" % PORT)
         input("按回车退出…")
         sys.exit(1)
     print()
