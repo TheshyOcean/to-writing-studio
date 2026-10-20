@@ -1,9 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-1.6 -1.6 35.2 35.2" width="64" height="64" role="img" aria-label="To写作工作台">
-  <!-- To Work Studio · 品牌标记
-       切角方章 + T 字骨 + 信号环，构成 "To" 单体字标 -->
-  <path d="M0 0h25.5L32 6.5V32H6.5L0 25.5Z" fill="#101110"/>
-  <path d="M2.6 2.6h21.7l5.1 5.1v21.7H7.7L2.6 24.3Z" fill="none" stroke="#fff500" stroke-opacity=".32"/>
-  <rect x="5.1" y="8.2" width="15.2" height="3.8" fill="#fff500"/>
-  <rect x="10.8" y="8.2" width="3.8" height="14" fill="#fff500"/>
-  <circle cx="22.3" cy="19.2" r="3.4" fill="none" stroke="#00E5FF" stroke-width="2.4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 42" width="64" height="64" role="img" aria-label="To写作工作台">
+  <!-- To 写作工作台 · 品牌标记：堇紫圆角方印里一笔手写的「To」——
+       T 的横是一笔带锋的毛笔横，竖画末尾回钩；o 微微倾斜；右上一点星光 -->
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6f63e6"/><stop offset="1" stop-color="#7f93ff"/></linearGradient></defs>
+  <rect width="42" height="42" rx="11" fill="url(#g)"/>
+  <path d="M7.6 15.4C13 12.8 22 11.2 32.2 11.5c1.5.07 1.8 1.9.3 2.2-8.6.9-17 2-23.4 3.9-1.6.5-2.6-1.6-1.5-2.2z" fill="#fff"/>
+  <path d="M19.4 14.4c-.4 5.2-.7 10.6-.3 15.9.1 1.6 1.6 2.3 2.8 1.1" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
+  <ellipse cx="27.6" cy="26.6" rx="4.6" ry="4.9" transform="rotate(-18 27.6 26.6)" fill="none" stroke="#fff" stroke-width="3"/>
+  <circle cx="34" cy="8" r="2" fill="#fff" opacity=".9"/>
 </svg>
