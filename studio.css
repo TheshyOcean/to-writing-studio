@@ -74,7 +74,8 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 :root[data-shell] *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 
 /* ---------- 3. 骨架 ---------- */
-:root[data-shell="desktop"] .app{grid-template-rows:0 minmax(0,1fr) 0!important;padding-top:0}
+:root[data-shell="desktop"] .app{grid-template-rows:minmax(0,1fr)!important;padding-top:0}
+:root[data-shell="desktop"] .app>.viewport{grid-row:1!important}
 :root[data-shell="desktop"] .viewport{grid-template-columns:var(--rail-w) minmax(0,1fr) 300px!important;background:transparent!important}
 :root.studio-focused[data-shell="desktop"] .viewport{grid-template-columns:0 minmax(0,1fr) 0!important}
 :root.studio-focused .st-margin{opacity:0;pointer-events:none}
@@ -427,3 +428,28 @@ body:not(.is-loading) .st-margin{animation:inU .9s var(--ez) .14s both}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}
 }
+
+/* ---------- 15. 修正：清掉旧层装饰，保护自有控件 ---------- */
+:root[data-shell] :is(.empty,.composer,.composer .field,.input-wrap,.chat,.view,.stage,.rail,.viewport)::before,
+:root[data-shell] :is(.empty,.composer,.composer .field,.input-wrap,.chat,.view,.stage,.viewport)::after{display:none!important;content:none!important}
+:root[data-shell] :is(.st-book,.st-model,.st-lux,.st-tpill,.st-bulb,.st-mh button,.st-ticks button,.st-tfoot button,.st-nseg button,.studio-new){box-shadow:none;background-image:none!important}
+:root[data-shell] .st-book{border:0!important;border-radius:18px!important;background:var(--card)!important;box-shadow:var(--shadow)!important;width:100%;align-items:stretch}
+:root[data-shell] .st-model{border:0!important;border-radius:10px!important;background:transparent!important;width:auto!important;height:auto!important}
+:root[data-shell] .st-model:hover{background:var(--soft)!important}
+:root[data-shell] .st-lux{border:0!important;border-radius:13px!important;background:var(--soft)!important;color:var(--ink)!important}
+:root[data-shell] .st-tpill{border-radius:19px!important;background:var(--soft)!important}
+:root[data-shell] .st-bulb{border-radius:19px!important;background:transparent!important}
+:root[data-shell].lux .st-bulb{background:var(--soft)!important}
+:root[data-shell] .st-ticks button,:root[data-shell] .st-mh button,:root[data-shell] .st-tfoot button{background:transparent!important}
+:root[data-shell] .st-nseg button{background:transparent!important;border-radius:19px!important}
+:root[data-shell] .st-nseg button.on{background:var(--soft)!important}
+:root[data-shell] .studio-new{width:100%!important;display:flex!important;align-items:center;justify-content:center}
+:root[data-shell] .studio-new span{display:inline!important;font-family:var(--zh)!important}
+:root[data-shell] .studio-new svg{width:16px;height:16px;stroke-width:1.8;stroke-linecap:round}
+/* 输入台排版：技能芯片 + 模板按钮一行，输入一行，提示一行 */
+:root[data-shell="desktop"] .composer{display:grid!important;grid-template-columns:minmax(0,1fr) auto;column-gap:8px;row-gap:8px}
+:root[data-shell="desktop"] .composer>.chip-row{grid-column:1;grid-row:1;min-width:0}
+:root[data-shell="desktop"] .composer>#twsBtnTpl{grid-column:2;grid-row:1;height:30px!important;padding:0 12px!important;font-size:12.5px!important;border-radius:15px!important;border:1px dashed var(--line2)!important;color:var(--fg2)!important;width:auto!important;margin:0!important}
+:root[data-shell="desktop"] .composer>.input-wrap{grid-column:1/-1;grid-row:2}
+:root[data-shell="desktop"] .composer>.studio-input-meta{grid-column:1/-1;grid-row:3;display:flex!important;justify-content:space-between;white-space:nowrap}
+:root[data-shell] .jump{bottom:190px!important;right:28px!important}
