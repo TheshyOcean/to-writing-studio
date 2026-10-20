@@ -127,12 +127,19 @@ function buildRail(){
   });
   var opus=document.createElement('div');
   opus.className='st-opus';
-  opus.innerHTML='<span class="st-sh" id="stOpusSh">Opus in manibus · 正在写</span>'+
+  opus.innerHTML='<div class="st-sh st-osw" id="stOpusSh" role="tablist" aria-label="左栏顶部显示"><button type="button" role="tab" data-m="book">正在写 <i>Opus</i></button><button type="button" role="tab" data-m="quote">今日一句 <i>Sententia</i></button></div>'+
     '<button type="button" class="st-book" id="stBook" title="打开书稿"><b id="stBookName"></b><span class="m" id="stBookCh"></span><span class="st-bar"><i id="stBookBar" style="width:0"></i></span><span class="m" id="stBookMeta" style="font-size:12px"></span></button>'+
     '<div class="st-quote" id="stQuote"><p class="q" id="stQ"></p><p class="tr" id="stQTr"></p><p class="src" id="stQSrc"></p><button type="button" class="st-qnew" id="stQNew">开始第一部作品 →</button></div>';
   rail.insertBefore(opus,rail.firstChild);
   $('stBook').addEventListener('click',function(){ window.showView&&window.showView('v-book'); });
-  $('stQNew').addEventListener('click',function(){ window.showView&&window.showView('v-book'); });
+  $('stQNew').addEventListener('click',function(){
+    var st=curState();
+    if(st.book){ store('tws_opus_mode','book'); refreshAll(); }
+    else window.showView&&window.showView('v-book');
+  });
+  opus.querySelectorAll('.st-osw button').forEach(function(b){ b.addEventListener('click',function(e){
+    e.stopPropagation(); store('tws_opus_mode',b.dataset.m); refreshAll();
+  }); });
   var fresh=$('studioNew'), firstNav=rail.querySelector('.rail-btn');
   if(fresh&&firstNav) rail.insertBefore(fresh,firstNav);
   /* 工具行：昼夜切换 + 模型 */
@@ -192,8 +199,10 @@ function refreshHead(){
   if($('stCrumbBook')){ $('stCrumbBook').textContent=st.book?'《'+st.book+'》':''; $('stCrumbSl').style.display=st.book?'':'none'; $('stCrumbT').textContent=ttl; }
   var op=document.querySelector('.st-opus');
   if(op){
-    op.classList.toggle('noopus',!st.book);
-    $('stOpusSh').textContent=st.book?'Opus in manibus · 正在写':'Sententia diei · 今日一句';
+    var mode=(!st.book||store('tws_opus_mode')==='quote')?'quote':'book';
+    op.classList.toggle('noopus',mode==='quote');
+    op.querySelectorAll('.st-osw button').forEach(function(b){ var on=b.dataset.m===mode; b.classList.toggle('on',on); b.setAttribute('aria-selected',String(on)); b.disabled=(b.dataset.m==='book'&&!st.book); });
+    $('stQNew').textContent=st.book?'回到《'+st.book+'》 →':'开始第一部作品 →';
     if(!st.book&&!op.dataset.q){ var q=todayQuote(); op.dataset.q='1'; $('stQ').textContent=q[0]; $('stQTr').textContent=q[1]; $('stQTr').style.display=q[1]?'':'none'; $('stQSrc').textContent='— '+q[2]; $('stQ').classList.toggle('la',/^[A-Za-z]/.test(q[0])); }
   }
   if($('stBookName')){

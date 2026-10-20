@@ -490,3 +490,10 @@ body:not(.is-loading) .st-margin{animation:inU .9s var(--ez) .14s both}
 .st-quote .src{font-family:var(--zh)!important;font-size:12px;color:var(--mut);text-align:right}
 :root[data-shell] .st-qnew{align-self:flex-start;margin-top:4px;border:0!important;border-radius:14px!important;background:var(--soft)!important;color:var(--ink)!important;font-size:12.5px;height:30px;padding:0 12px!important}
 :root[data-shell] .st-qnew:hover{filter:brightness(1.04)}
+/* 左栏顶部「正在写 · 今日一句」切换 */
+.st-osw{display:flex;align-items:center;gap:2px;padding:0 2px!important}
+:root[data-shell] .st-osw button{border:0!important;background:transparent!important;border-radius:10px!important;padding:4px 8px!important;font-family:var(--zh)!important;font-size:12.5px;color:var(--mut2)!important;letter-spacing:.04em;transition:color .35s,background .35s!important}
+:root[data-shell] .st-osw button i{font-family:var(--disp)!important;font-style:italic;font-size:13.5px;margin-left:2px}
+:root[data-shell] .st-osw button:hover:not(:disabled){color:var(--fg2)!important}
+:root[data-shell] .st-osw button.on{color:var(--ink)!important;background:var(--soft)!important}
+:root[data-shell] .st-osw button:disabled{opacity:.45;cursor:default}
