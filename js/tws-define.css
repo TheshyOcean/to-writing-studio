@@ -1,0 +1,148 @@
+/* ==========================================================================
+   tws-define.css · 智能定义（V2.5.2，电脑版）
+   用 studio.css 的变量：--ac --ac2 --soft --ink --card --paper --line2 --zh --disp --la --ez
+   ========================================================================== */
+:root .rail .rail-btn.df-merged,:root[data-shell] .rail .rail-btn.df-merged{display:none!important}
+/* 全站按钮是胶囊玻璃样式，这里的卡片、页签、进度条要按自己的样子画 */
+:root[data-shell] #v-def .df-card,:root[data-shell] #v-def .df-lore,:root #v-def .df-card,:root #v-def .df-lore{border-radius:20px!important;border:0!important;background:var(--card)!important;box-shadow:var(--shadow)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;transition:transform .45s var(--ez)!important;color:var(--fg)!important}
+:root[data-shell] #v-def .df-card,:root #v-def .df-card{padding:0!important}
+:root[data-shell] #v-def .df-lore,:root #v-def .df-lore{padding:16px 18px!important}
+:root[data-shell] #v-def .df-tabs button,:root #v-def .df-tabs button{border:0!important;border-radius:18px!important;background:transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;color:var(--fg2)!important}
+:root[data-shell] #v-def .df-tabs button:hover,:root #v-def .df-tabs button:hover{color:var(--ink)!important}
+:root[data-shell] #v-def .df-tabs button.on,:root #v-def .df-tabs button.on{background:var(--card)!important;box-shadow:var(--shadow)!important;color:var(--ink)!important}
+:root[data-shell] #v-def .df-prog button,:root #v-def .df-prog button{border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;padding:0!important;min-height:0!important}
+#v-def{overflow-y:auto}
+#v-def .df-body{padding:0 clamp(28px,4vw,52px) 80px;display:flex;flex-direction:column;gap:18px;max-width:1040px}
+#v-def .df-body.df-none>:not(#dfEmpty){display:none}
+#v-def .df-lead{margin:0;font-family:var(--zh);font-size:14px;line-height:1.9;color:var(--mut)}
+#v-def .df-tabs{display:flex;flex-wrap:wrap;gap:4px;align-self:flex-start;padding:4px;border-radius:22px;background:var(--soft)}
+#v-def .df-tabs button{height:36px;padding:0 14px;border-radius:18px;border:0;background:transparent;font-family:var(--zh);font-size:13.5px;color:var(--fg2);cursor:pointer;transition:background .35s var(--ez),color .35s,box-shadow .35s}
+#v-def .df-tabs button i{font-family:var(--disp);font-size:13px;opacity:.7;margin-left:2px}
+#v-def .df-tabs button:hover{color:var(--ink)}
+#v-def .df-tabs button.on{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+#v-def .df-pane{display:none;flex-direction:column;gap:14px}
+#v-def .df-pane.on{display:flex;animation:dfRise .55s var(--ez) both}
+@keyframes dfRise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#v-def .df-bar,.df-ced .df-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#v-def .df-sp,.df-ced .df-sp{flex:1}
+#v-def .df-note,.df-ced .df-note{margin:0;font-family:var(--zh);font-size:12.5px;line-height:1.8;color:var(--mut)}
+.df-chk{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.df-chk input{accent-color:var(--ac)}
+#v-def .df-lab,.df-ced .df-lab{display:block;margin:8px 0 6px;font-family:var(--zh);font-size:12.5px;color:var(--mut)}
+#v-def .df-ta,.df-ced .df-ta,#v-def .df-in,.df-ced .df-in,#v-def .df-sel{width:100%;box-sizing:border-box;border-radius:14px;border:1px solid var(--line2);background:var(--paper);color:var(--fg);font-family:var(--zh);font-size:14px;line-height:1.8;transition:border-color .3s,box-shadow .3s}
+#v-def .df-ta,.df-ced .df-ta{padding:10px 14px;resize:vertical}
+#v-def .df-in,.df-ced .df-in,#v-def .df-sel{height:38px;padding:0 12px}
+#v-def .df-sel{width:auto;padding-right:8px}
+#v-def .df-ta:focus,.df-ced .df-ta:focus,#v-def .df-in:focus,.df-ced .df-in:focus,#v-def .df-sel:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--soft)}
+
+/* 角色 */
+#v-def .df-cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+#v-def .df-card{border:0;padding:0;border-radius:20px;background:var(--card);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;text-align:left;cursor:pointer;color:inherit;animation:dfRise .55s var(--ez) both;transition:transform .45s var(--ez)}
+#v-def .df-card:hover{transform:translateY(-3px)}
+#v-def .df-info{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px}
+#v-def .df-info b{font-family:var(--zh);font-size:16.5px;font-weight:600;letter-spacing:.08em}
+#v-def .df-role{font-family:var(--zh);font-size:12.5px;color:var(--mut)}
+#v-def .df-tags{display:flex;flex-wrap:wrap;gap:5px}
+#v-def .df-tags span,#v-def .df-off{height:22px;padding:0 9px;border-radius:11px;background:var(--soft);color:var(--ink);font-family:var(--zh);font-size:11.5px;display:inline-flex;align-items:center}
+#v-def .df-off{align-self:flex-start;background:transparent;border:1px solid var(--line2);color:var(--mut)}
+.df-portrait{position:relative;aspect-ratio:4/3;background:var(--track);overflow:hidden}
+.df-portrait img,.df-portrait svg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.df-portrait.big{aspect-ratio:3/4;border-radius:18px;box-shadow:var(--shadow)}
+.df-portrait.busy::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);background-size:250% 100%;animation:dfSheen 1.4s linear infinite}
+.df-portrait.busy>*{opacity:.4}
+@keyframes dfSheen{from{background-position:120% 0}to{background-position:-120% 0}}
+
+/* 角色编辑 */
+.df-ced{position:fixed;inset:0;z-index:900;background:color-mix(in srgb,var(--paper) 70%,transparent);display:flex;align-items:flex-start;justify-content:center;padding:28px 20px;overflow:auto;opacity:0;visibility:hidden;transition:opacity .45s var(--ez),visibility 0s linear .45s}
+.df-ced.on{opacity:1;visibility:visible;transition:opacity .45s var(--ez),visibility 0s}
+.df-ced-in{width:min(860px,100%);border-radius:26px;background:var(--card);box-shadow:var(--shadow-lg);padding:24px;display:grid;grid-template-columns:260px minmax(0,1fr);gap:24px;transform:translateY(14px);transition:transform .6s var(--ez);color:var(--fg)}
+.df-ced.on .df-ced-in{transform:none}
+.df-ced-pic,.df-ced-form{display:flex;flex-direction:column;gap:6px;min-width:0}
+.df-ced-pic .df-bar{margin-top:6px}
+.df-ced .df-up{cursor:pointer;display:inline-flex;align-items:center}
+.df-ced .df-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.df-ced .df-foot{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.df-imgcfg{margin-top:6px;border-radius:14px;background:var(--soft);padding:8px 12px}
+.df-imgcfg summary{cursor:pointer;font-family:var(--zh);font-size:12.5px;color:var(--ink)}
+.df-imgcfg[open] summary{margin-bottom:6px}
+
+/* 关系图 */
+#v-def .df-relwrap{border-radius:22px;background:var(--card);box-shadow:var(--shadow);padding:10px;overflow-x:auto}
+#dfRelSvg{display:block;width:100%;min-width:560px;height:auto}
+#dfRelSvg .df-edge{stroke:var(--line2);stroke-width:1.5;fill:none}
+#dfRelSvg .df-elab{font-family:var(--zh);font-size:12px;fill:var(--ink)}
+#dfRelSvg .df-elbg{fill:var(--card)}
+#dfRelSvg .df-nd circle{fill:var(--soft);stroke:var(--ac);stroke-width:1.5}
+#dfRelSvg .df-nd text{font-family:var(--zh);font-size:14px;font-weight:600;fill:var(--fg);text-anchor:middle}
+#dfRelSvg .df-nd text.sub{font-size:11px;font-weight:400;fill:var(--mut)}
+#dfRelSvg .df-relempty{font-family:var(--zh);font-size:14px;fill:var(--mut);text-anchor:middle}
+#dfRelSvg .df-anim{opacity:0;animation:dfRise .7s var(--ez) forwards}
+
+/* 情节图 */
+#v-def .df-plot{display:flex;flex-direction:column;position:relative;padding-left:26px}
+#v-def .df-plot.df-plot-empty{padding-left:0}
+#v-def .df-plot:not(.df-plot-empty)::before{content:"";position:absolute;left:9px;top:10px;bottom:34px;width:2px;border-radius:1px;background:linear-gradient(var(--ac),var(--ac2))}
+#v-def .df-beat{position:relative;padding:4px 0 18px;opacity:0;animation:dfRise .7s var(--ez) forwards}
+#v-def .df-beat::before{content:"";position:absolute;left:-22px;top:10px;width:12px;height:12px;border-radius:6px;background:var(--card);box-shadow:0 0 0 2px var(--ac)}
+#v-def .df-bh{display:flex;align-items:baseline;gap:10px;font-family:var(--zh);font-size:12px;color:var(--ink);letter-spacing:.2em}
+#v-def .df-bh .lat{font-size:14px;color:var(--mut);letter-spacing:.04em}
+#v-def .df-bb{margin-top:6px;border-radius:16px;background:var(--card);box-shadow:var(--shadow);padding:12px 16px;font-family:var(--zh);font-size:14.5px;line-height:1.9;color:var(--fg)}
+#v-def .df-bb:focus{outline:2px solid var(--ac);outline-offset:2px}
+
+/* 故事模板 / 世界设定 */
+#v-def .df-tgrid,#v-def .df-wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+#v-def .df-tcard,#v-def .df-lore{border:0;border-radius:20px;background:var(--card);box-shadow:var(--shadow);padding:16px 18px;display:flex;flex-direction:column;gap:8px;text-align:left;color:inherit}
+#v-def .df-lore{cursor:pointer;transition:transform .45s var(--ez)}
+#v-def .df-lore:hover{transform:translateY(-2px)}
+#v-def .df-tcard b,#v-def .df-lore b{font-family:var(--zh);font-size:16.5px;font-weight:600;letter-spacing:.08em}
+#v-def .df-tcard .lat{font-size:15px;color:var(--mut);font-weight:400}
+#v-def .df-tcard p,#v-def .df-lore p{margin:0;font-family:var(--zh);font-size:13.5px;line-height:1.85;color:var(--fg2)}
+#v-def .df-bt{display:flex;flex-wrap:wrap;gap:5px}
+#v-def .df-bt span{height:22px;padding:0 9px;border-radius:11px;background:var(--track);font-family:var(--zh);font-size:11.5px;display:inline-flex;align-items:center;color:var(--fg2)}
+#v-def .df-tcard .mini-btn{align-self:flex-start;margin-top:4px}
+#v-def .df-k{font-family:var(--zh);font-size:11.5px;color:var(--ink);letter-spacing:.2em}
+
+/* 预告短片 */
+#v-def .df-film{position:relative;aspect-ratio:16/9;border-radius:22px;overflow:hidden;background:#0b0912;box-shadow:var(--shadow-lg);color:#f3efe6;isolation:isolate;container-type:inline-size}
+#v-def .df-film::before,#v-def .df-film::after{content:"";position:absolute;left:0;right:0;height:6.5%;background:#050408;z-index:5}
+#v-def .df-film::before{top:0}
+#v-def .df-film::after{bottom:0}
+#v-def .df-film.df-paused *{animation-play-state:paused!important}
+.df-shot{position:absolute;inset:0;opacity:0;transition:opacity 1.1s ease}
+.df-shot.in{opacity:1}
+.df-shot svg.df-bg{position:absolute;inset:0;width:100%;height:100%}
+.df-shot .df-fog{animation:dfFog var(--d) linear both}
+.df-shot .df-fog.b{animation-direction:reverse}
+@keyframes dfFog{from{transform:translateX(-5%)}to{transform:translateX(5%)}}
+.df-shot .df-pf{position:absolute;top:13%;bottom:13%;width:28%;border-radius:4px;overflow:hidden;box-shadow:0 24px 60px -24px #000;z-index:2}
+.df-shot .df-pf.r{right:8%}
+.df-shot .df-pf.l{left:8%}
+.df-shot .df-pf>svg,.df-shot .df-pf>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:dfKb var(--d) ease-out both}
+@keyframes dfKb{from{transform:scale(1.14)}to{transform:scale(1)}}
+.df-shot .df-pf::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(5,4,8,.7))}
+.df-shot .df-pf b{position:absolute;left:0;right:0;bottom:7%;z-index:1;text-align:center;font-family:var(--zh);font-weight:500;font-size:clamp(12px,2cqw,18px);letter-spacing:.3em;color:#f3efe6}
+.df-fcap{position:absolute;bottom:17%;width:50%;z-index:3;display:flex;flex-direction:column;gap:1.2cqw}
+.df-fcap.l{left:8%}
+.df-fcap.r{right:8%;text-align:right}
+.df-fcap .k{font-family:var(--zh);font-size:clamp(10px,1.3cqw,13px);letter-spacing:.42em;color:#d8c69c;opacity:0;animation:dfCap 1s ease .3s forwards}
+.df-fcap .t{font-family:var(--zh);font-size:clamp(13px,2.3cqw,23px);line-height:1.85;letter-spacing:.06em;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+.df-fcap .t span{opacity:0;animation:dfCap .9s ease forwards}
+@keyframes dfCap{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.df-ttl{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6cqw;text-align:center;padding:0 14%}
+.df-ttl .lat{font-size:clamp(12px,1.8cqw,18px);color:#d8c69c;letter-spacing:.2em;opacity:0;animation:dfCap 1.2s ease .2s forwards}
+.df-ttl h2{margin:0;font-family:var(--zh);font-weight:500;font-size:clamp(24px,6cqw,58px);letter-spacing:.32em;text-indent:.32em;color:#f3efe6;opacity:0;animation:dfTtl 2.2s var(--ez) .5s forwards}
+.df-ttl p{margin:0;font-family:var(--zh);font-size:clamp(12px,1.9cqw,17px);line-height:1.9;color:#cfc8de;opacity:0;animation:dfCap 1.4s ease 1.4s forwards}
+@keyframes dfTtl{from{opacity:0;letter-spacing:.6em}to{opacity:1}}
+#v-def .df-prog{flex:1;min-width:140px;display:flex;gap:4px;align-items:center}
+#v-def .df-prog button{flex:1;height:14px;display:flex;align-items:center;border:0;padding:0;background:none;cursor:pointer}
+#v-def .df-prog button span{display:block;width:100%;height:3px;border-radius:2px;background:var(--track);overflow:hidden}
+#v-def .df-prog button i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ac),var(--ac2))}
+#dfTime{font-variant-numeric:tabular-nums;min-width:74px;text-align:right}
+#v-def .df-slist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+#v-def .df-sh{border-radius:18px;background:var(--card);box-shadow:var(--shadow);padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+#v-def .df-sh .df-bh{letter-spacing:.16em}
+#v-def .df-sh .df-bh .lat{margin-left:auto}
+#v-def .df-sh .df-ta{font-size:13px;line-height:1.75}
+
+@media (max-width:760px){.df-ced-in{grid-template-columns:1fr}.df-ced .df-row2{grid-template-columns:1fr}.df-shot .df-pf{width:34%}.df-fcap{width:52%}}
+@media (prefers-reduced-motion:reduce){.df-shot .df-fog,.df-shot .df-pf>svg,.df-shot .df-pf>img{animation:none}}
