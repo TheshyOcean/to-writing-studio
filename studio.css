@@ -97,16 +97,16 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 .st-lux .lat{font-size:14px}
 
 /* ---------- 4. 按钮 ---------- */
-:root[data-shell] :is(button,.btn,.mini-btn,.chip,#modelChip,.tws-btn,.tws-tpl-btn,.tws-temp-btn,.tws-pill,.tws-goal-chip,.tws-tag,.tws-ch-chip,.jump,.go){
+:root[data-shell] :is(button,.btn,.mini-btn,.chip,.tws-btn,.tws-tpl-btn,.tws-temp-btn,.tws-pill,.tws-goal-chip,.tws-tag,.tws-ch-chip,.jump,.go){
   clip-path:none!important;background:transparent!important;background-image:none!important;box-shadow:none!important;text-transform:none!important;
   transition:background-color .4s var(--ez),border-color .4s var(--ez),color .35s var(--ez),transform .45s var(--ez),opacity .35s!important}
-:root[data-shell] :is(.btn,.mini-btn,.chip,#modelChip,.tws-btn,.tws-tpl-btn,.tws-pill,.tws-goal-chip,.tws-ch-chip){
+:root[data-shell] :is(.btn,.mini-btn,.chip,.tws-btn,.tws-tpl-btn,.tws-pill,.tws-goal-chip,.tws-ch-chip){
   border-radius:999px!important;border:1px solid var(--line2)!important;color:var(--fg2)!important;letter-spacing:.04em}
-:root[data-shell] :is(.btn,.mini-btn,.chip,#modelChip,.tws-btn,.tws-tpl-btn,.tws-pill,.tws-goal-chip,.tws-ch-chip):not(:disabled):hover{
+:root[data-shell] :is(.btn,.mini-btn,.chip,.tws-btn,.tws-tpl-btn,.tws-pill,.tws-goal-chip,.tws-ch-chip):not(:disabled):hover{
   border-color:var(--ac)!important;color:var(--ink)!important;background:var(--soft)!important}
 :root[data-shell] :is(button,.btn,.chip):not(:disabled):active{transform:scale(.96)!important;transition-duration:.15s!important}
 :root[data-shell] :is(.chip,.mini-btn,.btn)::before,:root[data-shell] :is(.chip,.mini-btn)::after{display:none!important}
-:root[data-shell] :is(.chip.on,.mini-btn.on,#modelChip.on,.tws-goal-chip.on){background:var(--soft)!important;border-color:transparent!important;color:var(--ink)!important}
+:root[data-shell] :is(.chip.on,.mini-btn.on,.tws-goal-chip.on){background:var(--soft)!important;border-color:transparent!important;color:var(--ink)!important}
 :root[data-shell] .icon-btn,.st-ibtn{width:38px!important;height:38px!important;border-radius:12px!important;border:0!important;background:transparent!important;color:var(--fg2)!important;display:inline-flex!important;align-items:center;justify-content:center}
 :root[data-shell] .icon-btn:hover,.st-ibtn:hover{background:var(--soft)!important;color:var(--ink)!important}
 :root[data-shell] .icon-btn.on{background:var(--soft)!important;color:var(--ink)!important}
@@ -245,8 +245,8 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 :root[data-shell] .composer .chip-row .chip{flex:none;height:30px;padding:0 12px!important;font-size:12.5px!important;display:inline-flex;align-items:center}
 :root[data-shell] .composer .input-wrap{display:flex!important;align-items:flex-end!important;gap:10px!important;border:0!important;background:transparent!important;padding:0!important}
 :root[data-shell] .composer .field{flex:1;min-width:0;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
-:root[data-shell] .composer textarea{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:8px 0!important;font-size:16px!important;line-height:1.75!important;color:var(--fg)!important}
-:root[data-shell] .composer textarea:focus{box-shadow:none!important}
+:root[data-shell] .composer textarea#input{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:8px 0!important;font-size:16px!important;line-height:1.75!important;color:var(--fg)!important;min-width:0}
+:root[data-shell] .composer textarea#input:focus{box-shadow:none!important;border:0!important}
 :root[data-shell] .send{width:48px!important;height:48px!important;min-height:48px!important;border-radius:16px!important;border:0!important;background:linear-gradient(140deg,var(--ac),var(--ac2))!important;color:#fff!important;box-shadow:0 10px 22px -10px var(--glow)!important;flex:none}
 :root[data-shell] .send svg{color:#fff!important;width:20px;height:20px}
 :root[data-shell] .send:hover{filter:brightness(1.05);transform:translateY(-1px)}
