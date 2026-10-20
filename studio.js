@@ -115,7 +115,7 @@ window.TWSLux={
    ============================================================ */
 var LAT={'v-chat':'Colloquium','studioHistory':'Archivum','v-book':'Codex','v-lore':'Thesaurus','v-threads':'Vestigia','__soon':'Collegium','v-cfg':'Officina'};
 var LABEL={'v-chat':'创作对话','studioHistory':'对话档案','v-book':'书稿','v-lore':'设定库','v-threads':'伏笔与时间线','__soon':'协作室','v-cfg':'系统配置'};
-var built=false;
+var built=false, opusMode=store('tws_opus_mode')||'book';
 function buildRail(){
   var rail=document.querySelector('.rail');
   if(!rail||built||!$('railBook')) return false;
@@ -134,11 +134,11 @@ function buildRail(){
   $('stBook').addEventListener('click',function(){ window.showView&&window.showView('v-book'); });
   $('stQNew').addEventListener('click',function(){
     var st=curState();
-    if(st.book){ store('tws_opus_mode','book'); refreshAll(); }
+    if(st.book){ opusMode='book'; store('tws_opus_mode','book'); refreshAll(); }
     else window.showView&&window.showView('v-book');
   });
   opus.querySelectorAll('.st-osw button').forEach(function(b){ b.addEventListener('click',function(e){
-    e.stopPropagation(); store('tws_opus_mode',b.dataset.m); refreshAll();
+    e.stopPropagation(); opusMode=b.dataset.m; store('tws_opus_mode',b.dataset.m); refreshAll();
   }); });
   var fresh=$('studioNew'), firstNav=rail.querySelector('.rail-btn');
   if(fresh&&firstNav) rail.insertBefore(fresh,firstNav);
@@ -199,7 +199,7 @@ function refreshHead(){
   if($('stCrumbBook')){ $('stCrumbBook').textContent=st.book?'《'+st.book+'》':''; $('stCrumbSl').style.display=st.book?'':'none'; $('stCrumbT').textContent=ttl; }
   var op=document.querySelector('.st-opus');
   if(op){
-    var mode=(!st.book||store('tws_opus_mode')==='quote')?'quote':'book';
+    var mode=(!st.book||opusMode==='quote')?'quote':'book';
     op.classList.toggle('noopus',mode==='quote');
     op.querySelectorAll('.st-osw button').forEach(function(b){ var on=b.dataset.m===mode; b.classList.toggle('on',on); b.setAttribute('aria-selected',String(on)); b.disabled=(b.dataset.m==='book'&&!st.book); });
     $('stQNew').textContent=st.book?'回到《'+st.book+'》 →':'开始第一部作品 →';
