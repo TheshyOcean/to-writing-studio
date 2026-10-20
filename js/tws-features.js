@@ -527,11 +527,18 @@
   function extract(chapter, onText) {
     var body = (chapter && chapter.content || '').trim();
     if (!body) return Promise.reject(new Error('这一章还没有正文'));
-    var sys = '你是小说编辑。从下面这段正文里提取两类信息：\n' +
-      '1. 伏笔：埋下但还没解释清楚的线索、悬念、暗示；\n' +
-      '2. 时间线事件：有明确时间感的「什么时候、谁、发生了什么」。\n\n' +
+    var known = '';
+    try {
+      var TD = window.TWS && window.TWS.data;
+      if (TD && TD.D.activeProject) known = TD.listCards(TD.D.activeProject).map(function (c) { return c.name; }).join('、');
+    } catch (e) {}
+    var sys = '你是小说编辑。从下面这段正文里提取三类信息：\n' +
+      '1. 人物与设定：有名字的新人物、地点、专有名词（已记录的不要重复：' + (known || '无') + '）；\n' +
+      '2. 伏笔：埋下但还没解释清楚的线索、悬念、暗示；\n' +
+      '3. 时间线事件：有明确时间感的「什么时候、谁、发生了什么」。\n\n' +
       '只输出一个 tws 代码块，每行一条 JSON，不要任何解释：\n' +
       '```tws\n' +
+      '{"op":"add_lore","kind":"character|place|term","name":"名字","body":"一句话描述"}\n' +
       '{"op":"add_thread","name":"线索名","note":"埋了什么、可能怎么回收"}\n' +
       '{"op":"add_event","when":"三年前","who":"沈砚","what":"师父被杀"}\n' +
       '```\n\n' +
@@ -539,7 +546,7 @@
       '- 只提取正文里确实写到的，不要编造；\n' +
       '- 伏笔只取「埋下但未解释」的，已经讲清楚的不算；\n' +
       '- 时间线只取有明确时间感的（三年前 / 第二天 / 入夜后 / 三个月后…）；\n' +
-      '- 最多 6 条，宁少勿滥；\n' +
+      '- 最多 8 条，宁少勿滥；\n' +
       '- 什么都没提取到，就输出一个空的 tws 代码块。';
     return callLLM([
       { role: 'system', content: sys },

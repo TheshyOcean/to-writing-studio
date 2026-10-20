@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='V2.5.0';
+var VERSION='V2.5.1';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -404,6 +404,7 @@ function buildCfg(){
   var sec=document.createElement('div'); sec.className='cfg-sec';
   sec.innerHTML='<div class="cfg-label"><span class="sq"></span>夜读配色 <span class="lat" style="margin-left:6px;color:var(--mut)">Nox</span></div>'+
     '<div class="st-nseg" id="stNight">'+NIGHTS.map(function(n){ return '<button type="button" data-n="'+n[0]+'"><i style="background:linear-gradient(135deg,'+n[3]+' 55%,'+n[4]+' 55%)"></i>'+n[1]+' <small>'+n[2]+'</small></button>'; }).join('')+'</div>'+
+    '<div class="st-luxrow"><div class="k"><b>自动识别 <span class="lat" style="font-size:15px;color:var(--mut)">Inventio</span></b><span>AI 每写完一段，自动找出新人物 / 地点 / 名词、时间线事件和可能的伏笔，勾选后一键写入。每次会额外用少量 Token。</span></div><button type="button" class="mini-btn" id="stAutoCfg">'+(autoLore?'关闭':'开启')+'</button></div>'+
     '<div class="st-luxrow"><div class="k"><b>灵光模式 <span class="lat" style="font-size:15px;color:var(--mut)">Lux</span></b><span>换用深度思考模型 · 单次输出更长 · 带上全部设定、伏笔与更多前文。会明显多用 Token。</span></div><button type="button" class="mini-btn" id="stLuxCfg">'+(lux?'关闭':'开启')+'</button></div>';
   body.insertBefore(sec,body.firstChild);
   sec.querySelectorAll('#stNight button').forEach(function(b){ b.addEventListener('click',function(){
@@ -411,6 +412,7 @@ function buildCfg(){
     if(root.dataset.theme!=='dark'){ var d=document.querySelector('#themeSeg button[data-t="dark"]'); if(d) d.click(); }
   }); });
   $('stLuxCfg').addEventListener('click',function(){ setLux(!lux,this); });
+  $('stAutoCfg').addEventListener('click',function(){ autoLore=!autoLore; store('tws_autolore',autoLore?'1':'0'); this.textContent=autoLore?'关闭':'开启'; toastMsg(autoLore?'已开启自动识别':'已关闭自动识别'); });
   applyNight(store('tws_night')||'ink');
 }
 function eyebrows(){
@@ -422,12 +424,127 @@ function eyebrows(){
 }
 
 /* ============================================================
+   自动识别：AI 每写完一段，找出新人物 / 地点 / 名词、时间线事件、可能的伏笔
+   结果挂在那条消息下面，勾选后一键写入；不确认就什么都不会写。
+   ============================================================ */
+var KIND={character:'人物',place:'地点',term:'名词',relation:'关系'};
+var autoLore=store('tws_autolore')!=='0';
+var scanning=false, loadKeys=null;
+function curConv(){ return (S.convs||[]).filter(function(c){ return c.id===S.activeId; })[0]||null; }
+function norm(s){ return String(s||'').replace(/\s+/g,'').toLowerCase(); }
+function knownNames(pid){
+  var d=D(), set={};
+  d.listCards(pid).forEach(function(c){ set[norm(c.name)]=1; (c.aliases||[]).forEach(function(a){ set[norm(a)]=1; }); });
+  return set;
+}
+function scanPrompt(pid){
+  var d=D();
+  var cards=d.listCards(pid).map(function(c){ return c.name; }).slice(0,80);
+  var ths=d.listThreads(pid).map(function(t){ return t.name; }).slice(0,40);
+  return '你是小说编辑助手。读下面这段刚写出来的小说文字，找出值得归档的三类信息：\n'+
+    '1. 新出现、且有名字的人物（也包括有名字的地点、专有名词、人物关系）；\n'+
+    '2. 有明确时间感的事件（三年前 / 第二天清晨 / 入夜后……谁做了什么）；\n'+
+    '3. 可能是伏笔的地方：埋下但没解释的线索、悬念、反常细节。\n\n'+
+    '已经记录过的设定（不要重复）：'+(cards.join('、')||'无')+'\n'+
+    '已经记录过的伏笔（不要重复）：'+(ths.join('、')||'无')+'\n\n'+
+    '只输出一个 tws 代码块，每行一条 JSON，不要任何解释：\n'+
+    '```tws\n'+
+    '{"op":"add_lore","kind":"character","name":"名字","body":"一句话描述（外貌 / 身份 / 性格，取自原文）"}\n'+
+    '{"op":"add_event","when":"第二天清晨","who":"沈未晞","what":"在栈桥收到那封信"}\n'+
+    '{"op":"add_thread","name":"线索名","note":"埋了什么、可能怎么回收"}\n'+
+    '```\n'+
+    '规则：只取原文确实写到的，不要编造；kind 只能是 character / place / term / relation；'+
+    '没名字的路人不算；伏笔只取真正留了悬念的；总共最多 6 条，宁少勿滥；什么都没有就输出空的 tws 代码块。';
+}
+function scanRequest(text,pid){
+  var p=provider(), body={
+    model:p.ds?'deepseek-flash':S.model,
+    messages:[{role:'system',content:scanPrompt(pid)},{role:'user',content:String(text).slice(-5000)}],
+    temperature:0.2, stream:false, max_tokens:900
+  };
+  if(p.ds) body.thinking={type:'disabled'};
+  return fetch(String(S.baseUrl||'https://api.deepseek.com/v1').replace(/\/+$/,'')+'/chat/completions',{
+    method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.apiKey},body:JSON.stringify(body)
+  }).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(j){ return (j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||''; });
+}
+function cleanOps(ops,pid){
+  var d=D(), names=knownNames(pid), ths={}, seen={};
+  d.listThreads(pid).forEach(function(t){ ths[norm(t.name)]=1; });
+  return ops.filter(function(o){
+    if(!o||['add_lore','add_event','add_thread'].indexOf(o.op)<0) return false;
+    if(o.op==='add_lore'){ var n=norm(o.name); if(!n||names[n]||seen[n]) return false; seen[n]=1; if(!KIND[o.kind]) o.kind='character'; }
+    if(o.op==='add_thread'){ var t=norm(o.name); if(!t||ths[t]||seen['t'+t]) return false; seen['t'+t]=1; }
+    if(o.op==='add_event'&&!o.what) return false;
+    return true;
+  }).slice(0,6);
+}
+function maybeScan(){
+  if(!autoLore||scanning||!S.apiKey||S.gen) return;
+  var d=D(); if(!d) return;
+  var pid=d.D.activeProject; if(!pid) return;
+  var c=curConv(); if(!c||!c.msgs.length) return;
+  var i=c.msgs.length-1, m=c.msgs[i];
+  if(!m||m.r!=='ai'||m.stream||m.lx||!m.c) return;
+  if(loadKeys&&loadKeys[c.id+':'+i]===m.c) return;      /* 打开页面前就有的旧回复不扫 */
+  if(m.c.replace(/\s/g,'').length<120) return;
+  if(/```tws/.test(m.c)) return;                          /* AI 自己已经提议整理了 */
+  scanning=true; m.lx={st:'scan'}; paintScans();
+  scanRequest(m.c,pid).then(function(txt){
+    var ops=cleanOps((window.TWS.ops.parse(txt).ops)||[],pid);
+    m.lx=ops.length?{st:'pending',ops:ops}:{st:'none'};
+  }).catch(function(e){ m.lx={st:'none',err:String(e&&e.message||e)}; })
+    .then(function(){ scanning=false; try{ api.save(); }catch(e){} paintScans(); });
+}
+function opLine(o,k){
+  var tag,txt;
+  if(o.op==='add_lore'){ tag=KIND[o.kind]||'设定'; txt='<b>'+esc(o.name)+'</b>'+(o.body?'<span>'+esc(String(o.body).slice(0,60))+'</span>':''); }
+  else if(o.op==='add_event'){ tag='时间线'; txt='<b>'+esc(o.when||'某时')+'</b><span>'+esc((o.who?o.who+' · ':'')+o.what)+'</span>'; }
+  else { tag='伏笔'; txt='<b>'+esc(o.name)+'</b>'+(o.note?'<span>'+esc(String(o.note).slice(0,60))+'</span>':''); }
+  return '<label class="st-scan-l"><input type="checkbox" data-k="'+k+'" checked><i class="tg tg-'+o.op+'">'+tag+'</i><span class="tx">'+txt+'</span></label>';
+}
+function paintScans(){
+  var chat=$('chat'), c=curConv(); if(!chat||!c) return;
+  chat.querySelectorAll('.msg.ai[data-i]').forEach(function(el){
+    var i=+el.getAttribute('data-i'), m=c.msgs[i], bub=el.querySelector('.bub'); if(!bub) return;
+    var box=bub.querySelector('.st-scan'), lx=m&&m.lx, key=lx?(lx.st+(lx.ops?lx.ops.length:'')):'';
+    if(!lx||lx.st==='none'||lx.st==='dismissed'){ if(box) box.remove(); return; }
+    if(box&&box.dataset.key===key) return;
+    if(!box){ box=document.createElement('div'); box.className='st-scan'; bub.appendChild(box); }
+    box.dataset.key=key;
+    if(lx.st==='scan'){ box.innerHTML='<div class="st-scan-h busy">✦ 正在识别人物、事件与伏笔 <span class="lat">Inventio</span></div>'; return; }
+    if(lx.st==='done'){ box.innerHTML='<div class="st-scan-h ok">✦ 已写入：'+esc(lx.summary||'')+'</div>'; return; }
+    box.innerHTML='<div class="st-scan-h">✦ 发现 '+lx.ops.length+' 条可以归档的内容 <span class="lat">Inventio</span></div>'+
+      '<div class="st-scan-b">'+lx.ops.map(opLine).join('')+'</div>'+
+      '<div class="st-scan-f"><button type="button" class="mini-btn st-scan-ok">写入所选</button><button type="button" class="mini-btn st-scan-no">忽略</button></div>';
+    box.querySelector('.st-scan-ok').addEventListener('click',function(e){
+      e.stopPropagation();
+      var sel=[]; box.querySelectorAll('input[data-k]').forEach(function(x){ if(x.checked) sel.push(lx.ops[+x.dataset.k]); });
+      if(!sel.length){ toastMsg('先勾选要写入的条目'); return; }
+      var r=window.TWS.runOps?window.TWS.runOps(sel):{done:[]};
+      m.lx={st:'done',summary:(r.done||[]).join('、')}; try{ api.save(); }catch(err){}
+      toastMsg('已写入：'+(r.done||[]).join('、')); paintScans(); refreshAll();
+    });
+    box.querySelector('.st-scan-no').addEventListener('click',function(e){ e.stopPropagation(); m.lx={st:'dismissed'}; try{ api.save(); }catch(err){} paintScans(); });
+  });
+}
+function toastMsg(t){
+  if(typeof window.toast==='function'){ window.toast(t); return; }
+  var w=$('toastWrap'); if(!w) return; var el=document.createElement('div'); el.className='toast'; el.textContent=t; w.appendChild(el); setTimeout(function(){ el.remove(); },2600);
+}
+function snapshotLoad(){
+  loadKeys={};
+  (S.convs||[]).forEach(function(c){ (c.msgs||[]).forEach(function(m,i){ loadKeys[c.id+':'+i]=m.c; }); });
+}
+
+/* ============================================================
    刷新与启动
    ============================================================ */
 var rq=0;
-function refreshAll(){ if(rq) return; rq=requestAnimationFrame(function(){ rq=0; var st=refreshHead(); decorateChat(); refreshMargin(st); paintModel(); }); }
+function refreshAll(){ if(rq) return; rq=requestAnimationFrame(function(){ rq=0; var st=refreshHead(); decorateChat(); refreshMargin(st); paintModel(); paintScans(); maybeScan(); }); }
 function boot(){
   if(!buildRail()){ if((boot.n=(boot.n||0)+1)<40){ setTimeout(boot,50); } return; }
+  snapshotLoad();
   buildHead(); buildMargin(); buildTemp(); buildCfg(); eyebrows();
   root.classList.toggle('lux',lux);
   var chat=$('chat');

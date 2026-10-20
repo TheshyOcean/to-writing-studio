@@ -606,7 +606,7 @@
     if (T.ai.needKey()) { needKeyGuide(); return; }
 
     var m = modal('从「' + c.title + '」提取',
-      '<p class="tws-p">让 AI 读一遍这章正文，把埋下的伏笔和有明确时间感的事件整理出来。' +
+      '<p class="tws-p">让 AI 读一遍这章正文，把新人物与设定、埋下的伏笔和有明确时间感的事件整理出来。' +
       '提取结果会先给你过目，你点确认才写入。</p>' +
       '<div class="tws-ai-out" id="exOut" style="margin-top:12px">点下面的按钮开始</div>',
       { footer: false });
@@ -633,14 +633,14 @@
         ops = parsed.ops;
         bar.querySelector('#exRun').disabled = false;
         if (!ops.length) {
-          out.textContent = '这一章里没找到可以归档的伏笔或时间线事件。';
+          out.textContent = '这一章里没找到可以归档的人物、伏笔或时间线事件。';
           return;
         }
         out.textContent = '';
         var list = document.createElement('div');
         list.innerHTML = ops.map(function (op) {
           return '<div class="tws-opline"><i>' + esc(T.ops.LABEL[op.op] || op.op) + '</i>' +
-            esc(T.ops.describe(op).replace(/^(写入伏笔|写入时间线)/, '')) + '</div>';
+            esc(T.ops.describe(op).replace(/^(写入伏笔|写入时间线|设定库写入)/, '')) + '</div>';
         }).join('');
         out.appendChild(list);
         bar.querySelector('#exOk').disabled = false;
