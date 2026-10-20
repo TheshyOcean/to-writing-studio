@@ -453,3 +453,5 @@ body:not(.is-loading) .st-margin{animation:inU .9s var(--ez) .14s both}
 :root[data-shell="desktop"] .composer>.input-wrap{grid-column:1/-1;grid-row:2}
 :root[data-shell="desktop"] .composer>.studio-input-meta{grid-column:1/-1;grid-row:3;display:flex!important;justify-content:space-between;white-space:nowrap}
 :root[data-shell] .jump{bottom:190px!important;right:28px!important}
+/* 左栏不再放「对话档案」，历史记录从纸面页眉右上角的图标打开 */
+:root[data-shell="desktop"] #studioHistory{display:none!important}
