@@ -127,10 +127,12 @@ function buildRail(){
   });
   var opus=document.createElement('div');
   opus.className='st-opus';
-  opus.innerHTML='<span class="st-sh">Opus in manibus · 正在写</span>'+
-    '<button type="button" class="st-book" id="stBook" title="打开书稿"><b id="stBookName">还没有作品</b><span class="m" id="stBookCh">在书稿里新建一部作品</span><span class="st-bar"><i id="stBookBar" style="width:0"></i></span><span class="m" id="stBookMeta" style="font-size:12px"></span></button>';
+  opus.innerHTML='<span class="st-sh" id="stOpusSh">Opus in manibus · 正在写</span>'+
+    '<button type="button" class="st-book" id="stBook" title="打开书稿"><b id="stBookName"></b><span class="m" id="stBookCh"></span><span class="st-bar"><i id="stBookBar" style="width:0"></i></span><span class="m" id="stBookMeta" style="font-size:12px"></span></button>'+
+    '<div class="st-quote" id="stQuote"><p class="q" id="stQ"></p><p class="tr" id="stQTr"></p><p class="src" id="stQSrc"></p><button type="button" class="st-qnew" id="stQNew">开始第一部作品 →</button></div>';
   rail.insertBefore(opus,rail.firstChild);
   $('stBook').addEventListener('click',function(){ window.showView&&window.showView('v-book'); });
+  $('stQNew').addEventListener('click',function(){ window.showView&&window.showView('v-book'); });
   var fresh=$('studioNew'), firstNav=rail.querySelector('.rail-btn');
   if(fresh&&firstNav) rail.insertBefore(fresh,firstNav);
   /* 工具行：昼夜切换 + 模型 */
@@ -188,14 +190,45 @@ function refreshHead(){
   var st=curState(), t=$('chatTitle');
   var ttl=st.chapter?('第'+cnNum(st.ci)+'章 · '+st.chapter.title):(t?t.textContent:'创作对话');
   if($('stCrumbBook')){ $('stCrumbBook').textContent=st.book?'《'+st.book+'》':''; $('stCrumbSl').style.display=st.book?'':'none'; $('stCrumbT').textContent=ttl; }
+  var op=document.querySelector('.st-opus');
+  if(op){
+    op.classList.toggle('noopus',!st.book);
+    $('stOpusSh').textContent=st.book?'Opus in manibus · 正在写':'Sententia diei · 今日一句';
+    if(!st.book&&!op.dataset.q){ var q=todayQuote(); op.dataset.q='1'; $('stQ').textContent=q[0]; $('stQTr').textContent=q[1]; $('stQTr').style.display=q[1]?'':'none'; $('stQSrc').textContent='— '+q[2]; $('stQ').classList.toggle('la',/^[A-Za-z]/.test(q[0])); }
+  }
   if($('stBookName')){
-    $('stBookName').textContent=st.book?'《'+st.book+'》':'还没有作品';
+    $('stBookName').textContent=st.book?'《'+st.book+'》':'';
     $('stBookCh').textContent=st.chapter?('第'+cnNum(st.ci)+'章 · '+st.chapter.title):(st.book?'还没有选中章节':'在书稿里新建一部作品');
     var pos=st.chapter&&st.count?Math.round(st.ci/st.count*100):0;
     $('stBookBar').style.width=pos+'%';
     $('stBookMeta').textContent=st.book?('全书 '+(st.words||0).toLocaleString('zh-CN')+' 字 · '+(st.count||0)+' 章'):'';
   }
   return st;
+}
+
+/* 今日一句：没有作品时，左栏顶上换成一句古今中外谈写作的话（均为公版古籍与拉丁格言），每天换一句 */
+var QUOTES=[
+ ['读书破万卷，下笔如有神。','','杜甫《奉赠韦左丞丈二十二韵》'],
+ ['Nulla dies sine linea.','无一日不落笔。','老普林尼《博物志》记画家阿佩莱斯'],
+ ['文章千古事，得失寸心知。','','杜甫《偶题》'],
+ ['Verba volant, scripta manent.','言语飞逝，文字长存。','拉丁谚语'],
+ ['为人性僻耽佳句，语不惊人死不休。','','杜甫《江上值水如海势聊短述》'],
+ ['Ars longa, vita brevis.','技艺长久，人生短暂。','希波克拉底语，塞涅卡拉丁译'],
+ ['文章本天成，妙手偶得之。','','陆游《文章》'],
+ ['Festina lente.','从容地快。','奥古斯都格言'],
+ ['看似寻常最奇崛，成如容易却艰辛。','','王安石《题张司业诗》'],
+ ['Carpe diem.','把握今日。','贺拉斯《颂歌》'],
+ ['吟安一个字，捻断数茎须。','','卢延让《苦吟》'],
+ ['Dum spiro, spero.','一息尚存，希望不灭。','拉丁格言'],
+ ['不积跬步，无以至千里。','','《荀子·劝学》'],
+ ['Gutta cavat lapidem.','滴水穿石。','奥维德《黑海书简》'],
+ ['两句三年得，一吟双泪流。','','贾岛《题诗后》'],
+ ['Audentes fortuna iuvat.','命运眷顾勇者。','维吉尔《埃涅阿斯纪》'],
+ ['笔落惊风雨，诗成泣鬼神。','','杜甫《寄李十二白二十韵》'],
+ ['Per aspera ad astra.','循此苦旅，以达天际。','拉丁格言']];
+function todayQuote(){
+  var d=new Date(), start=new Date(d.getFullYear(),0,0), day=Math.floor((d-start)/864e5);
+  return QUOTES[day%QUOTES.length];
 }
 
 /* ============================================================
