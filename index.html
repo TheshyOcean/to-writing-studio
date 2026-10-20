@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#101110">
+<meta name="theme-color" content="#efeef6">
 <meta name="color-scheme" content="dark light">
 <meta name="format-detection" content="telephone=no">
 <title>To写作工作台 · To Writing Studio</title>
@@ -11,6 +11,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="fonts/studio-fonts.css">
 <style>
 :root{
   --bg:#101110; --bg2:#181a18; --tx:#f5f5f0; --tx2:#898d89; --tx3:#5a5d59;
@@ -68,6 +69,25 @@ body{background-image:linear-gradient(color-mix(in srgb,var(--tx) 4%,transparent
 h1{font-size:25px;margin:15px 0 10px}.eyebrow{color:var(--tx2)}
 .choose button:hover{background:var(--ac);color:#252d13}.choose button:hover em{color:#252d13}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* V2.5.0 · 书斋：堇紫 × 古典衬线 */
+:root{--bg:#efeef6;--bg2:#ffffff;--tx:#1f1b33;--tx2:#4a4563;--tx3:#7a7495;--ac:#6f63e6;--bd:#e6e3f1;--bds:#d6d2e7;--chamfer:none}
+:root[data-theme="dark"]{--bg:#141317;--bg2:#222127;--tx:#ebe8ef;--tx2:#c7c3cf;--tx3:#9690a0;--ac:#9a90dc;--bd:#2b2a31;--bds:#3a3842}
+html,body{font-family:"EB Garamond","Noto Serif SC",serif!important}
+body{background-image:none!important}
+.brand{gap:12px}.brand i.mark{width:34px;height:34px}.brand i.mark svg{width:34px;height:34px}
+.brand b{font-family:"Noto Serif SC",serif!important;font-size:18px;letter-spacing:.16em;font-weight:600}
+.brand .lat{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:15px;letter-spacing:.02em;color:var(--tx3)}
+.card{border:0!important;border-top:0!important;border-radius:24px;clip-path:none!important;box-shadow:0 1px 2px rgba(31,27,51,.05),0 30px 70px -40px rgba(40,30,110,.35)}
+.eyebrow{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:15px;letter-spacing:.04em;text-transform:none}
+h1{font-family:"Noto Serif SC",serif;font-weight:500;letter-spacing:.12em}
+.track{height:4px;border-radius:2px}.track i{background:linear-gradient(90deg,#6f63e6,#7f93ff);border-radius:2px}
+.meta{display:none}
+.choose button{border-radius:16px;clip-path:none!important;border:1px solid var(--bds)}
+.choose button::before{width:8px;height:8px;border-radius:4px;background:var(--ac)}
+.choose button em{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:15px;letter-spacing:.02em;text-transform:none}
+.choose button:hover{background:color-mix(in srgb,var(--ac) 10%,transparent)!important;color:var(--tx)!important;border-color:var(--ac)}
+.choose button:hover em{color:var(--ac)!important}
 </style>
 <script>
 (function(){var t='auto';try{t=localStorage.getItem('endfield_theme_v2')||'auto';}catch(e){}if(t==='auto')t=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.dataset.theme=t;})();
@@ -75,10 +95,10 @@ h1{font-size:25px;margin:15px 0 10px}.eyebrow{color:var(--tx2)}
 </head>
 <body>
 <div class="wrap">
-  <div class="brand"><i class="mark"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M0 0h25.5L32 6.5V32H6.5L0 25.5Z" fill="#101110"/><path d="M2.6 2.6h21.7l5.1 5.1v21.7H7.7L2.6 24.3Z" stroke="#fff500" stroke-opacity=".32"/><rect x="5.1" y="8.2" width="15.2" height="3.8" fill="#fff500"/><rect x="10.8" y="8.2" width="3.8" height="14" fill="#fff500"/><circle cx="22.3" cy="19.2" r="3.4" stroke="#00E5FF" stroke-width="2.4"/></svg></i><b>To Writing Studio</b><span>To写作工作台</span></div>
+  <div class="brand"><i class="mark"><svg viewBox="0 0 42 42" aria-hidden="true"><defs><linearGradient id="ixLg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6f63e6"/><stop offset="1" stop-color="#7f93ff"/></linearGradient></defs><rect width="42" height="42" rx="13" fill="url(#ixLg)"/><path d="M8.5 15.6C13.5 13.2 22 11.6 31.5 11.9c1.1.05 1.3 1.4.2 1.6-8.2.8-16.2 1.9-22.3 3.7-1.2.4-1.8-1.1-.9-1.6z" fill="#fff"/><path d="M19.6 14.6c-.4 5-.7 10.4-.3 15.6.1 1.4 1.3 2 2.3 1" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="27.4" cy="26.6" rx="4.3" ry="4.6" transform="rotate(-18 27.4 26.6)" fill="none" stroke="#fff" stroke-width="2.2"/><circle cx="33.6" cy="8.6" r="1.6" fill="#fff" opacity=".85"/></svg></i><b>写作工作台</b><span class="lat">To Writing Studio</span></div>
 
   <div class="card" id="boot">
-    <div class="eyebrow" id="eyebrow">Detecting device</div>
+    <div class="eyebrow" id="eyebrow">Salve · 欢迎</div>
     <h1 id="title">正在识别设备…</h1>
     <p class="sub" id="sub">即将进入最适合当前设备的界面</p>
     <div class="track"><i id="fill"></i></div>

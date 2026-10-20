@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#101110">
+<meta name="theme-color" content="#efeef6">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="format-detection" content="telephone=no">
@@ -1781,9 +1781,9 @@ html.kb-open .chat{padding-bottom:2px;}
 }
 </style>
 <link rel="stylesheet" href="terminal-redesign.css?v=2.3.1">
-<link rel="stylesheet" href="boot-draw.css?v=2.3.1">
-<script src="lq-glass.js?v=2.3.0"></script>
+<link rel="stylesheet" href="boot-ink.css?v=2.5.0">
 <link rel="stylesheet" href="js/tws.css?v=2.5.1">
+<link rel="stylesheet" href="studio.css?v=2.5.0">
 </head>
 <body class="is-loading">
 
@@ -1796,8 +1796,7 @@ html.kb-open .chat{padding-bottom:2px;}
 
 <!-- ============ 开屏：图纸显影 ============ -->
 <div id="loader"></div>
-<script src="boot-art-desktop.js?v=2.3.0"></script>
-<script src="boot-draw.js?v=2.3.1"></script>
+<script src="boot-ink.js?v=2.5.0"></script>
 
 <!-- ============ 主应用 ============ -->
 <div class="app" id="app">
@@ -1827,7 +1826,7 @@ html.kb-open .chat{padding-bottom:2px;}
         <span class="badge" id="drBadge">0</span>
       </button>
 
-      <button class="icon-btn" id="btnTheme" title="主题 终端 / 纸墨 / 跟随系统">
+      <button class="icon-btn" id="btnTheme" title="昼读 / 夜读">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
       </button>
 
@@ -2003,11 +2002,11 @@ html.kb-open .chat{padding-bottom:2px;}
           <div class="cfg-sec">
             <div class="cfg-label"><span class="sq"></span>外观 / Appearance</div>
             <div class="seg" id="themeSeg">
-              <button data-t="dark">终端 DARK</button>
-              <button data-t="light">纸墨 LIGHT</button>
-              <button data-t="auto" class="on">跟随系统 AUTO</button>
+              <button data-t="dark">夜读</button>
+              <button data-t="light">昼读</button>
+              <button data-t="auto" class="on">跟随系统</button>
             </div>
-            <div class="cfg-hint" id="themeHint">跟随系统 · SYSTEM SYNC</div>
+            <div class="cfg-hint" id="themeHint">跟随系统</div>
           </div>
         </div>
       </section>
@@ -2028,7 +2027,7 @@ html.kb-open .chat{padding-bottom:2px;}
     <span class="sb hide-sm">MODEL <b id="sbModel">deepseek-chat</b></span>
     <span class="sp"></span>
     <span class="hz"></span>
-    <span class="sb hide-sm">BUILD <b>V2.3.0</b></span>
+    <span class="sb hide-sm">BUILD <b>V2.5.0</b></span>
     <span class="sb">© To写作工作台</span>
   </footer>
 </div>
@@ -2155,7 +2154,7 @@ var LSK='liangye_endfield_v2';
 var S={
   theme:'auto', resolved:'dark',
   apiKey:'', baseUrl:'https://api.deepseek.com/v1',
-  provider:'DeepSeek', model:'deepseek-chat', modelList:[],
+  provider:'DeepSeek', model:'deepseek-flash', modelList:[],
   limit:128000, used:0,
   temperature:0.8, maxTokens:0, stream:true,   /* v2 正式版：可调生成参数 */
   gen:false, timer:null, abort:null,
@@ -2228,19 +2227,19 @@ function resolveTheme(t){
   return t;
 }
 function themeLabel(t){
-  return t==='light'?'纸墨 LIGHT':(t==='auto'?'跟随系统 AUTO':'终端 DARK');
+  return t==='light'?'昼读':(t==='auto'?'跟随系统':'夜读');
 }
 function paintTheme(t){
   S.resolved=resolveTheme(t);
   document.documentElement.setAttribute('data-theme',S.resolved);
   var m=document.querySelector('meta[name="theme-color"]');
-  if(m)m.setAttribute('content',S.resolved==='light'?'#f2f2ed':'#101110');
+  if(m)m.setAttribute('content',S.resolved==='light'?'#efeef6':'#141317');
   $$('#themeSeg button').forEach(function(b){b.classList.toggle('on',b.dataset.t===t);});
   var hint=$('themeHint');
   if(hint){
     hint.textContent=(t==='auto')
-      ? '跟随系统 · 当前 '+(S.resolved==='dark'?'终端 DARK':'纸墨 LIGHT')
-      : '手动锁定 · '+(S.resolved==='dark'?'终端 DARK':'纸墨 LIGHT');
+      ? '跟随系统 · 当前'+(S.resolved==='dark'?'夜读':'昼读')
+      : '手动锁定 · '+(S.resolved==='dark'?'夜读':'昼读');
   }
 }
 function applyTheme(t){
@@ -2458,7 +2457,7 @@ function renderChat(){
     var tail=(m.stream?'<span class="caret"></span>':'');
     var think='';
     if(!isMe&&m.th&&m.c){
-      think='<details class="think"'+(m.stream||idx===c.msgs.length-1?' open':'')+'><summary>▸ 思考过程 · THINKING · '+m.th.length+' 字</summary><div class="think-b">'+md(m.th)+'</div></details>';
+      think='<details class="think"'+(m.stream||idx===c.msgs.length-1?' open':'')+'><summary>✦ 沉思 · Meditatio · '+m.th.length+' 字</summary><div class="think-b">'+md(m.th)+'</div></details>';
     }
     if(annoHere) html+=renderAnnoBar();
     html+=
@@ -2632,7 +2631,7 @@ function patchThink(idx,th){
   if(tb.__n!==shownTh){ tb.__n=shownTh; tb.innerHTML=md(shownTxt); }
   if(thinkReveal<ths.length) revealTick();
   var h=tk.querySelector('summary');
-  if(h) h.textContent='▸ 思考过程 · THINKING · '+th.length+' 字';
+  if(h) h.textContent='✦ 沉思中 · Meditatio · '+th.length+' 字';
 }
 /* 80ms 合并一次（约 12fps 文本刷新，视觉上依旧连续），DOM 写入量降一个数量级 */
 function scheduleFlush(){
@@ -2686,6 +2685,8 @@ function buildMessages(conv){
         '7. 一次最多 4 条指令，不要一口气全塞进去。';
     }
   }catch(e){}
+  /* 灵光模式：带上全部设定、未回收伏笔与更多前文（studio.js） */
+  try{ if(window.TWSLux&&window.TWSLux.on()) sys+=window.TWSLux.extra(); }catch(e){}
   if(sys.trim()) msgs.push({role:'system',content:sys});
   conv.msgs.forEach(function(m){
     if(m.stream) return;
@@ -2732,7 +2733,7 @@ function reply(conv){
     if(!last) return;
     var bub=last.querySelector('.bub');
     if(!bub) return;
-    bub.innerHTML='<div class="status"><span class="sq"></span><span id="__ph">THINKING</span><span class="dots"><i></i><i></i><i></i></span></div>';
+    bub.innerHTML='<div class="status"><span class="sq"></span><span id="__ph">构思中</span><span class="dots"><i></i><i></i><i></i></span></div>';
     statusEl=$('__ph');
   }
   showStatus();
@@ -2747,7 +2748,7 @@ function reply(conv){
 
 function simReply(conv){
   var phases=[
-    ['THINKING',900],['PARSING INPUT',700],['DRAFTING',600]
+    ['构思中',900],['理解来意',700],['落笔',600]
   ];
   var i=0;
   function next(){
@@ -2798,6 +2799,8 @@ function realReply(conv){
   var body={model:S.model,messages:buildMessages(conv),stream:useStream,
             temperature:(typeof S.temperature==='number'?S.temperature:0.8)};
   if(S.maxTokens>0) body.max_tokens=S.maxTokens;
+  /* 灵光模式：深度思考模型 + 更长输出（studio.js） */
+  try{ if(window.TWSLux) window.TWSLux.patch(body); }catch(e){}
   var ctrl=new AbortController();
   S.abort=ctrl;
   var last=conv.msgs[conv.msgs.length-1];
@@ -3284,7 +3287,7 @@ on('btnSaveKey','click',function(){
    —— 原来 btnRefreshModels 只是占位 toast，界面上无法换模型。
    ============================================================ */
 var PROVIDERS={
-  'DeepSeek':{baseUrl:'https://api.deepseek.com/v1',models:['deepseek-chat','deepseek-reasoner']},
+  'DeepSeek':{baseUrl:'https://api.deepseek.com/v1',models:['deepseek-flash','deepseek-v4-pro','deepseek-chat','deepseek-reasoner']},
   'OpenAI':{baseUrl:'https://api.openai.com/v1',models:['gpt-4o-mini','gpt-4o','gpt-4.1-mini']},
   'Moonshot Kimi':{baseUrl:'https://api.moonshot.cn/v1',models:['kimi-k2-0905-preview','moonshot-v1-32k']},
   '智谱 GLM':{baseUrl:'https://open.bigmodel.cn/api/paas/v4',models:['glm-4-plus','glm-4-flash']},
@@ -4129,5 +4132,6 @@ window.__ENDF__={S:S,save:save,renderDrawer:renderDrawer,renderChat:renderChat,g
 <script src="js/tws-data.js?v=2.3.0"></script>
 <script src="js/tws-features.js?v=2.3.0"></script>
 <script src="js/tws-views.js?v=2.3.0"></script>
+<script src="studio.js?v=2.5.0"></script>
 </body>
 </html>
