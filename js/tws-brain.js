@@ -345,7 +345,7 @@
     var m = my(), done = m.chap[id] || 0, txt = c.content || '';
     if (txt.length < done) { m.chap[id] = txt.length; saveMem(); return; }
     var part = txt.slice(done);
-    if (part.replace(/\s/g, '').length < 300) return;
+    if (part.replace(/\s/g, '').length < 120) return;
     m.chap[id] = txt.length; saveMem();
     if (alreadyRead(part)) return;   /* 采纳进来的 AI 回复，聊天里已经读过 */
     remember(part);
