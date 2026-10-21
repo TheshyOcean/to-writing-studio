@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Preview V2.5.2';
+var VERSION='Preview V2.5.3';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -482,11 +482,14 @@ function knownNames(pid){
 function scanPrompt(pid){
   var d=D();
   var cards=d.listCards(pid).map(function(c){ return c.name; }).slice(0,80);
-  var ths=d.listThreads(pid).map(function(t){ return t.name; }).slice(0,40);
-  return '你是小说编辑助手。读下面这段刚写出来的小说文字，找出值得归档的三类信息：\n'+
+  var all=d.listThreads(pid), ths=all.map(function(t){ return t.name; }).slice(0,40);
+  var open=all.filter(function(t){ return t.status==='open'; }).slice(0,30)
+    .map(function(t){ return '- '+t.name+(t.note?'：'+String(t.note).slice(0,80):''); }).join('\n');
+  return '你是小说编辑助手。读下面这段刚写出来的小说文字，找出值得归档的四类信息：\n'+
     '1. 新出现、且有名字的人物（也包括有名字的地点、专有名词、人物关系）；\n'+
     '2. 有明确时间感的事件（三年前 / 第二天清晨 / 入夜后……谁做了什么）；\n'+
-    '3. 可能是伏笔的地方：埋下但没解释的线索、悬念、反常细节。\n\n'+
+    '3. 可能是伏笔的地方：埋下但没解释的线索、悬念、反常细节；\n'+
+    '4. 伏笔回收：下面这些尚未回收的伏笔，如果在这段文字里被揭晓、解释或兑现了，就标记回收：\n'+(open||'（无）')+'\n\n'+
     '已经记录过的设定（不要重复）：'+(cards.join('、')||'无')+'\n'+
     '已经记录过的伏笔（不要重复）：'+(ths.join('、')||'无')+'\n\n'+
     '只输出一个 tws 代码块，每行一条 JSON，不要任何解释：\n'+
@@ -494,9 +497,11 @@ function scanPrompt(pid){
     '{"op":"add_lore","kind":"character","name":"名字","body":"一句话描述（外貌 / 身份 / 性格，取自原文）"}\n'+
     '{"op":"add_event","when":"第二天清晨","who":"沈未晞","what":"在栈桥收到那封信"}\n'+
     '{"op":"add_thread","name":"线索名","note":"埋了什么、可能怎么回收"}\n'+
+    '{"op":"resolve_thread","name":"照抄上面列表里的伏笔名","how":"一句话说明这里怎么回收的"}\n'+
     '```\n'+
     '规则：只取原文确实写到的，不要编造；kind 只能是 character / place / term / relation；'+
-    '没名字的路人不算；伏笔只取真正留了悬念的；总共最多 6 条，宁少勿滥；什么都没有就输出空的 tws 代码块。';
+    '没名字的路人不算；伏笔只取真正留了悬念的；回收只认真正揭晓或兑现的，仅仅又提到一次不算，name 必须和列表里一字不差；'+
+    '总共最多 6 条，宁少勿滥；什么都没有就输出空的 tws 代码块。';
 }
 function scanRequest(text,pid){
   var p=provider(), body={
@@ -510,11 +515,19 @@ function scanRequest(text,pid){
   }).then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(function(j){ return (j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||''; });
 }
+function findOpen(pid,name){
+  var k=norm(name); if(!k) return null;
+  var open=D().listThreads(pid).filter(function(t){ return t.status==='open'; });
+  return open.filter(function(t){ return norm(t.name)===k; })[0]||
+    open.filter(function(t){ var n=norm(t.name); return n&&(n.indexOf(k)>=0||k.indexOf(n)>=0); })[0]||
+    (window.TWS&&window.TWS.nameSim?open.filter(function(t){ return window.TWS.nameSim(t.name,k)>=0.75; })[0]:null)||null;
+}
 function cleanOps(ops,pid){
   var d=D(), names=knownNames(pid), ths={}, seen={};
   d.listThreads(pid).forEach(function(t){ ths[norm(t.name)]=1; });
   return ops.filter(function(o){
-    if(!o||['add_lore','add_event','add_thread'].indexOf(o.op)<0) return false;
+    if(!o||['add_lore','add_event','add_thread','resolve_thread'].indexOf(o.op)<0) return false;
+    if(o.op==='resolve_thread'){ var th=findOpen(pid,o.name); if(!th||seen['r'+th.id]) return false; seen['r'+th.id]=1; o.id=th.id; o.name=th.name; return true; }
     if(o.op==='add_lore'){ var n=norm(o.name); if(!n||names[n]||seen[n]) return false; seen[n]=1; if(!KIND[o.kind]) o.kind='character'; }
     if(o.op==='add_thread'){ var t=norm(o.name); if(!t||ths[t]||seen['t'+t]) return false; seen['t'+t]=1; }
     if(o.op==='add_event'&&!o.what) return false;
@@ -542,6 +555,7 @@ function opLine(o,k){
   var tag,txt;
   if(o.op==='add_lore'){ tag=KIND[o.kind]||'设定'; txt='<b>'+esc(o.name)+'</b>'+(o.body?'<span>'+esc(String(o.body).slice(0,60))+'</span>':''); }
   else if(o.op==='add_event'){ tag='时间线'; txt='<b>'+esc(o.when||'某时')+'</b><span>'+esc((o.who?o.who+' · ':'')+o.what)+'</span>'; }
+  else if(o.op==='resolve_thread'){ tag='回收'; txt='<b>'+esc(o.name)+' → 已回收</b>'+(o.how?'<span>'+esc(String(o.how).slice(0,60))+'</span>':''); }
   else { tag='伏笔'; txt='<b>'+esc(o.name)+'</b>'+(o.note?'<span>'+esc(String(o.note).slice(0,60))+'</span>':''); }
   return '<label class="st-scan-l"><input type="checkbox" data-k="'+k+'" checked><i class="tg tg-'+o.op+'">'+tag+'</i><span class="tx">'+txt+'</span></label>';
 }
@@ -554,7 +568,7 @@ function paintScans(){
     if(box&&box.dataset.key===key) return;
     if(!box){ box=document.createElement('div'); box.className='st-scan'; bub.appendChild(box); }
     box.dataset.key=key;
-    if(lx.st==='scan'){ box.innerHTML='<div class="st-scan-h busy">✦ 正在识别人物、事件与伏笔 <span class="lat">Inventio</span></div>'; return; }
+    if(lx.st==='scan'){ box.innerHTML='<div class="st-scan-h busy">✦ 正在识别人物、事件与伏笔回收 <span class="lat">Inventio</span></div>'; return; }
     if(lx.st==='done'){ box.innerHTML='<div class="st-scan-h ok">✦ 已写入：'+esc(lx.summary||'')+'</div>'; return; }
     box.innerHTML='<div class="st-scan-h">✦ 发现 '+lx.ops.length+' 条可以归档的内容 <span class="lat">Inventio</span></div>'+
       '<div class="st-scan-b">'+lx.ops.map(opLine).join('')+'</div>'+

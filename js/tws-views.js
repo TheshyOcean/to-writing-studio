@@ -1243,8 +1243,20 @@
     var lore = D.listCards(pid).length;
     var th = D.listThreads(pid).length;
     lines.push('设定库 ' + lore + ' 条 · 伏笔 ' + th + ' 条');
+    var openTh = D.listThreads(pid).filter(function (t) { return t.status === 'open'; });
+    if (openTh.length) lines.push('还没回收的伏笔：' + openTh.slice(0, 20).map(function (t) { return '「' + t.name + '」'; }).join('、'));
     return lines.join('\n');
   }
+
+  /* 两个名字有多像（按字重合算，0~1），AI 偶尔会少抄一两个字 */
+  function nameSim(a, b) {
+    a = Array.from(String(a || '').replace(/\s+/g, '')); b = Array.from(String(b || '').replace(/\s+/g, ''));
+    if (!a.length || !b.length) return 0;
+    var pool = b.slice(), hit = 0;
+    a.forEach(function (c) { var i = pool.indexOf(c); if (i >= 0) { hit++; pool.splice(i, 1); } });
+    return hit / Math.max(a.length, b.length);
+  }
+  T.nameSim = nameSim;
 
   /* 执行一批指令 */
   function runOps(ops) {
@@ -1286,6 +1298,21 @@
           }
           D.addThread(pid, op.name || '未命名', op.note || '', chId);
           done.push('伏笔「' + (op.name || '') + '」');
+          opened.threads = true;
+
+        } else if (op.op === 'resolve_thread') {
+          if (!pid) return;
+          var key = String(op.name || '').replace(/\s+/g, '');
+          var ths = D.listThreads(pid);
+          var th = (op.id && ths.filter(function (t) { return t.id === op.id; })[0]) ||
+            ths.filter(function (t) { return t.name.replace(/\s+/g, '') === key; })[0] ||
+            ths.filter(function (t) { var n = t.name.replace(/\s+/g, ''); return key && n && (n.indexOf(key) >= 0 || key.indexOf(n) >= 0); })[0] ||
+            ths.filter(function (t) { return t.status === 'open' && nameSim(t.name, key) >= 0.75; })[0];
+          if (!th) return;
+          var patch = { status: 'done', payoffChapter: th.payoffChapter || ui.chapterId || '' };
+          if (op.how) patch.note = (th.note ? th.note + '\n' : '') + '【回收】' + op.how;
+          D.updateThread(th.id, patch);
+          done.push('伏笔「' + th.name + '」已回收');
           opened.threads = true;
 
         } else if (op.op === 'add_event') {

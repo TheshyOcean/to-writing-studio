@@ -1783,7 +1783,7 @@ html.kb-open .chat{padding-bottom:2px;}
 <link rel="stylesheet" href="terminal-redesign.css?v=2.3.1">
 <link rel="stylesheet" href="boot-ink.css?v=2.5.0">
 <link rel="stylesheet" href="js/tws.css?v=2.5.1">
-<link rel="stylesheet" href="studio.css?v=2.5.1.2">
+<link rel="stylesheet" href="studio.css?v=2.5.3">
 <link rel="stylesheet" href="js/tws-define.css?v=2.5.2">
 </head>
 <body class="is-loading">
@@ -2028,7 +2028,7 @@ html.kb-open .chat{padding-bottom:2px;}
     <span class="sb hide-sm">MODEL <b id="sbModel">deepseek-chat</b></span>
     <span class="sp"></span>
     <span class="hz"></span>
-    <span class="sb hide-sm">BUILD <b>Preview V2.5.2</b></span>
+    <span class="sb hide-sm">BUILD <b>Preview V2.5.3</b></span>
     <span class="sb">© To写作工作台</span>
   </footer>
 </div>
@@ -2683,6 +2683,7 @@ function buildMessages(conv){
         '5. 写到新人物的外貌/性格/关系，或新地点、专有名词时，主动提议写进设定库，'+
         '并顺带说一句"以后想改就去设定库里改"。\n'+
         '6. 埋了悬念或暗示时，主动提议记成伏笔，并说一句"以后去伏笔页改"。\n'+
+        '6.5 写到的内容揭晓或兑现了书稿状态里某条还没回收的伏笔时，主动问一句要不要标成已回收，同意后用 resolve_thread，name 照抄原伏笔名。\n'+
         '7. 一次最多 4 条指令，不要一口气全塞进去。';
     }
   }catch(e){}
@@ -4131,9 +4132,9 @@ window.__ENDF__={S:S,save:save,renderDrawer:renderDrawer,renderChat:renderChat,g
 </script>
 <script src="terminal-redesign.js?v=2.3.0"></script>
 <script src="js/tws-data.js?v=2.3.0"></script>
-<script src="js/tws-features.js?v=2.5.1"></script>
-<script src="js/tws-views.js?v=2.5.1"></script>
+<script src="js/tws-features.js?v=2.5.3"></script>
+<script src="js/tws-views.js?v=2.5.3"></script>
 <script src="js/tws-define.js?v=2.5.2"></script>
-<script src="studio.js?v=2.5.2"></script>
+<script src="studio.js?v=2.5.3"></script>
 </body>
 </html>
