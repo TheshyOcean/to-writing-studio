@@ -315,7 +315,7 @@
     var tools = $('stTools'); if (!tools || $('fnDiceBtn')) return;
     var dice = document.createElement('button'); dice.type = 'button'; dice.id = 'fnDiceBtn'; dice.className = 'fn-headbtn zhu'; dice.innerHTML = '🎲 命运骰子';
     dice.addEventListener('click', openDice);
-    var ru = document.createElement('button'); ru.type = 'button'; ru.id = 'fnRuBtn'; ru.className = 'fn-headbtn ink'; ru.innerHTML = '🎭 入戏';
+    var ru = document.createElement('button'); ru.type = 'button'; ru.id = 'fnRuBtn'; ru.className = 'fn-headbtn ink'; ru.innerHTML = '<span class="fn-mask" aria-hidden="true">🎭</span><span class="fn-swap"><span class="zh">入戏</span><span class="la" aria-hidden="true">Persona</span></span>'; ru.setAttribute('aria-label', '入戏');
     ru.addEventListener('click', function () { if (T.persona) T.persona.open(); });
     tools.insertBefore(ru, tools.firstChild); tools.insertBefore(dice, tools.firstChild);
   }

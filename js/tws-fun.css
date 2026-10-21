@@ -24,7 +24,7 @@ textarea.fn-fld{height:auto;min-height:38px;padding:8px 12px;resize:none;line-he
 .fn-headbtn.zhu{border:1px solid var(--zhu);color:var(--zhu);background:transparent}
 .fn-headbtn.zhu:hover{background:var(--zhu);color:#fff}
 .fn-headbtn.ink{border:0;background:var(--fg);color:var(--paper)}
-.fn-headbtn.ink:hover{opacity:.85}
+.fn-headbtn.ink:hover{opacity:1}
 .fn-typing::after{content:'▍';animation:fnblink 1s steps(1) infinite;color:var(--zhu);margin-left:2px}
 @keyframes fnblink{50%{opacity:0}}
 .fn-por{flex:none;width:40px;height:40px;border-radius:20px;overflow:hidden}
@@ -248,4 +248,26 @@ button.pz-role:hover{border-color:var(--zhu);transform:translateY(-2px)}
 
 /* 通用按钮规则会把背景清成透明，导致「入戏」按钮只剩纸色文字、昼夜都看不见；这里把墨色底补回来 */
 :root[data-shell] .fn-headbtn.ink{background:var(--fg)!important;color:var(--paper)!important;border:1px solid var(--fg)!important}
-:root[data-shell] .fn-headbtn.ink:hover{opacity:.85}
+:root[data-shell] .fn-headbtn.ink:hover{opacity:1}
+
+/* 入戏按钮悬停：面具活过来，「入戏」化作拉丁文 Persona（拉丁语：戏剧面具） */
+.fn-headbtn.ink{display:inline-flex;align-items:center;gap:6px}
+.fn-mask{display:inline-block;transform-origin:50% 70%}
+.fn-swap{display:inline-grid;align-items:center;justify-items:center}
+.fn-swap>span{grid-area:1/1;transition:opacity .45s var(--ez,ease),transform .55s var(--ez,ease),filter .45s ease,letter-spacing .6s var(--ez,ease)}
+.fn-swap .la{font-family:'Cormorant Garamond',var(--la);font-style:italic;font-weight:600;font-size:15px;letter-spacing:.02em;opacity:0;transform:translateY(6px);filter:blur(3px)}
+.fn-headbtn.ink:hover .fn-swap .zh,.fn-headbtn.ink:focus-visible .fn-swap .zh{opacity:0;transform:translateY(-6px);filter:blur(3px)}
+.fn-headbtn.ink:hover .fn-swap .la,.fn-headbtn.ink:focus-visible .fn-swap .la{opacity:1;transform:none;filter:none;letter-spacing:.08em}
+.fn-headbtn.ink:hover .fn-mask,.fn-headbtn.ink:focus-visible .fn-mask{animation:fnMask 1.4s var(--ez,ease) infinite}
+@keyframes fnMask{
+  0%{transform:rotate(0) scale(1)}
+  15%{transform:rotate(-16deg) scale(1.18)}
+  30%{transform:rotate(12deg) scale(1.18)}
+  45%{transform:rotate(-8deg) scale(1.1)}
+  60%{transform:rotate(4deg) scale(1.05)}
+  75%,100%{transform:rotate(0) scale(1)}
+}
+@media (prefers-reduced-motion:reduce){
+  .fn-headbtn.ink:hover .fn-mask{animation:none}
+  .fn-swap>span{transition:opacity .2s linear}
+}
