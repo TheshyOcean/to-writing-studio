@@ -330,7 +330,13 @@
   function pushDock(res, title) {
     if (isEmpty(res)) return;
     res.title = title; dockRes.push(res); paintDock();
-    if (!res.asks.length && !res.pending.length) setTimeout(function () { dockRes = dockRes.filter(function (y) { return y !== res; }); paintDock(); }, 12000);
+    if (!res.asks.length && !res.pending.length) {
+      var hide = function () {
+        if (dockEl().matches(':hover')) { setTimeout(hide, 3000); return; }   /* 鼠标停在上面就先不收 */
+        dockRes = dockRes.filter(function (y) { return y !== res; }); paintDock();
+      };
+      setTimeout(hide, 25000);
+    }
   }
 
   /* ---------------- 章节保存后自动读新写的部分 ---------------- */
