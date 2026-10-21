@@ -152,3 +152,13 @@ chromium.launch({ channel: 'msedge' })   // 独立调试端口，不会被转发
 - 一致性检查的语义部分需要 API Key；无 Key 时只跑本地规则（名字、章节顺序）
 - 数据不跨设备同步（纯本地）
 - 移动端技能标签条的右缘渐隐未实现
+
+* * *
+
+## 欢迎指点
+
+这是我的第一个项目，还有很多不成熟的地方。不管是代码写法、界面设计，还是功能上的想法，都非常欢迎来 [Issues](https://github.com/TheshyOcean/to-writing-studio/issues) 留言指点，也欢迎直接提 Pull Request 🙏
+
+## 许可证
+
+[MIT](LICENSE)。`fonts/` 中的字体另行遵循 SIL Open Font License 1.1。
