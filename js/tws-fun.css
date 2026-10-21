@@ -62,28 +62,7 @@ textarea.fn-fld{height:auto;min-height:38px;padding:8px 12px;resize:none;line-he
 .fn-pchip:hover{border-color:var(--zhu)}
 .fn-pchip em{font-style:normal;font-size:11px;padding:2px 7px;border-radius:9px;background:var(--zhu-soft);color:var(--zhu)}
 
-/* ---------- 命运骰子 ---------- */
-.fn-cwrap{perspective:900px;display:flex;justify-content:center;padding:4px 0}
-.fn-cwrap.shake{animation:fnshake .5s}
-@keyframes fnshake{20%{transform:rotate(-4deg)}40%{transform:rotate(4deg)}60%{transform:rotate(-2deg)}80%{transform:rotate(2deg)}}
-.fn-card{width:220px;height:300px;position:relative;transform-style:preserve-3d;transition:transform .9s var(--ez)}
-.fn-card.flip{transform:rotateY(180deg)}
-.fn-back,.fn-front{position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px;overflow:hidden}
-.fn-back{background:linear-gradient(150deg,var(--ac),var(--ink));color:rgba(255,255,255,.85);box-shadow:inset 0 0 0 6px rgba(255,255,255,.12),inset 0 0 0 7px rgba(255,255,255,.25)}
-.fn-back span{font-size:46px}
-.fn-front{transform:rotateY(180deg);background:var(--card);border:1px solid var(--line2);gap:14px}
-.fn-front .tier{font-family:var(--disp);font-style:italic;font-size:15px;letter-spacing:.06em;color:var(--mut)}
-.fn-front .kind{font-family:var(--zh);font-size:12px;letter-spacing:.3em;color:var(--zhu)}
-.fn-front b{font-family:var(--zh);font-size:21px;font-weight:600;line-height:1.55;letter-spacing:.06em;color:var(--fg)}
-.fn-front p{margin:0;font-family:var(--zh);font-size:13px;line-height:1.7;color:var(--mut)}
-.fn-front.rare{border-color:var(--ac);box-shadow:0 0 0 3px var(--soft)}
-.fn-front.rare .tier{color:var(--ink)}
-.fn-front.gold{background:linear-gradient(160deg,#fff8e6,#f3dfae);border-color:#d6a84a;box-shadow:0 0 0 3px rgba(214,168,74,.25),0 18px 40px -16px rgba(180,130,40,.6)}
-.fn-front.gold .tier,.fn-front.gold .kind{color:#9a6a12}
-.fn-front.gold b{color:#3d2a08}
-.fn-front.gold p{color:#7a5a20}
-.fn-card.flip .fn-front.gold::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.75) 50%,transparent 70%);background-size:250% 100%;background-position:120% 0;animation:fnshine 2.4s ease-in-out .7s forwards}
-@keyframes fnshine{to{background-position:-120% 0}}
+/* ---------- 命运塔罗（样式见文件末尾） ---------- */
 .fn-dex{display:flex;align-items:center;gap:10px;font-family:var(--zh);font-size:12.5px;color:var(--mut)}
 .fn-dots{flex:1;display:flex;gap:4px;flex-wrap:wrap}
 .fn-dots i{width:10px;height:10px;border-radius:3px;background:var(--mut2)}
@@ -251,13 +230,13 @@ button.pz-role:hover{border-color:var(--zhu);transform:translateY(-2px)}
 :root[data-shell] .fn-headbtn.ink:hover{opacity:1}
 
 /* 入戏按钮悬停：面具活过来，「入戏」化作拉丁文 Persona（拉丁语：戏剧面具） */
-.fn-headbtn.ink{display:inline-flex;align-items:center;gap:6px}
+.fn-headbtn{display:inline-flex;align-items:center;gap:7px}
 .fn-mask{display:inline-block;transform-origin:50% 70%}
 .fn-swap{display:inline-grid;align-items:center;justify-items:center}
 .fn-swap>span{grid-area:1/1;transition:opacity .45s var(--ez,ease),transform .55s var(--ez,ease),filter .45s ease,letter-spacing .6s var(--ez,ease)}
 .fn-swap .la{font-family:'Cormorant Garamond',var(--la);font-style:italic;font-weight:600;font-size:15px;letter-spacing:.02em;opacity:0;transform:translateY(6px);filter:blur(3px)}
-.fn-headbtn.ink:hover .fn-swap .zh,.fn-headbtn.ink:focus-visible .fn-swap .zh{opacity:0;transform:translateY(-6px);filter:blur(3px)}
-.fn-headbtn.ink:hover .fn-swap .la,.fn-headbtn.ink:focus-visible .fn-swap .la{opacity:1;transform:none;filter:none;letter-spacing:.08em}
+.fn-headbtn:hover .fn-swap .zh,.fn-headbtn:focus-visible .fn-swap .zh{opacity:0;transform:translateY(-6px);filter:blur(3px)}
+.fn-headbtn:hover .fn-swap .la,.fn-headbtn:focus-visible .fn-swap .la{opacity:1;transform:none;filter:none;letter-spacing:.08em}
 .fn-headbtn.ink:hover .fn-mask,.fn-headbtn.ink:focus-visible .fn-mask{animation:fnMask 1.4s var(--ez,ease) infinite}
 @keyframes fnMask{
   0%{transform:rotate(0) scale(1)}
@@ -271,3 +250,94 @@ button.pz-role:hover{border-color:var(--zhu);transform:translateY(-2px)}
   .fn-headbtn.ink:hover .fn-mask{animation:none}
   .fn-swap>span{transition:opacity .2s linear}
 }
+
+/* ============================================================
+   命运塔罗 Arcana
+   ============================================================ */
+/* 顶栏按钮：通用规则会清掉背景，这里用 !important 把朱砂描边 / 悬停实底补回来 */
+:root[data-shell] .fn-headbtn.zhu{background:transparent!important;color:var(--zhu)!important;border:1px solid var(--zhu)!important}
+:root[data-shell] .fn-headbtn.zhu:hover,:root[data-shell] .fn-headbtn.zhu:focus-visible{background:var(--zhu)!important;color:#fff!important}
+.fn-tcard{width:11px;height:16px;perspective:60px;display:inline-block}
+.fn-tcard i{display:block;width:100%;height:100%;border:1.3px solid currentColor;border-radius:2px;position:relative;transform-style:preserve-3d}
+.fn-tcard i::after{content:'';position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;background:currentColor;transform:rotate(45deg)}
+.fn-headbtn.zhu:hover .fn-tcard i,.fn-headbtn.zhu:focus-visible .fn-tcard i{animation:fnTflip 1.6s var(--ez,ease) infinite}
+@keyframes fnTflip{0%{transform:rotateY(0)}35%,50%{transform:rotateY(180deg)}85%,100%{transform:rotateY(360deg)}}
+
+/* 弹窗 */
+.fn-box.fn-tarot{width:min(760px,100%)}
+.tr-stage{--gold:#c9a55a;position:relative;height:340px;border-radius:20px;border:1px solid var(--line);overflow:hidden;
+  background:radial-gradient(ellipse 60% 70% at 50% 46%,color-mix(in srgb,var(--ac) 12%,transparent),transparent 72%),var(--note)}
+.tr-stage::before{content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(1px 1px at 12% 18%,var(--mut2) 50%,transparent 51%),radial-gradient(1px 1px at 82% 14%,var(--mut2) 50%,transparent 51%),radial-gradient(1.2px 1.2px at 68% 82%,var(--mut2) 50%,transparent 51%),radial-gradient(1px 1px at 22% 76%,var(--mut2) 50%,transparent 51%),radial-gradient(1px 1px at 92% 58%,var(--mut2) 50%,transparent 51%),radial-gradient(1px 1px at 6% 48%,var(--mut2) 50%,transparent 51%)}
+.tr-glow{position:absolute;left:50%;top:44%;width:220px;height:220px;margin:-110px 0 0 -110px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,color-mix(in srgb,var(--gold) 30%,transparent),transparent 65%);opacity:.55;animation:trBreath 4.5s ease-in-out infinite}
+@keyframes trBreath{50%{opacity:.95;transform:scale(1.08)}}
+.tr-stage[data-phase="read"] .tr-glow{left:calc(50% - 168px);transition:left 1s var(--ez)}
+
+/* 牌 */
+.tr-card{position:absolute;left:50%;top:50%;width:100px;height:170px;margin:-92px 0 0 -50px;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;border-radius:9px!important;cursor:default;
+  transform:translate(var(--x,0),var(--y,0)) rotate(var(--a,0deg)) translateY(var(--l,0px)) scale(var(--s,1));
+  transition:transform .75s var(--ez),opacity .6s ease,filter .4s ease;perspective:900px;outline:none}
+.tr-in{position:absolute;inset:0;transform-style:preserve-3d;transition:transform 1s cubic-bezier(.2,.8,.2,1)}
+.tr-card.flip .tr-in{transform:rotateY(180deg)}
+.tr-b,.tr-f{position:absolute;inset:0;border-radius:9px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden}
+.tr-b{background:linear-gradient(160deg,#2b2540,#1c1829);box-shadow:0 10px 24px -14px rgba(20,14,30,.75),inset 0 0 0 1px rgba(201,165,90,.35)}
+.tr-b svg{width:100%;height:100%;display:block;fill:none;stroke:var(--gold);stroke-width:1.1}
+.tr-b svg .ry{stroke-width:.8;opacity:.6}
+.tr-f{transform:rotateY(180deg);background:linear-gradient(170deg,#fdf9ef,#f2e8d2);color:#3a2e1c;box-shadow:0 18px 40px -16px rgba(120,90,30,.55),inset 0 0 0 1px rgba(201,165,90,.7),inset 0 0 0 5px #fbf5e6,inset 0 0 0 6px rgba(201,165,90,.5);
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px 8px 11px}
+.tr-f.rev>*{transform:rotate(180deg)}
+.tr-f.rev{flex-direction:column-reverse}
+.tr-num{font-family:'Cormorant Garamond',var(--la);font-weight:600;font-size:14px;letter-spacing:.12em;color:#8a6a2a}
+.tr-gl{width:62px;height:62px;fill:none;stroke:#3a2e1c;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.tr-nm{text-align:center;line-height:1.2}
+.tr-nm b{display:block;font-family:var(--zh);font-size:13px;font-weight:600;letter-spacing:.2em;color:#2b2418}
+.tr-nm i{font-family:'Cormorant Garamond',var(--la);font-style:italic;font-size:11.5px;color:#8a6a2a;letter-spacing:.04em}
+.tr-card.chosen .tr-f::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.85) 50%,transparent 65%);background-size:260% 100%;background-position:130% 0}
+.tr-card.chosen.flip .tr-f::after{animation:trShine 1.6s ease-in-out .55s forwards}
+@keyframes trShine{to{background-position:-130% 0;opacity:0}}
+
+/* 扇形：可选、悬停浮起 */
+.tr-stage[data-phase="fan"] .tr-card{cursor:pointer}
+.tr-stage[data-phase="fan"] .tr-card:hover,.tr-stage[data-phase="fan"] .tr-card:focus-visible{--l:-22px;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--gold) 70%,transparent))}
+.tr-stage[data-phase="fan"]:has(.tr-card:hover) .tr-card:not(:hover){filter:brightness(.82)}
+.tr-card.gone{opacity:0;pointer-events:none;transition:transform .9s var(--ez),opacity .7s ease}
+.tr-card.chosen{transition:transform 1s var(--ez)}
+
+/* 提示语 */
+.tr-hint{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-family:var(--zh);font-size:12.5px;letter-spacing:.3em;color:var(--mut);opacity:0;transform:translateY(4px);transition:opacity .4s,transform .5s var(--ez);pointer-events:none}
+.tr-hint.on{opacity:1;transform:none}
+
+/* 解读 */
+.tr-read{position:absolute;right:26px;top:26px;bottom:22px;width:min(330px,calc(100% - 330px));overflow:auto;display:flex;flex-direction:column;gap:8px;opacity:0;transform:translateX(16px);transition:opacity .7s ease,transform .8s var(--ez);pointer-events:none}
+.tr-read.on{opacity:1;transform:none;pointer-events:auto}
+.tr-rh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tr-rn{font-family:'Cormorant Garamond',var(--la);font-weight:600;font-size:22px;color:var(--gold)}
+.tr-rh b{font-family:var(--zh);font-size:22px;font-weight:600;letter-spacing:.14em;color:var(--fg)}
+.tr-rh i{font-family:'Cormorant Garamond',var(--la);font-style:italic;font-size:17px;color:var(--mut)}
+.tr-pos{align-self:flex-start;font-family:var(--zh);font-size:11.5px;letter-spacing:.14em;color:#8a6a2a;border:1px solid color-mix(in srgb,var(--gold) 60%,transparent);border-radius:10px;padding:2px 9px}
+.tr-pos.rev{color:var(--zhu);border-color:color-mix(in srgb,var(--zhu) 55%,transparent)}
+.tr-kw{font-family:var(--zh);font-size:12.5px;letter-spacing:.3em;color:var(--mut)}
+.tr-p{margin:0;font-family:var(--zh);font-size:14px;line-height:1.85;color:var(--fg2)}
+.tr-ai{margin-top:4px;padding-top:10px;border-top:1px dashed var(--line2);display:flex;flex-direction:column;gap:4px}
+.tr-ai:empty{display:none}
+.tr-lbl{font-family:var(--zh);font-size:11.5px;letter-spacing:.2em;color:var(--ink)}
+.tr-note{font-family:var(--zh);font-size:12px;color:var(--mut2);line-height:1.7}
+.tr-dots i{width:8px;height:12px;border-radius:2px;background:var(--line2)}
+.tr-dots i.on{background:var(--gold,#c9a55a)}
+:root[data-theme="dark"] .tr-pos{color:#d9b56a}
+:root[data-theme="dark"] .tr-stage{background:radial-gradient(ellipse 60% 70% at 50% 46%,color-mix(in srgb,var(--ac) 16%,transparent),transparent 72%),color-mix(in srgb,var(--paper) 70%,#000)}
+
+@media (max-width:640px){
+  .tr-stage{height:460px}
+  .tr-read{left:20px;right:20px;width:auto;top:auto;bottom:16px;height:200px}
+}
+@media (prefers-reduced-motion:reduce){
+  .tr-glow{animation:none}
+  .fn-headbtn.zhu:hover .fn-tcard i{animation:none}
+  .tr-card,.tr-in,.tr-read{transition-duration:.01s!important}
+}
+
+/* 弹窗主按钮：同样被通用规则清掉了底色，补回来 */
+:root[data-shell] .fn-btn.on{background:var(--ac)!important;border-color:transparent!important;color:var(--onac,#fff)!important}
+:root[data-shell] .fn-btn.on:disabled{opacity:.4}
