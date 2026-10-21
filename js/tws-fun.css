@@ -239,3 +239,7 @@ button.pz-role:hover{border-color:var(--zhu);transform:translateY(-2px)}
 .pz-row textarea{max-height:120px}
 .pr-item .kind{flex:none;font-size:11px;padding:1px 7px;border-radius:9px;white-space:nowrap;background:var(--track);color:var(--mut)}
 .pr-item .kind.k-u,.pr-item .kind.k-c{background:var(--soft);color:var(--ink)}
+/* 正式版里有通用按钮样式（自动外边距、竖排），入戏里统一复位 */
+#pzStage button{margin:0!important}
+#pzStage .pz-pick{display:inline-flex!important;flex-direction:row!important;align-items:center!important}
+#pzStage .pz-role{display:flex!important;flex-direction:column!important;align-items:flex-start!important}
