@@ -146,3 +146,8 @@
 
 @media (max-width:760px){.df-ced-in{grid-template-columns:1fr}.df-ced .df-row2{grid-template-columns:1fr}.df-shot .df-pf{width:34%}.df-fcap{width:52%}}
 @media (prefers-reduced-motion:reduce){.df-shot .df-fog,.df-shot .df-pf>svg,.df-shot .df-pf>img{animation:none}}
+
+#v-def .df-dup{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
+#v-def .df-dup[hidden]{display:none}
+#v-def .df-dupl{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 14px;border-radius:14px;background:var(--soft,rgba(111,99,230,.1));font-family:var(--zh);font-size:13px;color:var(--fg2,inherit);line-height:1.7}
+#v-def .df-dupl span{flex:1;min-width:200px}

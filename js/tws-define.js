@@ -87,7 +87,7 @@
   function cv(c) {
     var a = c.attrs || {};
     return {
-      id: c.id, name: c.name, bio: c.body || '', on: !!c.on,
+      id: c.id, name: c.name, bio: c.body || '', on: !!c.on, aliases: c.aliases || [],
       role: a['身份'] || '', look: a['外貌'] || '',
       tags: String(a['性格'] || '').split(/[\s、，,]+/).filter(Boolean)
     };
@@ -121,6 +121,7 @@
         '<div class="df-pane" id="df-rel">' +
           '<label class="df-lab" for="dfRelIn">用几句话描述人物关系，AI 会画成关系图</label><textarea class="df-ta" id="dfRelIn" rows="3" placeholder="例如：沈未晞和守灯人是旧识；守灯人暗中保护沈未晞"></textarea>' +
           '<div class="df-bar"><span class="df-note" id="dfRelNote"></span><span class="df-sp"></span><button type="button" class="tws-btn primary" id="dfRelGo">✦ 生成关系图</button></div>' +
+          '<div class="df-dup" id="dfRelDup" hidden></div>' +
           '<div class="df-relwrap"><svg id="dfRelSvg" viewBox="0 0 720 440" role="img" aria-label="人物关系图"></svg></div>' +
         '</div>' +
         '<div class="df-pane" id="df-plot">' +
@@ -303,20 +304,82 @@
   }
 
   /* ---------------- 关系图 ---------------- */
+  /* 把简称、别名、少字写法统一到已有角色的正式名：茜香 → 黑见茜香 */
+  function canonName(n, list) {
+    var k = String(n || '').replace(/\s+/g, ''); if (!k) return k;
+    var ex = list.filter(function (c) { return c.name === k || (c.aliases || []).indexOf(k) >= 0; })[0];
+    if (ex) return ex.name;
+    if (k.length < 2) return k;
+    var hit = list.filter(function (c) {
+      var forms = [c.name].concat(c.aliases || []);
+      return forms.some(function (f) { f = String(f).replace(/\s+/g, ''); return f.length >= 2 && (f.indexOf(k) >= 0 || k.indexOf(f) >= 0); });
+    });
+    return hit.length === 1 ? hit[0].name : k;
+  }
+  function canonRels(rels, list) {
+    var seen = {}, out = [];
+    (rels || []).forEach(function (r) {
+      var a = canonName(r.a, list), b = canonName(r.b, list);
+      if (!a || !b || a === b) return;
+      var key = [a, b].sort().join('|') + '|' + r.l;
+      if (seen[key]) return; seen[key] = 1;
+      out.push({ a: a, b: b, l: r.l });
+    });
+    return out;
+  }
   function parseRels(text, list) {
     var out = [];
     text.split(/[；;。\n]/).forEach(function (seg) {
       seg = seg.trim(); if (!seg) return;
-      var hit = list.filter(function (c) { return seg.indexOf(c.name) >= 0; }).sort(function (a, b) { return seg.indexOf(a.name) - seg.indexOf(b.name); });
+      var hit = [];
+      list.forEach(function (c) {
+        var forms = [c.name].concat(c.aliases || []), at = -1, used = '';
+        forms.forEach(function (f) { var i = f && seg.indexOf(f); if (f && i >= 0 && (at < 0 || f.length > used.length)) { at = i; used = f; } });
+        if (at < 0) { /* 正文里只写了名字后半截：黑见茜香 → 茜香 */
+          for (var L = Math.min(3, c.name.length - 1); L >= 2 && at < 0; L--) { var tail = c.name.slice(-L), j = seg.indexOf(tail); if (j >= 0) { at = j; used = tail; } }
+        }
+        if (at >= 0) hit.push({ name: c.name, at: at, used: used });
+      });
+      hit.sort(function (a, b) { return a.at - b.at; });
       if (hit.length < 2) return;
-      var lab = seg; hit.slice(0, 2).forEach(function (c) { lab = lab.split(c.name).join(''); });
+      var lab = seg; hit.slice(0, 2).forEach(function (c) { lab = lab.split(c.used).join(''); });
       lab = lab.replace(/^[和与跟同]|是|的$|^的/g, '').replace(/[，,]/g, '').trim();
       out.push({ a: hit[0].name, b: hit[1].name, l: lab.slice(0, 10) || '相关' });
     });
     return out;
   }
+  /* 角色卡里重复的人：「茜香」其实就是「黑见茜香」 */
+  function findDups(list) {
+    var out = [];
+    list.forEach(function (x) {
+      if (x.name.length < 2) return;
+      var ys = list.filter(function (y) { return y !== x && y.name.length > x.name.length && y.name.indexOf(x.name) >= 0; });
+      if (ys.length === 1) out.push({ from: x, to: ys[0] });
+    });
+    return out;
+  }
+  function mergeDup(d) {
+    var to = D.listCards(pid(), 'character').filter(function (c) { return c.id === d.to.id; })[0]; if (!to) return;
+    var al = (to.aliases || []).slice();
+    [d.from.name].concat(d.from.aliases || []).forEach(function (n) { if (n && n !== to.name && al.indexOf(n) < 0) al.push(n); });
+    var patch = { aliases: al };
+    if (!to.body && d.from.bio) patch.body = d.from.bio;
+    D.updateCard(to.id, patch); D.removeCard(d.from.id);
+    toast('已合并：「' + d.from.name + '」记为「' + to.name + '」的简称');
+    try { renderChars(); } catch (e) {}
+    renderRel();
+  }
   function renderRel() {
-    var list = chars(), rels = my().rels || [], names = list.map(function (c) { return c.name; });
+    var all = chars(), dups = findDups(all), drop = dups.map(function (d) { return d.from.id; });
+    var list = all.filter(function (c) { return drop.indexOf(c.id) < 0; });
+    dups.forEach(function (d) { d.to.aliases = (d.to.aliases || []).concat(d.from.name); });   /* 图里先按同一人画 */
+    var dupBox = $('dfRelDup');
+    if (dupBox) {
+      dupBox.hidden = !dups.length;
+      dupBox.innerHTML = dups.map(function (d, i) { return '<div class="df-dupl"><span>「' + esc(d.from.name) + '」看起来就是「' + esc(d.to.name) + '」，图里已按同一人画。</span><button type="button" class="mini-btn" data-dup="' + i + '">合并角色卡</button></div>'; }).join('');
+      dupBox.querySelectorAll('[data-dup]').forEach(function (b) { b.addEventListener('click', function () { mergeDup(dups[+b.dataset.dup]); }); });
+    }
+    var rels = canonRels(my().rels || [], list), names = list.map(function (c) { return c.name; });
     rels.forEach(function (r) { [r.a, r.b].forEach(function (n) { if (names.indexOf(n) < 0) { names.push(n); list.push({ name: n, role: '' }); } }); });
     $('dfRelNote').textContent = hasKey() ? '用当前模型理解你的描述' : '没配 API Key：用规则识别，每句写清两个人名和关系';
     var svg = $('dfRelSvg'), W = 720, H = 440, cx = W / 2, cy = H / 2, n = list.length, R = n > 8 ? 175 : 150, pos = {};
@@ -337,16 +400,21 @@
     svg.innerHTML = h;
   }
   function genRel() {
-    var text = $('dfRelIn').value.trim(), m = my(), list = chars();
+    var text = $('dfRelIn').value.trim(), m = my(), all = chars(), dups = findDups(all), drop = dups.map(function (d) { return d.from.id; });
+    var list = all.filter(function (c) { return drop.indexOf(c.id) < 0; });
+    dups.forEach(function (d) { d.to.aliases = (d.to.aliases || []).concat(d.from.name); });
     m.relText = text; persist();
     if (!text) { $('dfRelIn').focus(); return; }
     if (!hasKey()) { m.rels = parseRels(text, list); persist(); renderRel(); if (!m.rels.length) toast('没认出关系：每句里要写到两个已有角色的名字'); return; }
     var b = $('dfRelGo'); b.disabled = true; b.textContent = '生成中…';
-    llm('你把小说作者对人物关系的描述整理成关系图数据。只输出一个 JSON 数组，不要解释：[{"a":"人物A","b":"人物B","l":"关系，不超过8个字"}]。人名尽量用已有角色的写法；描述里出现的新人物也可以加进来；每对人物只保留一条最主要的关系。',
-      '已有角色：' + (list.map(function (c) { return c.name + (c.role ? '（' + c.role + '）' : ''); }).join('、') || '无') + '\n描述：' + text)
+    llm('你把小说作者对人物关系的描述整理成关系图数据。只输出一个 JSON 数组，不要解释：[{"a":"人物A","b":"人物B","l":"关系，不超过8个字"}]。\n' +
+      '人名规则（最重要）：作者常用简称、昵称、只写名不写姓，甚至打错同音字。先判断描述里的每个称呼指的是不是某个已有角色，' +
+      '是的话 a/b 一律写成该角色的完整正式名（例：已有「黑见茜香」，描述写「茜香」→ 写黑见茜香；已有「奥空绫音」，描述写「凌音」→ 写奥空绫音）。' +
+      '只有确实对不上任何已有角色时，才当作新人物。描述里「A和B和C都是X关系」要拆成两两一条。每对人物只保留一条最主要的关系。',
+      '已有角色：' + (list.map(function (c) { return c.name + ((c.aliases || []).length ? '〔又称 ' + c.aliases.join('、') + '〕' : '') + (c.role ? '（' + c.role + '）' : ''); }).join('、') || '无') + '\n描述：' + text)
       .then(function (t) {
         var j = String(t).match(/\[[\s\S]*\]/); var arr = j ? JSON.parse(j[0]) : [];
-        m.rels = arr.filter(function (r) { return r && r.a && r.b && r.a !== r.b; }).slice(0, 30).map(function (r) { return { a: String(r.a).trim(), b: String(r.b).trim(), l: String(r.l || '相关').trim() }; });
+        m.rels = canonRels(arr.filter(function (r) { return r && r.a && r.b && r.a !== r.b; }).slice(0, 30).map(function (r) { return { a: String(r.a).trim(), b: String(r.b).trim(), l: String(r.l || '相关').trim() }; }), list);
         if (!m.rels.length) m.rels = parseRels(text, list);
         persist(); renderRel();
       })

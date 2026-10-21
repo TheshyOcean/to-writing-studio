@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Preview V2.5.3';
+var VERSION='Preview V2.5.4';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -491,6 +491,7 @@ function scanPrompt(pid){
     '3. 可能是伏笔的地方：埋下但没解释的线索、悬念、反常细节；\n'+
     '4. 伏笔回收：下面这些尚未回收的伏笔，如果在这段文字里被揭晓、解释或兑现了，就标记回收：\n'+(open||'（无）')+'\n\n'+
     '已经记录过的设定（不要重复）：'+(cards.join('、')||'无')+'\n'+
+    '注意：文中的简称、昵称、只写名不写姓（如已有「黑见茜香」，文中写「茜香」）都是已有人物，不算新人物。\n'+
     '已经记录过的伏笔（不要重复）：'+(ths.join('、')||'无')+'\n\n'+
     '只输出一个 tws 代码块，每行一条 JSON，不要任何解释：\n'+
     '```tws\n'+
@@ -522,13 +523,18 @@ function findOpen(pid,name){
     open.filter(function(t){ var n=norm(t.name); return n&&(n.indexOf(k)>=0||k.indexOf(n)>=0); })[0]||
     (window.TWS&&window.TWS.nameSim?open.filter(function(t){ return window.TWS.nameSim(t.name,k)>=0.75; })[0]:null)||null;
 }
+/* 简称 / 只写名不写姓：茜香 和已有的 黑见茜香 算同一人 */
+function partOfKnown(n,names){
+  if(n.length<2) return false;
+  return Object.keys(names).some(function(k){ return k.length>=2&&k!==n&&(k.indexOf(n)>=0||n.indexOf(k)>=0); });
+}
 function cleanOps(ops,pid){
   var d=D(), names=knownNames(pid), ths={}, seen={};
   d.listThreads(pid).forEach(function(t){ ths[norm(t.name)]=1; });
   return ops.filter(function(o){
     if(!o||['add_lore','add_event','add_thread','resolve_thread'].indexOf(o.op)<0) return false;
     if(o.op==='resolve_thread'){ var th=findOpen(pid,o.name); if(!th||seen['r'+th.id]) return false; seen['r'+th.id]=1; o.id=th.id; o.name=th.name; return true; }
-    if(o.op==='add_lore'){ var n=norm(o.name); if(!n||names[n]||seen[n]) return false; seen[n]=1; if(!KIND[o.kind]) o.kind='character'; }
+    if(o.op==='add_lore'){ var n=norm(o.name); if(!n||names[n]||seen[n]||partOfKnown(n,names)) return false; seen[n]=1; if(!KIND[o.kind]) o.kind='character'; }
     if(o.op==='add_thread'){ var t=norm(o.name); if(!t||ths[t]||seen['t'+t]) return false; seen['t'+t]=1; }
     if(o.op==='add_event'&&!o.what) return false;
     return true;
