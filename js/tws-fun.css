@@ -341,3 +341,9 @@ button.pz-role:hover{border-color:var(--zhu);transform:translateY(-2px)}
 /* 弹窗主按钮：同样被通用规则清掉了底色，补回来 */
 :root[data-shell] .fn-btn.on{background:var(--ac)!important;border-color:transparent!important;color:var(--onac,#fff)!important}
 :root[data-shell] .fn-btn.on:disabled{opacity:.4}
+
+/* 修正：通用规则 button:active{transform:scale(.96)!important} 会把牌的扇形位置整个替换掉，
+   按下时牌滑出光标，click 不成立——只有不动的中间那张能点。这里保住牌自己的 transform。 */
+:root[data-shell] .tr-stage .tr-card.tr-card,:root[data-shell] .tr-stage .tr-card.tr-card:not(:disabled):active{
+  transform:translate(var(--x,0),var(--y,0)) rotate(var(--a,0deg)) translateY(var(--l,0px)) scale(var(--s,1))!important}
+:root[data-shell] .tr-stage[data-phase="fan"] .tr-card.tr-card:not(:disabled):active{--l:-14px}
