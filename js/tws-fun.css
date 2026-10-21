@@ -244,3 +244,4 @@ button.pz-role:hover{border-color:var(--zhu);transform:translateY(-2px)}
 #pzStage .pz-pick{display:inline-flex!important;flex-direction:row!important;align-items:center!important}
 #pzStage .pz-role{display:flex!important;flex-direction:column!important;align-items:flex-start!important}
 #pzStage [hidden]{display:none!important}
+#pzStage .pr-out .seg button,#pzStage .fn-btn{white-space:nowrap!important;flex:none!important;width:auto!important}
