@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Preview V2.6.2';
+var VERSION='Beta V3.0.0';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -302,7 +302,7 @@ function refreshMargin(st){
   var ts=d.listThreads(st.pid).slice().sort(function(a,b){ return (a.status==='done')-(b.status==='done'); }).slice(0,4);
   th.innerHTML=ts.length?ts.map(function(t){ var done=t.status==='done'; return '<div class="st-thr'+(done?' done':'')+'"><i></i><span class="t">'+esc(t.name)+'</span><em>'+(done?'已回收':'待回收')+'</em></div>'; }).join(''):'<span class="st-empty">还没有记下伏笔。</span>';
   var ps=d.listCards(st.pid,'character').slice(0,8);
-  pp.innerHTML=ps.length?ps.map(function(c){ return '<span>'+esc(c.name)+'</span>'; }).join(''):'<span class="st-empty">设定库里还没有人物。</span>';
+  pp.innerHTML=ps.length?(window.TWS&&window.TWS.fun?window.TWS.fun.peopleHtml(ps):ps.map(function(c){ return '<span>'+esc(c.name)+'</span>'; }).join('')):'<span class="st-empty">设定库里还没有人物。</span>';
 }
 
 /* ============================================================
@@ -619,7 +619,17 @@ function snapshotLoad(){
    刷新与启动
    ============================================================ */
 var rq=0;
-function refreshAll(){ if(rq) return; rq=requestAnimationFrame(function(){ rq=0; var st=refreshHead(); decorateChat(); refreshMargin(st); paintModel(); paintScans(); maybeScan(); }); }
+function refreshAll(){ if(rq) return; rq=requestAnimationFrame(function(){ rq=0; var st=refreshHead(); decorateChat(); refreshMargin(st); paintModel(); paintScans(); maybeScan(); funTick(); }); }
+/* 趣味玩法：挂入口、AI 写完一段后让读者发弹幕（tws-fun.js） */
+function funTick(){
+  var F=window.TWS&&window.TWS.fun; if(!F) return;
+  try{ F.tick(); }catch(e){}
+  var c=curConv(); if(!c||!c.msgs||!c.msgs.length||S.gen) return;
+  var i=c.msgs.length-1, m=c.msgs[i];
+  if(!m||m.r!=='ai'||m.stream||!m.c) return;
+  if(loadKeys&&loadKeys[c.id+':'+i]===m.c) return;
+  F.onReply(m.c,c.id+':'+i+':'+m.c.length);
+}
 function boot(){
   if(!buildRail()){ if((boot.n=(boot.n||0)+1)<40){ setTimeout(boot,50); } return; }
   snapshotLoad();
