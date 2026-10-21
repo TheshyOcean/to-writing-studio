@@ -36,8 +36,12 @@
     stage.appendChild(el);
     $('pzClose').addEventListener('click', close);
     el.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !e.target.closest('textarea,input')) close(); });
-    $('pzOpts').addEventListener('click', function (e) { var b = e.target.closest('button[data-o]'); if (b) act(b.textContent); });
-    $('pzSend').addEventListener('click', function () { var v = $('pzIn').value.trim(); if (!v) return; $('pzIn').value = ''; act(v); });
+    $('pzOpts').addEventListener('click', function (e) { var b = e.target.closest('button[data-o]'); if (!b) return; if (busy) { F.toast('旁白还在落笔，稍等一下'); return; } act(b.textContent); });
+    $('pzSend').addEventListener('click', function () {
+      var v = $('pzIn').value.trim(); if (!v) return;
+      if (busy) { F.toast('旁白还在落笔，稍等一下'); return; }   /* 不清空输入，免得这句话丢了 */
+      $('pzIn').value = ''; act(v);
+    });
     $('pzIn').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('pzSend').click(); } });
     $('pzDice').addEventListener('click', function () { if (!st) return; st.dice = st.dice ? 0 : 1 + Math.floor(Math.random() * 20); this.classList.toggle('on', !!st.dice); this.textContent = st.dice ? '🎲 ' + st.dice : '🎲'; });
     $('pzSave').addEventListener('click', function () { if (!st) return; st.save = { at: st.log.length, msgs: st.msgs.length, opts: st.opts.slice() }; sys('已存档'); $('pzLoad').hidden = false; });
@@ -97,7 +101,7 @@
       '只输出 JSON：{"n":"这一轮的叙述","o":["可选行动1","可选行动2","可选行动3"]}（选项是玩家角色可能做的事，每个不超过 14 个字）';
   }
   function narrate() {
-    busy = true; var w = typing();
+    busy = true; var w = typing(); var sb = $('pzSend'); if (sb) sb.disabled = true;
     return F.llm([{ role: 'system', content: sysPrompt() }].concat(st.msgs.slice(-24)), { temperature: 0.95, max_tokens: 600 })
       .then(function (txt) {
         var j = F.json(txt) || { n: String(txt || '').trim(), o: [] };
@@ -106,7 +110,7 @@
         opts((j.o || []).slice(0, 4));
       }).catch(function (e) {
         w.remove(); st.msgs.pop(); sys(e.message === 'NO_KEY' ? '先在「系统配置」填 API Key' : '旁白没接上：' + e.message + '，再试一次');
-      }).then(function () { busy = false; });
+      }).then(function () { busy = false; var sb = $('pzSend'); if (sb) sb.disabled = false; });
   }
   function start(name, isNew, newWho) {
     if (!F.store) return;
