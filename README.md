@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.0.0
+# To Writing Studio 写作工作台 · Beta V3.1.0
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -18,6 +18,9 @@
 ## 版本
 
 > 目前所有版本都是 **Beta（测试版）**，还没有正式发版；以前标过的 V / Preview 版本号也一律算作 Beta。
+
+**Beta V3.1.0 · 2026-10-21**（电脑版）：入戏模式改为「旁白 / 角色 / 你」三方分离。① 你对谁说话，谁就用自己的独立对话回你：每个角色有自己的记忆，只知道自己在场时看到、听到的事；点下方「在场」头像或用 @名字 选择对象。② 角色的动作由模型单独输出，显示成居中的灰色提示条（像 QQ 群提示），台词放在气泡里。③ 旁白单独一层，只在你需要时推进：「✦ AI 写旁白」「✎ 我来写旁白」（可直接用，或只写一句方向让 AI 扩写），另有「自动旁白」开关（默认关）。旁白写到有人进场 / 离场，「在场」名单自动更新。④ 输入框新增（）按钮，方便写自己的动作；「戏外」改为独立按钮，戏外的话不进书稿、角色也听不见。⑤ 提纯：对白一字不改保留原话，动作改为叙述，旁白润色成第三人称。⑥ 旁白落笔时发送不再吞掉输入。
+改动文件：`js/tws-persona.js`（重写）、`js/tws-fun.css`、`studio.js`、`desktop.html`。
 
 **Beta V3.0.0 · 2026-10-21**（电脑版）：① **故事大脑**：AI 每写完一段、或保存章节后，一次分析同时更新人物、简称别名、关系图、伏笔（含回收）和时间线；低风险直接写入并可撤销，拿不准的称呼只问一次；系统配置里可选全自动 / 半自动 / 每条都问 / 关闭。② **入戏模式**（顶栏「🎭 入戏」）：选一个角色进入自己的小说，AI 负责旁白和其他人物；支持选项 / 自由行动、括号戏外、存档读档、掷骰判定。③ **提纯**：入戏结束后逐条判断留 / 丢并写明理由，改写成第三人称正文，戏中即兴的设定标为待确认；由你选择进本章草稿、存为备用素材或只更新设定——入戏内容不会直接进书稿。④ **读者弹幕**：写完一段，虚拟读者发弹幕、追更数上涨（右侧「读者」卡可关）。⑤ **命运骰子**（顶栏「🎲」）：通用卡 + 本书专属卡，分普通 / 稀有 / 金卡，抽到写进下一段。⑥ **角色访谈**：点右侧出场人物，用角色口吻对话，好回答可写进人设。⑦ 界面改为暖纸色 + 朱砂点缀 + 纸纹，紫色只做强调。⑧ 关系图认简称（茜香 = 黑见茜香）、重复角色卡可一键合并；伏笔回收可被自动识别。
 改动文件：新增 `js/tws-brain.js`、`js/tws-fun.js`、`js/tws-persona.js`、`js/tws-fun.css`；`studio.js`、`studio.css`、`js/tws-define.js`、`js/tws-views.js`、`js/tws-features.js`、`desktop.html`。

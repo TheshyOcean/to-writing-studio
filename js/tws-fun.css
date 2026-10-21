@@ -200,3 +200,42 @@ button.pz-role:hover{border-color:var(--zhu);transform:translateY(-2px)}
 .pr-done b{font-size:22px;font-weight:500;letter-spacing:.1em;color:var(--fg)}
 .pr-done span{font-size:14px;color:var(--mut)}
 .pr-f{display:flex;gap:8px;margin-top:8px}
+
+/* ---------- 入戏 V2：旁白 / 角色 / 你 三方分离（Beta V3.1.0） ---------- */
+.pz-n.mine{border-left:2px solid var(--zhu);padding-left:14px}
+.pz-by{display:block;font-size:11.5px;color:var(--zhu);letter-spacing:.04em}
+.pz-to{display:block;font-size:11px;color:var(--mut);margin-bottom:1px}
+.pz-act{font-style:normal;color:var(--mut)}
+.pz-cg{display:flex;flex-direction:column;gap:8px;align-self:stretch}
+.pz-c{align-self:flex-start;max-width:82%;display:flex;gap:10px;align-items:flex-start;animation:pzin .5s var(--ez) both}
+.pz-cpor{flex:none;width:34px;height:34px;border-radius:17px;overflow:hidden;box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--hue)}
+.pz-cpor svg{width:100%;height:100%;display:block}
+.pz-cb{display:flex;flex-direction:column;gap:2px;padding:9px 15px;border-radius:6px 18px 18px 18px;background:var(--card);border:1px solid var(--line);border-left:3px solid var(--hue)}
+.pz-cn{font-family:var(--zh);font-size:11.5px;color:var(--hue);letter-spacing:.06em}
+.pz-ct{font-family:var(--zh);font-size:15px;line-height:1.85;color:var(--fg);min-height:1.2em;white-space:pre-wrap}
+.pz-pill{align-self:center;max-width:86%;text-align:center;font-family:var(--zh);font-size:12.5px;line-height:1.6;color:var(--mut);background:var(--track);padding:4px 14px;border-radius:13px;animation:pzin .5s var(--ez) both}
+.pz-pill b{font-weight:500;color:var(--hue)}
+.pz-wait .pz-cb{min-width:70px}
+.pz-log .gone{opacity:.35}
+.pz-cast{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pz-castl{font-family:var(--zh);font-size:12px;color:var(--mut);margin-right:2px}
+.pz-pick{height:32px;padding:0 12px 0 4px;border-radius:16px;border:1px solid var(--line2);background:var(--card);font-family:var(--zh);font-size:13px;color:var(--fg2);display:inline-flex;align-items:center;gap:6px;cursor:pointer;transition:border-color .3s,background .3s,color .3s}
+.pz-pick[data-t=""]{padding:0 12px}
+.pz-pick:hover{border-color:var(--hue,var(--ac))}
+.pz-pick.on{border-color:var(--hue,var(--ac));background:color-mix(in srgb,var(--hue,var(--ac)) 14%,var(--card));color:var(--fg)}
+.pz-mini{width:24px;height:24px;border-radius:12px;overflow:hidden;flex:none;display:inline-block}
+.pz-mini svg{width:100%;height:100%;display:block}
+.pz-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pz-sw{display:flex;align-items:center;gap:6px;font-family:var(--zh);font-size:12.5px;color:var(--mut);cursor:pointer}
+.pz-mine{display:flex;gap:8px;align-items:center;padding:10px 12px;border-radius:14px;border:1px dashed var(--zhu);background:var(--zhu-soft)}
+.pz-mine[hidden]{display:none}
+.pz-mine .fn-fld{flex:1}
+.pz-sq{height:40px;min-width:40px;padding:0 12px;border-radius:14px;border:1px solid var(--line2);background:var(--card);font-family:var(--zh);font-size:14px;color:var(--fg2);cursor:pointer;white-space:nowrap;transition:all .3s}
+.pz-sq:hover{border-color:var(--ac);color:var(--ink)}
+.pz-sq.on{background:var(--mut);border-color:transparent;color:var(--paper)}
+#pzDice.on{background:var(--zhu);color:#fff}
+.pz-sq.go{background:var(--ac);border-color:transparent;color:var(--onac,#fff)}
+.pz-sq:disabled,.fn-btn:disabled{opacity:.45;cursor:default}
+.pz-row textarea{max-height:120px}
+.pr-item .kind{flex:none;font-size:11px;padding:1px 7px;border-radius:9px;white-space:nowrap;background:var(--track);color:var(--mut)}
+.pr-item .kind.k-u,.pr-item .kind.k-c{background:var(--soft);color:var(--ink)}
