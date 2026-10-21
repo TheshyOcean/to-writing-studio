@@ -1449,6 +1449,8 @@
   T.snapConv = snapConv;
   T.bookState = bookState;
   T.runOps = runOps;
+  T.refreshViews = function () { try { renderTree(); renderLore(); renderThreads(); renderGoalChip(); } catch (e) {} };
+  T.currentChapter = function () { return ui.chapterId || D.D.activeChapter || ''; };
 
   /* ============================================================
      挂载

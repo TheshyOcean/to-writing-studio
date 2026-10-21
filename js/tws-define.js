@@ -637,7 +637,29 @@
     loadImgs().then(function () { if ($('v-def').classList.contains('active')) renderTab(); });
   }
 
-  T.define = { show: function () { window.showView('v-def'); } };
+  T.define = {
+    show: function () { window.showView('v-def'); },
+    /* 故事大脑写关系用：返回 true 表示真的加上了 */
+    rels: function () { return (my().rels || []).slice(); },
+    addRel: function (a, b, l) {
+      var m = my(); m.rels = m.rels || [];
+      var list = chars(); a = canonName(a, list); b = canonName(b, list);
+      if (!a || !b || a === b) return false;
+      var same = m.rels.filter(function (r) { return (r.a === a && r.b === b) || (r.a === b && r.b === a); })[0];
+      if (same && same.l === l) return false;
+      if (same) same.l = l; else m.rels.push({ a: a, b: b, l: l || '相关' });
+      persist(); if ($('v-def') && $('v-def').classList.contains('active')) renderRel();
+      return { a: a, b: b, prev: same ? same.l : null };
+    },
+    removeRel: function (a, b, prevLabel) {
+      var m = my(); m.rels = (m.rels || []).filter(function (r) {
+        var hit = (r.a === a && r.b === b) || (r.a === b && r.b === a);
+        if (hit && prevLabel) { r.l = prevLabel; return true; }
+        return !hit;
+      });
+      persist(); if ($('v-def') && $('v-def').classList.contains('active')) renderRel();
+    }
+  };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
   else mount();
 })();

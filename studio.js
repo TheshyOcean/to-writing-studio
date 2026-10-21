@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Preview V2.5.4';
+var VERSION='Preview V2.6.0';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -446,7 +446,7 @@ function buildCfg(){
   var sec=document.createElement('div'); sec.className='cfg-sec';
   sec.innerHTML='<div class="cfg-label"><span class="sq"></span>夜读配色 <span class="lat" style="margin-left:6px;color:var(--mut)">Nox</span></div>'+
     '<div class="st-nseg" id="stNight">'+NIGHTS.map(function(n){ return '<button type="button" data-n="'+n[0]+'"><i style="background:linear-gradient(135deg,'+n[3]+' 55%,'+n[4]+' 55%)"></i>'+n[1]+' <small>'+n[2]+'</small></button>'; }).join('')+'</div>'+
-    '<div class="st-luxrow"><div class="k"><b>自动识别 <span class="lat" style="font-size:15px;color:var(--mut)">Inventio</span></b><span>AI 每写完一段，自动找出新人物 / 地点 / 名词、时间线事件和可能的伏笔，勾选后一键写入。每次会额外用少量 Token。</span></div><button type="button" class="mini-btn" id="stAutoCfg">'+(autoLore?'关闭':'开启')+'</button></div>'+
+    (window.TWS&&window.TWS.brain?window.TWS.brain.cfgHtml():'<div class="st-luxrow"><div class="k"><b>自动识别 <span class="lat" style="font-size:15px;color:var(--mut)">Inventio</span></b><span>AI 每写完一段，自动找出新人物 / 地点 / 名词、时间线事件和可能的伏笔，勾选后一键写入。每次会额外用少量 Token。</span></div><button type="button" class="mini-btn" id="stAutoCfg">'+(autoLore?'关闭':'开启')+'</button></div>')+
     '<div class="st-luxrow"><div class="k"><b>灵光模式 <span class="lat" style="font-size:15px;color:var(--mut)">Lux</span></b><span>换用深度思考模型 · 单次输出更长 · 带上全部设定、伏笔与更多前文。会明显多用 Token。</span></div><button type="button" class="mini-btn" id="stLuxCfg">'+(lux?'关闭':'开启')+'</button></div>';
   body.insertBefore(sec,body.firstChild);
   sec.querySelectorAll('#stNight button').forEach(function(b){ b.addEventListener('click',function(){
@@ -454,7 +454,8 @@ function buildCfg(){
     if(root.dataset.theme!=='dark'){ var d=document.querySelector('#themeSeg button[data-t="dark"]'); if(d) d.click(); }
   }); });
   $('stLuxCfg').addEventListener('click',function(){ setLux(!lux,this); });
-  $('stAutoCfg').addEventListener('click',function(){ autoLore=!autoLore; store('tws_autolore',autoLore?'1':'0'); this.textContent=autoLore?'关闭':'开启'; toastMsg(autoLore?'已开启自动识别':'已关闭自动识别'); });
+  if(window.TWS&&window.TWS.brain) window.TWS.brain.bindCfg(sec);
+  if($('stAutoCfg')) $('stAutoCfg').addEventListener('click',function(){ autoLore=!autoLore; store('tws_autolore',autoLore?'1':'0'); this.textContent=autoLore?'关闭':'开启'; toastMsg(autoLore?'已开启自动识别':'已关闭自动识别'); });
   applyNight(store('tws_night')||'ink');
 }
 function eyebrows(){
@@ -541,7 +542,7 @@ function cleanOps(ops,pid){
   }).slice(0,6);
 }
 function maybeScan(){
-  if(!autoLore||scanning||!S.apiKey||S.gen) return;
+  if((window.TWS&&window.TWS.brain?window.TWS.brain.mode()==='off':!autoLore)||scanning||!S.apiKey||S.gen) return;
   var d=D(); if(!d) return;
   var pid=d.D.activeProject; if(!pid) return;
   var c=curConv(); if(!c||!c.msgs.length) return;
@@ -550,6 +551,15 @@ function maybeScan(){
   if(loadKeys&&loadKeys[c.id+':'+i]===m.c) return;      /* 打开页面前就有的旧回复不扫 */
   if(m.c.replace(/\s/g,'').length<120) return;
   if(/```tws/.test(m.c)) return;                          /* AI 自己已经提议整理了 */
+  if(window.TWS.brain){                                   /* 故事大脑：一次分析，直接写入 + 可撤销 */
+    if(window.TWS.brain.mode()==='off') return;
+    scanning=true; m.lx={st:'scan'}; paintScans(); window.TWS.brain.remember(m.c);
+    window.TWS.brain.run(m.c,{source:'reply'}).then(function(res){
+      m.lx=(res&&!window.TWS.brain.isEmpty(res))?{st:'brain',res:res}:{st:'none'};
+      if(res&&res.err) m.lx.err=res.err;
+    }).then(function(){ scanning=false; try{ api.save(); }catch(e){} paintScans(); refreshAll(); });
+    return;
+  }
   scanning=true; m.lx={st:'scan'}; paintScans();
   scanRequest(m.c,pid).then(function(txt){
     var ops=cleanOps((window.TWS.ops.parse(txt).ops)||[],pid);
@@ -574,7 +584,13 @@ function paintScans(){
     if(box&&box.dataset.key===key) return;
     if(!box){ box=document.createElement('div'); box.className='st-scan'; bub.appendChild(box); }
     box.dataset.key=key;
-    if(lx.st==='scan'){ box.innerHTML='<div class="st-scan-h busy">✦ 正在识别人物、事件与伏笔回收 <span class="lat">Inventio</span></div>'; return; }
+    if(lx.st==='scan'){ box.innerHTML='<div class="st-scan-h busy">✦ 故事大脑正在读这一段 <span class="lat">Cerebrum</span></div>'; return; }
+    if(lx.st==='brain'){
+      if(box.dataset.key==='brain') return;
+      box.dataset.key='brain'; box.classList.add('br-in');
+      window.TWS.brain.renderBox(box,lx.res,function(){ try{ api.save(); }catch(err){} refreshAll(); });
+      return;
+    }
     if(lx.st==='done'){ box.innerHTML='<div class="st-scan-h ok">✦ 已写入：'+esc(lx.summary||'')+'</div>'; return; }
     box.innerHTML='<div class="st-scan-h">✦ 发现 '+lx.ops.length+' 条可以归档的内容 <span class="lat">Inventio</span></div>'+
       '<div class="st-scan-b">'+lx.ops.map(opLine).join('')+'</div>'+

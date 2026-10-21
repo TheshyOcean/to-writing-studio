@@ -499,3 +499,38 @@ body:not(.is-loading) .st-margin{animation:inU .9s var(--ez) .14s both}
 :root[data-shell] .st-osw button:hover:not(:disabled){color:var(--fg2)!important}
 :root[data-shell] .st-osw button.on{color:var(--ink)!important;background:var(--soft)!important}
 :root[data-shell] .st-osw button:disabled{opacity:.45;cursor:default}
+
+/* ---------- 故事大脑 Cerebrum ---------- */
+.st-scan.br-in{display:flex;flex-direction:column;gap:9px}
+.st-scan.br-in[hidden],.br-card [hidden]{display:none}
+.br-h{display:flex;align-items:center;gap:10px;font-family:var(--zh,serif);font-size:13px;color:var(--ink,#4c42c4)}
+.br-h>span{flex:1}
+.br-h .lat{font-family:var(--disp,serif);font-style:italic;opacity:.75}
+.br-h.undone{color:var(--mut,#7a7495)}
+.br-tags{display:flex;flex-wrap:wrap;gap:6px}
+.br-tags span{height:24px;padding:0 10px;border-radius:12px;background:var(--soft,#eceafc);color:var(--fg2,#4a4563);font-family:var(--zh,serif);font-size:12px;display:inline-flex;align-items:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.br-ask{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 12px;border-radius:12px;border:1px dashed var(--line2,#d6d2e7);font-family:var(--zh,serif);font-size:13px;color:var(--fg,#1f1b33)}
+.br-ask>span{flex:1;min-width:150px}
+.br-list{display:flex;flex-direction:column;gap:6px;font-family:var(--zh,serif);font-size:13px;color:var(--fg2,#4a4563)}
+.br-list label{display:flex;align-items:center;gap:8px;cursor:pointer}
+.br-f{display:flex;gap:6px}
+.br-btn{height:28px;padding:0 12px;border-radius:14px;font-family:var(--zh,serif);font-size:12.5px;color:var(--mut,#7a7495);border:1px solid var(--line2,#d6d2e7);background:transparent;cursor:pointer;transition:background .3s,color .3s,border-color .3s}
+.br-btn:hover{border-color:var(--ac,#6f63e6);color:var(--ink,#4c42c4)}
+.br-btn.on{background:var(--ac,#6f63e6);border-color:transparent;color:var(--onac,#fff)}
+.br-btn.on:hover{filter:brightness(1.06);color:var(--onac,#fff)}
+.br-dock{position:fixed;right:20px;bottom:20px;z-index:60;width:min(360px,calc(100vw - 32px));display:flex;flex-direction:column;gap:10px;pointer-events:none;opacity:0;transform:translateY(8px);transition:opacity .4s,transform .5s cubic-bezier(.22,1,.36,1)}
+.br-dock.on{opacity:1;transform:none}
+.br-card{pointer-events:auto;position:relative;border-radius:18px;background:var(--card,#fff);box-shadow:var(--shadow-lg,0 20px 50px -24px rgba(40,30,110,.4));border:1px solid var(--line,#e6e3f1);padding:14px 16px;display:flex;flex-direction:column;gap:9px}
+.br-card>div:last-child{display:flex;flex-direction:column;gap:9px}
+.br-busy{font-family:var(--zh,serif);font-size:13px;color:var(--ink,#4c42c4)}
+.br-busy .lat{font-family:var(--disp,serif);font-style:italic;opacity:.75}
+.br-src{font-family:var(--zh,serif);font-size:12px;color:var(--mut,#7a7495);padding-right:22px}
+.br-x{position:absolute;top:8px;right:10px;width:24px;height:24px;border-radius:12px;color:var(--mut,#7a7495);font-size:16px;line-height:1;background:none;border:0;cursor:pointer}
+.br-x:hover{background:var(--soft,#eceafc)}
+.br-cfg .k{display:flex;flex-direction:column;gap:8px}
+.br-seg{display:flex;flex-wrap:wrap;gap:6px}
+.br-seg button{height:30px;padding:0 13px;border-radius:15px;border:1px solid var(--line2,#d6d2e7);font-family:var(--zh,serif);font-size:12.5px;color:var(--fg2,#4a4563);transition:all .35s}
+.br-seg button:hover{border-color:var(--ac,#6f63e6)}
+.br-seg button.on{background:var(--soft,#eceafc);border-color:var(--ac,#6f63e6);color:var(--ink,#4c42c4)}
+.br-desc{font-size:12.5px;color:var(--mut,#7a7495)}
+@media (prefers-reduced-motion:reduce){.br-dock{transition:none}}
