@@ -245,3 +245,7 @@ button.pz-role:hover{border-color:var(--zhu);transform:translateY(-2px)}
 #pzStage .pz-role{display:flex!important;flex-direction:column!important;align-items:flex-start!important}
 #pzStage [hidden]{display:none!important}
 #pzStage .pr-out .seg button,#pzStage .fn-btn{white-space:nowrap!important;flex:none!important;width:auto!important}
+
+/* 通用按钮规则会把背景清成透明，导致「入戏」按钮只剩纸色文字、昼夜都看不见；这里把墨色底补回来 */
+:root[data-shell] .fn-headbtn.ink{background:var(--fg)!important;color:var(--paper)!important;border:1px solid var(--fg)!important}
+:root[data-shell] .fn-headbtn.ink:hover{opacity:.85}
