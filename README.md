@@ -1,5 +1,13 @@
 # To Writing Studio 写作工作台 · V2.5.2
 
+> **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
+> Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
+> Bring your own API key (e.g. DeepSeek); it stays in your browser's localStorage and is never uploaded.
+>
+> **Features:** projects → volumes → chapters · AI chat per chapter with "adopt into chapter" · character / world-setting library · relationship & plot graphs · foreshadowing and timeline tracking · consistency checks · version history · export to .docx / .txt · daily word goals.
+>
+> This is my first project — feedback, issues and pull requests are very welcome! The UI is currently in Chinese.
+
 **纯静态版本** —— 不需要 Node、不需要服务器。双击 `index.html` 就能用。
 
 > 与 `beta2.0.04` 的区别：移除账号系统与协作室（入口保留，点击提示"暂未上线"），
@@ -155,10 +163,10 @@ chromium.launch({ channel: 'msedge' })   // 独立调试端口，不会被转发
 
 * * *
 
-## 欢迎指点
+## 欢迎指点 · Feedback welcome
 
 这是我的第一个项目，还有很多不成熟的地方。不管是代码写法、界面设计，还是功能上的想法，都非常欢迎来 [Issues](https://github.com/TheshyOcean/to-writing-studio/issues) 留言指点，也欢迎直接提 Pull Request 🙏
 
-## 许可证
+## 许可证 · License
 
 [MIT](LICENSE)。`fonts/` 中的字体另行遵循 SIL Open Font License 1.1。
