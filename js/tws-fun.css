@@ -98,11 +98,11 @@ textarea.fn-fld{height:auto;min-height:38px;padding:8px 12px;resize:none;line-he
 .pz-x{width:32px;height:32px;border-radius:16px;font-size:20px;color:var(--mut);background:none;border:0;cursor:pointer}
 .pz-x:hover{background:var(--soft)}
 .pz-body{flex:1;min-height:0;overflow:auto}
-.pz-pick{max-width:680px;margin:0 auto;padding:44px 28px 60px;display:flex;flex-direction:column;gap:16px}
+.pz-start{max-width:680px;margin:0 auto;padding:44px 28px 60px;display:flex;flex-direction:column;gap:16px}
 .pz-eye{font-family:var(--zh);font-size:12px;letter-spacing:.38em;color:var(--zhu)}
 .pz-eye .lat{font-family:var(--disp);font-style:italic;letter-spacing:.06em;font-size:15px;color:var(--mut)}
-.pz-pick h2,.pr-top h2{margin:0;font-family:var(--zh);font-size:30px;font-weight:500;letter-spacing:.18em;color:var(--fg)}
-.pz-pick p{margin:0;font-family:var(--zh);font-size:14px;line-height:1.9;color:var(--fg2)}
+.pz-start h2,.pr-top h2{margin:0;font-family:var(--zh);font-size:30px;font-weight:500;letter-spacing:.18em;color:var(--fg)}
+.pz-start p{margin:0;font-family:var(--zh);font-size:14px;line-height:1.9;color:var(--fg2)}
 .pz-l{font-family:var(--zh);font-size:12.5px;color:var(--mut)}
 .pz-note{font-size:13px!important;color:var(--mut)!important}
 .pz-roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
@@ -220,8 +220,12 @@ button.pz-role:hover{border-color:var(--zhu);transform:translateY(-2px)}
 .pr-item .kind.k-u,.pr-item .kind.k-c{background:var(--soft);color:var(--ink)}
 /* 正式版里有通用按钮样式（自动外边距、竖排），入戏里统一复位 */
 #pzStage button{margin:0!important}
-#pzStage .pz-pick{display:inline-flex!important;flex-direction:row!important;align-items:center!important}
+#pzStage button.pz-pick{display:inline-flex!important;flex-direction:row!important;align-items:center!important}
 #pzStage .pz-role{display:flex!important;flex-direction:column!important;align-items:flex-start!important}
+/* 选角卡是 button，会被通用按钮规则改成胶囊形；还原成圆角卡片 */
+#pzStage .pz-role{border-radius:18px!important;width:auto!important;height:auto!important;min-height:0!important;padding:14px!important;text-align:left!important;justify-content:flex-start!important;white-space:normal!important;background:var(--card)!important;border:1px solid var(--line)!important;box-shadow:none!important}
+#pzStage button.pz-role:hover{border-color:var(--zhu)!important}
+#pzStage .pz-new{border-style:dashed!important}
 #pzStage [hidden]{display:none!important}
 #pzStage .pr-out .seg button,#pzStage .fn-btn{white-space:nowrap!important;flex:none!important;width:auto!important}
 
@@ -347,3 +351,7 @@ button.pz-role:hover{border-color:var(--zhu);transform:translateY(-2px)}
 :root[data-shell] .tr-stage .tr-card.tr-card,:root[data-shell] .tr-stage .tr-card.tr-card:not(:disabled):active{
   transform:translate(var(--x,0),var(--y,0)) rotate(var(--a,0deg)) translateY(var(--l,0px)) scale(var(--s,1))!important}
 :root[data-shell] .tr-stage[data-phase="fan"] .tr-card.tr-card:not(:disabled):active{--l:-14px}
+
+/* 入戏底栏：发送键（.pz-sq.go）与开着的骰子键同样被通用规则清掉了底色 */
+:root[data-shell] #pzStage .pz-sq.go{background:var(--ac)!important;border-color:transparent!important;color:var(--onac,#fff)!important}
+:root[data-shell] #pzStage #pzDice.on{background:var(--zhu)!important;color:#fff!important}

@@ -94,7 +94,7 @@
   function spare() { var m = F.store.my(); return m.spare || (m.spare = []); }
   function pick() {
     var cs = D.listCards(pid(), 'character');
-    body().innerHTML = '<div class="pz-pick"><div class="pz-eye">入戏 <span class="lat">Persona</span></div><h2>这一场，你是谁？</h2>' +
+    body().innerHTML = '<div class="pz-start"><div class="pz-eye">入戏 <span class="lat">Persona</span></div><h2>这一场，你是谁？</h2>' +
       '<p>选一个角色进入《' + esc(F.bookName()) + '》。你对谁说话，谁就用自己的口吻回你；旁白只在你需要时推进。演完点「结束并提纯」，挑出精华再决定写到哪里——入戏的内容不会直接进书稿。</p>' +
       '<label class="pz-l" for="pzScene">这一场从哪里开始（可不填，默认接着当前章节）</label><input class="fn-fld" id="pzScene" placeholder="例如：深夜，灯塔顶层，雨很大" autocomplete="off">' +
       '<div class="pz-roles">' + cs.map(function (c) {
