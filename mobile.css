@@ -1,0 +1,287 @@
+/* ==========================================================================
+   To写作工作台 · 手机版外壳（mobile.css）
+   最后加载，只改布局，不动皮肤：配色、字体、灵光模式全部沿用 studio.css。
+   选择器统一以 html:root[data-device="phone"][data-shell] 开头，
+   稳压电脑版的 :root[data-shell="desktop"] 布局规则。
+   ========================================================================== */
+
+html:root[data-device="phone"][data-shell]{
+  --m-tab:60px;
+  --m-sb:env(safe-area-inset-bottom,0px);
+  --m-st:env(safe-area-inset-top,0px);
+  --m-pad:18px;
+  -webkit-text-size-adjust:100%;
+  -webkit-tap-highlight-color:transparent;
+}
+html:root[data-device="phone"][data-shell],
+html:root[data-device="phone"][data-shell] body{
+  height:var(--m-vh,100dvh)!important;overflow:hidden!important;overscroll-behavior:none;
+}
+
+/* ---------- 1. 骨架：整屏只留一张手稿纸 ---------- */
+html:root[data-device="phone"][data-shell] .app{
+  grid-template-rows:minmax(0,1fr)!important;height:100%!important;
+  padding:0!important;
+}
+html:root[data-device="phone"][data-shell] .app>.topbar,
+html:root[data-device="phone"][data-shell] .app>.statusbar,
+html:root[data-device="phone"][data-shell] .frame{display:none!important}
+html:root[data-device="phone"][data-shell] .viewport{
+  display:block!important;grid-template-columns:none!important;height:100%!important;position:relative;
+}
+html:root[data-device="phone"][data-shell] .stage{
+  position:absolute!important;left:0;right:0;top:0;
+  bottom:calc(var(--m-tab) + var(--m-sb));
+  margin:0!important;border-radius:0!important;box-shadow:none!important;
+  padding-top:var(--m-st);
+  transform:none!important;
+  transition:bottom .32s var(--ez);
+}
+html:root[data-device="phone"][data-shell].m-typing .stage,
+html:root[data-device="phone"][data-shell].m-kb .stage{bottom:0}
+
+/* ---------- 2. 底部标签栏 ---------- */
+html:root[data-device="phone"][data-shell] .m-tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  height:calc(var(--m-tab) + var(--m-sb));
+  padding:0 6px var(--m-sb);
+  display:grid;grid-template-columns:repeat(5,1fr);
+  background:color-mix(in srgb,var(--paper) 86%,transparent);
+  -webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2);
+  border-top:1px solid var(--line);
+  transition:transform .32s var(--ez),opacity .2s;
+}
+html:root[data-device="phone"][data-shell].m-typing .m-tabbar,
+html:root[data-device="phone"][data-shell].m-kb .m-tabbar{transform:translateY(110%);opacity:0;pointer-events:none}
+html:root[data-device="phone"][data-shell] .m-tabbar button{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  min-width:0;height:var(--m-tab);padding:0;
+  color:var(--mut)!important;font-family:var(--zh)!important;font-size:11.5px!important;letter-spacing:.12em!important;
+  background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+  transition:color .3s var(--ez);
+}
+html:root[data-device="phone"][data-shell] .m-tabbar svg{width:22px;height:22px;transition:transform .35s var(--ez)}
+html:root[data-device="phone"][data-shell] .m-tabbar button.on{color:var(--ink)!important}
+html:root[data-device="phone"][data-shell] .m-tabbar button:active svg{transform:scale(.88)}
+/* 选中标记：一枚空心句点，呼应首页「在此发生。」 */
+html:root[data-device="phone"][data-shell] .m-tabbar button::after{
+  content:"";position:absolute;top:7px;right:calc(50% - 19px);
+  width:6px;height:6px;border-radius:50%;
+  border:1.5px solid var(--ac);
+  opacity:0;transform:scale(.4);transition:opacity .3s,transform .4s var(--ez);
+}
+html:root[data-device="phone"][data-shell] .m-tabbar button.on::after{opacity:1;transform:none}
+html:root[data-device="phone"][data-shell] .m-tabbar button:focus-visible{outline:2px solid var(--ac)!important;outline-offset:-6px;border-radius:14px!important}
+
+/* ---------- 3. 「更多」面板 ---------- */
+html:root[data-device="phone"][data-shell] .m-scrim{
+  position:fixed;inset:0;z-index:58;background:rgba(20,16,40,.28);
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+html:root[data-device="phone"][data-shell].m-sheet-open .m-scrim{opacity:1;pointer-events:auto}
+html:root[data-device="phone"][data-shell] .m-sheet{
+  position:fixed;left:0;right:0;z-index:59;
+  bottom:calc(var(--m-tab) + var(--m-sb));
+  max-height:calc(var(--m-vh,100dvh) - var(--m-tab) - var(--m-sb) - var(--m-st) - 24px);
+  display:flex;flex-direction:column;
+  background:var(--bg);
+  border-radius:26px 26px 0 0;
+  box-shadow:0 -24px 60px -30px rgba(40,30,110,.45);
+  transform:translateY(calc(100% + var(--m-tab) + var(--m-sb)));
+  transition:transform .42s var(--ez);
+  will-change:transform;
+}
+html:root[data-device="phone"][data-shell] .m-sheet.open{transform:none}
+html:root[data-device="phone"][data-shell] .m-grab{flex:none;height:22px;display:grid;place-items:center}
+html:root[data-device="phone"][data-shell] .m-grab i{width:38px;height:4px;border-radius:2px;background:var(--line2)}
+html:root[data-device="phone"][data-shell] .m-sheet-body{
+  flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  padding:2px var(--m-pad) 22px;
+  display:flex;flex-direction:column;gap:18px;
+}
+
+/* 电脑版左栏 → 面板内容 */
+html:root[data-device="phone"][data-shell] .m-sheet .rail{
+  position:static!important;width:auto!important;height:auto!important;
+  display:flex!important;flex-direction:column!important;gap:14px!important;
+  padding:0!important;overflow:visible!important;background:none!important;border:0!important;
+}
+html:root[data-device="phone"][data-shell] .m-sheet .rail .nav-highlight,
+html:root[data-device="phone"][data-shell] .m-sheet .rail-spacer,
+html:root[data-device="phone"][data-shell] .m-sheet .rail-vert{display:none!important}
+/* 已经在标签栏里的入口不再重复 */
+html:root[data-device="phone"][data-shell] .m-sheet #railDef,
+html:root[data-device="phone"][data-shell] .m-sheet #railBook,
+html:root[data-device="phone"][data-shell] .m-sheet #railThreads,
+html:root[data-device="phone"][data-shell] .m-sheet .rail-btn[data-go="v-chat"]{display:none!important}
+html:root[data-device="phone"][data-shell] .m-sheet .rail-btn{
+  height:52px!important;padding:0 16px!important;border-radius:16px!important;
+  background:var(--card)!important;box-shadow:var(--shadow)!important;
+}
+html:root[data-device="phone"][data-shell] .m-sheet .rail-btn.active{color:var(--ink)!important;background:var(--soft)!important}
+html:root[data-device="phone"][data-shell] .m-sheet .studio-new{height:48px!important}
+html:root[data-device="phone"][data-shell] .m-sheet .st-foot{
+  display:flex!important;align-items:center;justify-content:space-between;gap:12px;
+  padding:6px 4px 0!important;margin:0!important;border:0!important;
+}
+
+/* 页边卡片 → 横向滑动的一排 */
+html:root[data-device="phone"][data-shell] .m-sec-title{
+  font-family:var(--zh);font-size:14px;letter-spacing:.06em;color:var(--fg2);padding:6px 4px 0;
+}
+html:root[data-device="phone"][data-shell] .m-sec-title .lat{font-family:var(--disp);font-style:italic;color:var(--mut2);margin-left:6px}
+html:root[data-device="phone"][data-shell] .m-sheet #stMargin{
+  position:static!important;display:flex!important;flex-direction:row!important;gap:12px!important;
+  width:auto!important;height:auto!important;padding:2px var(--m-pad) 14px!important;margin:0 calc(-1 * var(--m-pad))!important;
+  overflow-x:auto!important;overflow-y:visible!important;scroll-snap-type:x mandatory;scrollbar-width:none;
+  scroll-padding:0 var(--m-pad);
+}
+html:root[data-device="phone"][data-shell] .m-sheet #stMargin::-webkit-scrollbar{display:none}
+html:root[data-device="phone"][data-shell] .m-sheet #stMargin>*{flex:0 0 min(78vw,300px)!important;scroll-snap-align:start;margin:0!important}
+html:root[data-device="phone"][data-shell] .m-sheet .st-colophon{
+  position:static!important;margin:4px 0 0!important;padding:14px 4px 0!important;
+  border-top:1px solid var(--line)!important;
+}
+
+/* ---------- 4. 对话页顶栏 ---------- */
+html:root[data-device="phone"][data-shell] #stHead{
+  display:flex!important;flex-wrap:wrap!important;align-items:center!important;
+  gap:8px 6px!important;height:auto!important;min-height:0!important;
+  padding:10px 10px 10px var(--m-pad)!important;
+}
+/* 对话顶栏只属于对话页；其他页有自己的标题 */
+html:root[data-device="phone"][data-shell]:not([data-m-view="v-chat"]) #stHead{display:none!important}
+html:root[data-device="phone"][data-shell] #stHead .st-crumb{
+  order:1;flex:1 1 0;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+}
+html:root[data-device="phone"][data-shell] #stHead .st-crumb b{font-size:17px!important}
+html:root[data-device="phone"][data-shell] #stHead>.sp{display:none!important}
+html:root[data-device="phone"][data-shell] #stHead #btnDrawer{order:2}
+html:root[data-device="phone"][data-shell] #stHead #mNewChat{order:3}
+html:root[data-device="phone"][data-shell] #stHead .icon-btn{width:40px!important;height:40px!important;border-radius:20px!important}
+html:root[data-device="phone"][data-shell] #stHead .icon-btn svg{width:20px;height:20px}
+/* 第二行：工具条横向滑动 */
+html:root[data-device="phone"][data-shell] #stHead .m-break{order:4;flex:0 0 100%;height:0}
+html:root[data-device="phone"][data-shell] #stHead #stLuxChip{order:5;flex:none}
+html:root[data-device="phone"][data-shell]:not(.lux) #stHead #stLuxChip{display:none!important}
+html:root[data-device="phone"][data-shell] #stHead #stTools{
+  order:6;flex:1 1 0;min-width:0;display:flex!important;gap:6px!important;
+  overflow-x:auto;scrollbar-width:none;margin:0 -10px 0 0;padding-right:10px;
+  -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent);
+}
+html:root[data-device="phone"][data-shell] #stHead #stTools::-webkit-scrollbar{display:none}
+html:root[data-device="phone"][data-shell] #stHead #stTools>*{flex:none!important}
+html:root[data-device="phone"][data-shell] #stHead #btnMore{display:inline-flex!important}
+html:root[data-device="phone"][data-shell] #stHead #studioFocus{display:none!important}
+
+/* ---------- 5. 对话区与输入框 ---------- */
+html:root[data-device="phone"][data-shell] .chat{padding:18px var(--m-pad) 24px!important;gap:22px!important}
+html:root[data-device="phone"][data-shell] .studio-readbar{padding:10px var(--m-pad) 0!important}
+html:root[data-device="phone"][data-shell] .composer{
+  position:relative;
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:8px!important;
+  width:auto!important;max-width:none!important;
+  margin:0 10px 10px!important;padding:10px 10px 8px 16px!important;
+  border:0!important;border-radius:22px!important;background:var(--card)!important;box-shadow:var(--shadow-lg)!important;
+}
+html:root[data-device="phone"][data-shell].m-kb .composer{margin-bottom:8px!important}
+html:root[data-device="phone"][data-shell] .composer>.chip-row{
+  grid-column:1;grid-row:1;min-width:0;flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;
+}
+html:root[data-device="phone"][data-shell] .composer>.chip-row::-webkit-scrollbar{display:none}
+html:root[data-device="phone"][data-shell] .composer>.chip-row>*{flex:none!important}
+html:root[data-device="phone"][data-shell] .composer>#twsBtnTpl{grid-column:2;grid-row:1;height:30px!important;padding:0 12px!important;width:auto!important;margin:0!important}
+html:root[data-device="phone"][data-shell] .composer>.input-wrap{grid-column:1/-1;grid-row:2}
+html:root[data-device="phone"][data-shell] .composer>.studio-input-meta{grid-column:1/-1;grid-row:3}
+/* iOS 输入框小于 16px 会自动放大页面 */
+html:root[data-device="phone"][data-shell] textarea,
+html:root[data-device="phone"][data-shell] input,
+html:root[data-device="phone"][data-shell] select{font-size:16px!important}
+html:root[data-device="phone"][data-shell] .composer .input-wrap{
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:center!important;gap:6px 10px!important;
+}
+html:root[data-device="phone"][data-shell] .composer .input-wrap>.field{grid-column:1/-1;min-width:0}
+html:root[data-device="phone"][data-shell] .composer textarea#input{
+  min-height:30px!important;max-height:32vh;height:auto;padding:4px 0!important;width:100%!important;
+}
+html:root[data-device="phone"][data-shell] .composer .input-wrap>.st-tpill{grid-column:1;justify-self:start;margin-left:0}
+html:root[data-device="phone"][data-shell] .composer .send{grid-column:2;width:44px!important;height:44px!important}
+html:root[data-device="phone"][data-shell] .composer>.studio-input-meta>:not(#studioChars){display:none!important}
+html:root[data-device="phone"][data-shell] .composer>.studio-input-meta{position:absolute;right:66px;bottom:23px;pointer-events:none;font-size:12px}
+html:root[data-device="phone"][data-shell] .jump{bottom:calc(var(--m-comp,170px) + 22px)!important;right:16px!important}
+/* 空白对话不显示「回到底部」 */
+html:root[data-device="phone"][data-shell] #chat:has(> .empty) ~ .jump{display:none!important}
+
+/* ---------- 6. 其他视图的通用收窄 ---------- */
+html:root[data-device="phone"][data-shell] .sec-head{padding:14px var(--m-pad) 12px!important;flex-wrap:wrap;gap:10px!important}
+/* 区段标题：标题独占一行，操作按钮放下一行 */
+html:root[data-device="phone"][data-shell] .sec-head .sec-meta{flex:1 1 100%;min-width:0}
+html:root[data-device="phone"][data-shell] .sec-head .sec-right{flex:1 1 100%;flex-wrap:wrap;gap:6px;margin-left:0!important;justify-content:flex-start}
+html:root[data-device="phone"][data-shell] .cfg-body,
+html:root[data-device="phone"][data-shell] .df-body,
+html:root[data-device="phone"][data-shell] .tws-thread-list,
+html:root[data-device="phone"][data-shell] .tws-cards{padding-left:var(--m-pad)!important;padding-right:var(--m-pad)!important}
+html:root[data-device="phone"][data-shell] .tws-tabs{padding-left:var(--m-pad)!important;padding-right:var(--m-pad)!important;overflow-x:auto;flex-wrap:nowrap!important;scrollbar-width:none}
+html:root[data-device="phone"][data-shell] .tws-tabs>*{flex:none}
+
+/* 抽屉撑满宽度 */
+html:root[data-device="phone"][data-shell] .drawer{
+  top:0!important;bottom:0!important;right:0!important;width:100vw!important;max-width:100vw!important;
+  padding-top:var(--m-st);padding-bottom:var(--m-sb);border-radius:0!important;z-index:80!important;
+}
+
+/* ---------- 7. 书稿：目录和正文分两屏 ---------- */
+html:root[data-device="phone"][data-shell] #v-book .tws-book{flex-direction:column!important;position:relative}
+html:root[data-device="phone"][data-shell] #v-book .tws-tree{
+  width:auto!important;max-height:none!important;flex:1 1 auto!important;border:0!important;
+  overflow-y:auto!important;padding:4px 6px 24px!important;
+}
+html:root[data-device="phone"][data-shell] #v-book .tws-ch{min-height:48px;display:flex;align-items:center;padding-left:18px!important;padding-right:14px!important;border-radius:14px}
+html:root[data-device="phone"][data-shell] #v-book .tws-vol-h{min-height:44px}
+html:root[data-device="phone"][data-shell] #v-book .tws-vol-h button,
+html:root[data-device="phone"][data-shell] #v-book .tws-proj-a button{min-width:36px;min-height:36px}
+html:root[data-device="phone"][data-shell] #v-book .tws-editor{display:none!important}
+html:root[data-device="phone"][data-shell] .m-book-back{display:none}
+
+html:root[data-device="phone"][data-shell][data-m-book="edit"] #v-book .tws-tree{display:none!important}
+html:root[data-device="phone"][data-shell][data-m-book="edit"] #v-book .tws-editor{display:flex!important;flex:1 1 auto!important}
+html:root[data-device="phone"][data-shell][data-m-book="edit"] #v-book>.sec-head{display:none!important}
+html:root[data-device="phone"][data-shell][data-m-book="edit"] .m-book-back{
+  display:inline-flex!important;align-items:center;gap:4px;align-self:flex-start;flex:none;
+  height:40px;margin:8px 0 0 8px;padding:0 14px 0 6px!important;border:0!important;
+  color:var(--ink)!important;font-family:var(--zh)!important;font-size:15px!important;
+}
+html:root[data-device="phone"][data-shell] .m-book-back svg{width:22px;height:22px}
+html:root[data-device="phone"][data-shell] #v-book .tws-ch-head{padding:4px var(--m-pad) 10px!important}
+html:root[data-device="phone"][data-shell] #v-book .tws-ch-title{font-size:22px!important;padding:6px 0!important;border:0!important;box-shadow:none!important;background:transparent!important;width:100%}
+html:root[data-device="phone"][data-shell] #v-book .tws-ch-row{flex-wrap:wrap;row-gap:8px}
+html:root[data-device="phone"][data-shell] #v-book .tws-spacer{flex-basis:100%!important;height:0}
+html:root[data-device="phone"][data-shell] #v-book .tws-content{
+  padding:14px var(--m-pad) 80px!important;border:0!important;box-shadow:none!important;background:transparent!important;
+  font-size:17px!important;line-height:2!important;
+}
+
+@media (prefers-reduced-motion:reduce){
+  html:root[data-device="phone"][data-shell] .m-sheet,
+  html:root[data-device="phone"][data-shell] .m-tabbar,
+  html:root[data-device="phone"][data-shell] .stage,
+  html:root[data-device="phone"][data-shell] .view{transition:none!important}
+}
+
+/* 区段大标题：桌面版给的 max-width 在手机上会把「伏笔与时间线」截断 */
+html:root[data-device="phone"][data-shell] .sec-head .sec-cn{max-width:none!important;overflow:visible!important;white-space:normal!important;font-size:26px!important;letter-spacing:.14em!important}
+
+/* 入戏是全屏舞台，有自己的输入框：收起标签栏，舞台铺到底 */
+html:root[data-device="phone"][data-shell]:has(#pzStage.on) .m-tabbar{transform:translateY(110%);opacity:0;pointer-events:none}
+html:root[data-device="phone"][data-shell]:has(#pzStage.on) .stage{bottom:0}
+html:root[data-device="phone"][data-shell] #pzStage{padding-bottom:var(--m-sb)}
+
+/* 伏笔 / 时间线 切换器：两侧留出页边 */
+html:root[data-device="phone"][data-shell] #v-threads .tws-tabs,
+html:root[data-device="phone"][data-shell] #v-lore .tws-tabs{margin:0 var(--m-pad)!important;padding:4px!important;width:auto!important;border-radius:22px!important;align-self:stretch}
+/* 入戏输入行：文字框独占一行，按钮排到下一行，「说」靠右 */
+html:root[data-device="phone"][data-shell] #pzStage .pz-row{flex-wrap:wrap!important;gap:8px!important}
+html:root[data-device="phone"][data-shell] #pzStage #pzIn{order:-1;flex:1 1 100%!important;width:100%!important;min-height:44px}
+html:root[data-device="phone"][data-shell] #pzStage #pzSend{margin-left:auto!important}
+html:root[data-device="phone"][data-shell] #pzStage .pz-foot{padding-left:var(--m-pad)!important;padding-right:var(--m-pad)!important}
+html:root[data-device="phone"][data-shell] #pzStage .pz-head{padding-top:calc(var(--m-st) + 10px)!important}
