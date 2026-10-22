@@ -15,7 +15,7 @@ html:root[data-device="phone"][data-shell]{
 }
 html:root[data-device="phone"][data-shell],
 html:root[data-device="phone"][data-shell] body{
-  height:var(--m-vh,100dvh)!important;overflow:hidden!important;overscroll-behavior:none;
+  height:var(--vvh,100dvh)!important;overflow:hidden!important;overscroll-behavior:none;
 }
 
 /* ---------- 1. 骨架：整屏只留一张手稿纸 ---------- */
@@ -37,8 +37,11 @@ html:root[data-device="phone"][data-shell] .stage{
   transform:none!important;
   transition:bottom .32s var(--ez);
 }
-html:root[data-device="phone"][data-shell].m-typing .stage,
-html:root[data-device="phone"][data-shell].m-kb .stage{bottom:0}
+html:root[data-device="phone"][data-shell].m-typing .stage{bottom:0;transition:none}
+/* 键盘弹出：不整体上移（电脑版做法会把书稿正文推出屏幕），
+   而是让内容区止于键盘上沿，输入框和光标始终可见 */
+html:root[data-device="phone"][data-shell].kb-open .app{transform:none!important}
+html:root[data-device="phone"][data-shell].kb-open .stage{bottom:var(--kb,0px)!important;transition:none}
 
 /* ---------- 2. 底部标签栏 ---------- */
 html:root[data-device="phone"][data-shell] .m-tabbar{
@@ -52,7 +55,7 @@ html:root[data-device="phone"][data-shell] .m-tabbar{
   transition:transform .32s var(--ez),opacity .2s;
 }
 html:root[data-device="phone"][data-shell].m-typing .m-tabbar,
-html:root[data-device="phone"][data-shell].m-kb .m-tabbar{transform:translateY(110%);opacity:0;pointer-events:none}
+html:root[data-device="phone"][data-shell].kb-open .m-tabbar{transform:translateY(110%);opacity:0;pointer-events:none}
 html:root[data-device="phone"][data-shell] .m-tabbar button{
   position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
   min-width:0;height:var(--m-tab);padding:0;
@@ -82,7 +85,7 @@ html:root[data-device="phone"][data-shell].m-sheet-open .m-scrim{opacity:1;point
 html:root[data-device="phone"][data-shell] .m-sheet{
   position:fixed;left:0;right:0;z-index:59;
   bottom:calc(var(--m-tab) + var(--m-sb));
-  max-height:calc(var(--m-vh,100dvh) - var(--m-tab) - var(--m-sb) - var(--m-st) - 24px);
+  max-height:calc(var(--vvh,100dvh) - var(--m-tab) - var(--m-sb) - var(--m-st) - 24px);
   display:flex;flex-direction:column;
   background:var(--bg);
   border-radius:26px 26px 0 0;
@@ -184,7 +187,7 @@ html:root[data-device="phone"][data-shell] .composer{
   margin:0 10px 10px!important;padding:10px 10px 8px 16px!important;
   border:0!important;border-radius:22px!important;background:var(--card)!important;box-shadow:var(--shadow-lg)!important;
 }
-html:root[data-device="phone"][data-shell].m-kb .composer{margin-bottom:8px!important}
+html:root[data-device="phone"][data-shell].kb-open .composer{margin-bottom:8px!important}
 html:root[data-device="phone"][data-shell] .composer>.chip-row{
   grid-column:1;grid-row:1;min-width:0;flex-wrap:nowrap!important;overflow-x:auto;scrollbar-width:none;
 }

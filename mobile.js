@@ -227,29 +227,20 @@
     setBook('tree');
   }
 
-  /* ---------- 键盘：用可视视口高度撑满，输入时收起标签栏 ---------- */
+  /* ---------- 键盘：高度由电脑版的视口逻辑算好（--kb / .kb-open），这里只管
+     「正在输入」时收起标签栏；不要再自己改页面高度，否则会和电脑版叠加，
+     输入框被推出屏幕（iOS Safari 上的老问题） ---------- */
   function keyboard() {
-    var vv = window.visualViewport;
-    function fit() {
-      var h = vv ? vv.height : window.innerHeight;
-      root.style.setProperty('--m-vh', h + 'px');
-      var kb = vv ? (window.innerHeight - vv.height > 120) : false;
-      root.classList.toggle('m-kb', kb);
-      root.classList.toggle('kb-open', kb);   /* 电脑版 autosize 会据此收窄输入框上限 */
-      if (vv) window.scrollTo(0, 0);
-    }
-    if (vv) { vv.addEventListener('resize', fit); vv.addEventListener('scroll', fit); }
-    window.addEventListener('resize', fit);
+    var EDIT = 'textarea, input[type="text"], input[type="search"], input:not([type]), [contenteditable="true"]';
     document.addEventListener('focusin', function (e) {
-      if (e.target.matches('textarea, input[type="text"], input:not([type]), [contenteditable="true"]')) root.classList.add('m-typing');
+      if (e.target.matches(EDIT)) root.classList.add('m-typing');
     });
     document.addEventListener('focusout', function () {
       setTimeout(function () {
         var a = document.activeElement;
-        if (!a || !a.matches('textarea, input, [contenteditable="true"]')) root.classList.remove('m-typing');
+        if (!a || !a.matches(EDIT)) root.classList.remove('m-typing');
       }, 80);
     });
-    fit();
   }
 
   /* ---------- 返回：先关面板 ---------- */
