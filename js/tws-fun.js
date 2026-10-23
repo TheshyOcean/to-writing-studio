@@ -268,7 +268,7 @@
     return p.then(function () {
       var ids = shuffled(); tdeal = ids.slice(0, NCARD);
       els.forEach(function (el, i) {
-        var t = (i - (NCARD - 1) / 2) / ((NCARD - 1) / 2), a = t * 26, R = 360, r = a * Math.PI / 180;
+        var t = (i - (NCARD - 1) / 2) / ((NCARD - 1) / 2), a = t * 26, R = Math.min(360, Math.max(160, (st.clientWidth / 2 - 56) / Math.sin(26 * Math.PI / 180))), r = a * Math.PI / 180;
         el.querySelector('.tr-f').innerHTML = ''; el.tabIndex = 0;
         setTimeout(function () { pose(el, R * Math.sin(r), R * (1 - Math.cos(r)) - 8, a, 1, i); }, i * 70 * T0);
       });
@@ -289,7 +289,7 @@
     var f = el.querySelector('.tr-f'); f.innerHTML = face(c); f.classList.toggle('rev', rev);
     pose(el, 0, -14, 0, 1.25, 50);
     return wait(650 * T0).then(function () { el.classList.add('flip'); return wait(1000 * T0); })
-      .then(function () { pose(el, -168, 6, 0, 1.4, 50); st.dataset.phase = 'read'; return wait(500 * T0); })
+      .then(function () { if (window.matchMedia('(max-width:640px)').matches) pose(el, 0, -112, 0, 1.05, 50); else pose(el, -168, 6, 0, 1.4, 50); st.dataset.phase = 'read'; return wait(500 * T0); })
       .then(function () {
         var r = $('trRead'), pos = rev ? '逆位 · Inversa' : '正位 · Recta';
         r.innerHTML = '<div class="tr-rh"><span class="tr-rn">' + c[0] + '</span><b>' + c[1] + '</b><i>' + c[2] + '</i></div>' +

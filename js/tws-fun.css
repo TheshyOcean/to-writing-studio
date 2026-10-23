@@ -334,7 +334,8 @@ button.pz-role:hover{border-color:var(--zhu);transform:translateY(-2px)}
 
 @media (max-width:640px){
   .tr-stage{height:460px}
-  .tr-read{left:20px;right:20px;width:auto;top:auto;bottom:16px;height:200px}
+  .tr-read{left:20px;right:20px;width:auto;top:auto;bottom:16px;height:196px}
+  .tr-stage[data-phase="read"] .tr-glow{left:50%;top:26%}
 }
 @media (prefers-reduced-motion:reduce){
   .tr-glow{animation:none}
