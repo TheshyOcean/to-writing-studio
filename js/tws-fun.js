@@ -268,9 +268,9 @@
     return p.then(function () {
       var ids = shuffled(); tdeal = ids.slice(0, NCARD);
       els.forEach(function (el, i) {
-        var t = (i - (NCARD - 1) / 2) / ((NCARD - 1) / 2), a = t * 26, R = Math.min(360, Math.max(160, (st.clientWidth / 2 - 56) / Math.sin(26 * Math.PI / 180))), r = a * Math.PI / 180;
+        var t = (i - (NCARD - 1) / 2) / ((NCARD - 1) / 2), a = t * 26, S = st.clientWidth < 560 ? .76 : 1, R = Math.min(360, Math.max(120, (st.clientWidth / 2 - 12 - 82 * S) / Math.sin(26 * Math.PI / 180))), r = a * Math.PI / 180;
         el.querySelector('.tr-f').innerHTML = ''; el.tabIndex = 0;
-        setTimeout(function () { pose(el, R * Math.sin(r), R * (1 - Math.cos(r)) - 8, a, 1, i); }, i * 70 * T0);
+        setTimeout(function () { pose(el, R * Math.sin(r), R * (1 - Math.cos(r)) - 8, a, S, i); }, i * 70 * T0);
       });
       return wait((NCARD * 70 + 700) * T0);
     }).then(function () {
