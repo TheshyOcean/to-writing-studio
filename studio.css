@@ -1,10 +1,20 @@
+/* hallmark · restyle (type only) · zh: 霞鹜文楷 · latin: EB Garamond + Cormorant 斜体点缀（unicode-range 限拉丁）· critique: 全宋体读作 Office 文档；楷书与 Garamond 同为手写笔意，按文字分工而非按区域混排 */
 /* ==========================================================================
    V2.5.0 · 书斋「堇紫 × 鎏金」— 电脑版外观层（最后加载，只改外观，不动逻辑）
    布局：左栏（正在写 / 导航 / 工具 / 落款）· 中间浮起的手稿纸面 · 右侧页边栏
-   字体：思源宋体 + EB Garamond（拉丁、希腊、数字）+ Cormorant Garamond（拉丁斜体点缀）
+   字体：霞鹜文楷（中文）+ EB Garamond（拉丁、数字）+ Cormorant Garamond（拉丁斜体点缀）
    颜色：昼读月白 + 堇紫；夜读四套（墨夜默认）；灵光模式整页渐变为金（夜读为暗金）
    ========================================================================== */
-@import url("fonts/studio-fonts.css");
+@import url("fonts/lxgw-wenkai/regular/result.css");
+@import url("fonts/lxgw-wenkai/medium/result.css");
+
+/* 西文只取拉丁字母、数字和半角标点；中文引号、破折号、省略号一律留给文楷 */
+@font-face{font-family:'TWS Latin';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/garamond/eb-garamond-latin-400-normal.woff2) format('woff2');unicode-range:U+0020-007E,U+00A0-00FF,U+0100-017F,U+0131,U+0152-0153,U+20AC,U+2122}
+@font-face{font-family:'TWS Latin';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/garamond/eb-garamond-latin-500-normal.woff2) format('woff2');unicode-range:U+0020-007E,U+00A0-00FF,U+0100-017F,U+0131,U+0152-0153,U+20AC,U+2122}
+@font-face{font-family:'TWS Latin';font-style:italic;font-weight:400;font-display:swap;src:url(fonts/garamond/eb-garamond-latin-400-italic.woff2) format('woff2');unicode-range:U+0020-007E,U+00A0-00FF,U+0100-017F,U+0131,U+0152-0153,U+20AC,U+2122}
+@font-face{font-family:'TWS Latin Disp';font-style:italic;font-weight:500;font-display:swap;src:url(fonts/garamond/cormorant-garamond-latin-500-italic.woff2) format('woff2');unicode-range:U+0020-007E,U+00A0-00FF,U+0100-017F,U+0131,U+0152-0153,U+20AC,U+2122}
+@font-face{font-family:'TWS Latin Disp';font-style:italic;font-weight:600;font-display:swap;src:url(fonts/garamond/cormorant-garamond-latin-600-italic.woff2) format('woff2');unicode-range:U+0020-007E,U+00A0-00FF,U+0100-017F,U+0131,U+0152-0153,U+20AC,U+2122}
+@font-face{font-family:'TWS Latin Disp';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/garamond/cormorant-garamond-latin-600-normal.woff2) format('woff2');unicode-range:U+0020-007E,U+00A0-00FF,U+0100-017F,U+0131,U+0152-0153,U+20AC,U+2122}
 
 @property --ac{syntax:'<color>';inherits:true;initial-value:#6f63e6}
 @property --ac2{syntax:'<color>';inherits:true;initial-value:#7f93ff}
@@ -14,12 +24,13 @@
 
 /* ---------- 1. 令牌 · 昼读 ---------- */
 :root:root{
-  --zh:'Noto Serif SC','Songti SC','STSong','SimSun',serif;
-  --la:'EB Garamond','Garamond','Iowan Old Style',Georgia,serif;
-  --disp:'Cormorant Garamond','EB Garamond',Georgia,serif;
+  --zh:"LXGW WenKai","Kaiti SC","STKaiti","KaiTi","PingFang SC","Microsoft YaHei",sans-serif;
+  --ui:"TWS Latin",var(--zh);
+  --la:"TWS Latin",var(--zh);
+  --disp:"TWS Latin Disp","TWS Latin",var(--zh);
   --text:var(--la),var(--zh);
   --code:ui-monospace,'SFMono-Regular','Cascadia Code',Menlo,Consolas,monospace;
-  --sans:var(--text);--mono:var(--text);--disp-old:var(--text);--num:var(--la);
+  --sans:var(--ui);--mono:var(--text);--disp-old:var(--text);--num:var(--la);
 
   --bg:#efeef6;--paper:#fbfbfe;--card:#ffffff;--line:#e6e3f1;--line2:#d6d2e7;
   --fg:#1f1b33;--fg2:#4a4563;--mut:#7a7495;--mut2:#a7a2bb;--note:#efedfb;--track:#eceaf6;
@@ -63,7 +74,7 @@
 :root:root[data-theme="dark"].lux{--ac:#a87f36;--ac2:#c39a4e;--soft:#2c2416;--ink:#d2ae68;--glow:rgba(168,127,54,.4)}
 
 /* ---------- 2. 字体与基底 ---------- */
-html body,html body *:not(pre):not(code):not(kbd):not(samp):not(svg):not(svg *){font-family:var(--text)!important}
+html body,html body *:not(pre):not(code):not(kbd):not(samp):not(svg):not(svg *){font-family:var(--ui)!important}
 html body :is(pre,code,kbd,samp){font-family:var(--code)!important}
 html,body{background:var(--bg)!important;color:var(--fg)}
 body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";transition:background .6s var(--ez),color .6s var(--ez)}
@@ -87,9 +98,9 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 /* 纸面页眉 */
 .st-head{position:relative;z-index:6;height:var(--st-head);flex:none;display:flex;align-items:center;gap:12px;padding:0 20px 0 30px;border-bottom:1px solid var(--line)}
 .st-crumb{display:flex;align-items:baseline;gap:10px;min-width:0;white-space:nowrap}
-.st-crumb .bk{font-family:var(--zh)!important;font-size:13px;color:var(--mut)}
+.st-crumb .bk{font-family:var(--ui)!important;font-size:13px;color:var(--mut)}
 .st-crumb .sl{color:var(--line2)}
-.st-crumb b{font-family:var(--zh)!important;font-size:15px;font-weight:600;letter-spacing:.06em;color:var(--fg);overflow:hidden;text-overflow:ellipsis}
+.st-crumb b{font-family:var(--ui)!important;font-size:15px;font-weight:600;letter-spacing:0;color:var(--fg);overflow:hidden;text-overflow:ellipsis}
 .st-head .sp{flex:1}
 .st-tools{display:flex;align-items:center;gap:6px}
 .st-lux{height:26px;padding:0 11px;border-radius:13px;background:var(--soft);color:var(--ink);font-size:12.5px;display:inline-flex;align-items:center;gap:6px;opacity:0;transform:translateY(-4px) scale(.96);pointer-events:none;transition:opacity .6s var(--ez) .4s,transform .6s var(--ez) .4s}
@@ -136,11 +147,11 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 :root[data-shell="desktop"] .rail::-webkit-scrollbar{display:none}
 :root[data-shell="desktop"] .rail::before,:root[data-shell="desktop"] .rail::after{display:none!important;content:none!important}
 .st-opus{display:flex;flex-direction:column;gap:10px}
-.st-sh{font-family:var(--disp)!important;font-style:italic;font-size:14px;color:var(--mut);padding:0 8px;letter-spacing:.04em}
+.st-sh{font-family:var(--disp)!important;font-style:italic;font-size:14px;color:var(--mut);padding:0 8px;letter-spacing:0}
 .st-book{border-radius:18px;background:var(--card);box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:8px;text-align:left;cursor:pointer;transition:transform .45s var(--ez),box-shadow .45s var(--ez)}
 .st-book:hover{transform:translateY(-1px)}
 .st-book b{font-family:var(--zh)!important;font-size:17px;font-weight:600;letter-spacing:.06em;color:var(--fg)}
-.st-book .m{font-family:var(--zh)!important;font-size:13px;color:var(--mut)}
+.st-book .m{font-family:var(--ui)!important;font-size:13px;color:var(--mut)}
 .st-bar{height:4px;border-radius:2px;background:var(--track);overflow:hidden}
 .st-bar i{display:block;height:100%;border-radius:2px;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .8s var(--ez)}
 :root[data-shell] .studio-new{height:44px!important;margin:0!important;border:0!important;border-radius:14px!important;background:var(--card)!important;box-shadow:var(--shadow)!important;color:var(--fg)!important;font-size:14px!important;gap:8px!important}
@@ -150,7 +161,7 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 :root[data-shell="desktop"] .rail-btn:hover{color:var(--fg)!important;background:transparent!important}
 :root[data-shell="desktop"] .rail-btn.active{color:var(--ink)!important;background:transparent!important}
 :root[data-shell="desktop"] .rail-btn svg{width:18px!important;height:18px!important;flex:none;color:currentColor!important;stroke-width:1.6}
-:root[data-shell="desktop"] .rail-btn>span{font-family:var(--zh)!important;font-size:14.5px!important;letter-spacing:.04em!important;display:inline!important}
+:root[data-shell="desktop"] .rail-btn>span{font-family:var(--ui)!important;font-size:14.5px!important;letter-spacing:0!important;display:inline!important}
 :root[data-shell="desktop"] .rail-btn small{display:none!important}
 :root[data-shell="desktop"] .rail-btn em{margin-left:auto;font-family:var(--disp)!important;font-style:italic;font-size:14px;color:var(--mut2);transition:color .4s}
 :root[data-shell="desktop"] .rail-btn.active em{color:var(--ink);opacity:.75}
@@ -158,7 +169,7 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 :root[data-shell] .nav-highlight{background:var(--soft)!important;background-image:none!important;border:0!important;border-radius:12px!important;box-shadow:none!important;clip-path:none!important;transition:transform .55s var(--ez),height .55s var(--ez),width .55s var(--ez),opacity .4s!important}
 .rail-spacer{flex:1 1 auto;min-height:8px}
 .st-foot{display:flex;align-items:center;gap:4px}
-.st-model{margin-left:auto;display:flex;align-items:center;gap:7px;min-width:0;font-family:var(--la)!important;font-size:13px;color:var(--mut);cursor:pointer;padding:6px 8px;border-radius:10px;transition:background .3s,color .6s}
+.st-model{margin-left:auto;display:flex;align-items:center;gap:7px;min-width:0;font-family:var(--ui)!important;font-size:13px;color:var(--mut);cursor:pointer;padding:6px 8px;border-radius:10px;transition:background .3s,color .6s}
 .st-model:hover{background:var(--soft)}
 .lux .st-model{color:var(--ink)}
 .st-model .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
@@ -175,16 +186,16 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 .st-colophon{display:flex;align-items:center;gap:9px;padding:12px 8px 0;border-top:1px solid var(--line);opacity:.78;transition:opacity .4s}
 .st-colophon:hover{opacity:1}
 .st-colophon svg{flex:none;width:22px;height:22px}
-.st-colophon b{font-family:var(--zh)!important;font-size:12.5px;font-weight:500;letter-spacing:.2em;color:var(--fg2)}
+.st-colophon b{font-family:var(--ui)!important;font-size:12.5px;font-weight:500;letter-spacing:0;color:var(--fg2);white-space:nowrap;flex-shrink:0}
 .st-colophon .lat{font-size:12.5px;color:var(--mut)}
-.st-colophon .ver{margin-left:auto;font-family:var(--la)!important;font-size:11.5px;color:var(--mut2);letter-spacing:.06em}
+.st-colophon .ver{margin-left:auto;font-family:var(--ui)!important;font-size:11.5px;color:var(--mut2);letter-spacing:0}
 
 /* ---------- 7. 区块标题（书稿 / 设定库 / 伏笔 / 配置） ---------- */
 :root[data-shell] .sec-head{min-height:0!important;padding:30px clamp(28px,4vw,52px) 18px!important;border:0!important;gap:16px!important;align-items:flex-end!important}
 :root[data-shell] .sec-head::after{display:none!important}
 :root[data-shell] .sec-meta{display:flex!important;flex-direction:column!important;gap:8px!important;padding:0!important}
-:root[data-shell] .sec-meta .st-eye{display:block;font-family:var(--disp)!important;font-style:italic;font-size:15px;color:var(--mut);letter-spacing:.04em}
-:root[data-shell] .sec-cn{font-family:var(--zh)!important;font-size:30px!important;font-weight:500!important;letter-spacing:.2em!important;color:var(--fg)!important}
+:root[data-shell] .sec-meta .st-eye{display:block;font-family:var(--disp)!important;font-style:italic;font-size:15px;color:var(--mut);letter-spacing:0}
+:root[data-shell] .sec-cn{font-family:var(--zh)!important;font-size:30px!important;font-weight:500!important;letter-spacing:.04em!important;color:var(--fg)!important}
 :root[data-shell] .sec-cn::after{content:"";display:block;width:32px;height:2px;margin-top:12px;border-radius:1px;background:linear-gradient(90deg,var(--ac),var(--ac2))}
 :root[data-shell] .sec-right{gap:8px!important;padding:0 0 4px!important}
 :root[data-shell] #v-chat>.sec-head{display:none!important}
@@ -192,15 +203,15 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 /* ---------- 8. 对话：手稿 ---------- */
 :root[data-shell="desktop"] .chat{padding:40px max(40px,calc((100% - 700px)/2)) 40px!important;gap:28px!important}
 .st-chhead{display:flex;flex-direction:column;gap:12px;margin-bottom:4px}
-.st-chhead .eye{display:flex;align-items:baseline;gap:12px;font-family:var(--zh)!important;font-size:12px;color:var(--ink);letter-spacing:.38em}
+.st-chhead .eye{display:flex;align-items:baseline;gap:12px;font-family:var(--ui)!important;font-size:12px;color:var(--ink);letter-spacing:0}
 .st-chhead .eye .lat{letter-spacing:.06em;font-size:15px;color:var(--mut)}
-.st-chhead h1{margin:0;font-family:var(--zh)!important;font-size:42px;font-weight:500;letter-spacing:.24em;line-height:1.25;color:var(--fg)}
+.st-chhead h1{margin:0;font-family:var(--zh)!important;font-size:42px;font-weight:500;letter-spacing:.06em;line-height:1.25;color:var(--fg)}
 .st-rule{width:36px;height:2px;border-radius:1px;background:linear-gradient(90deg,var(--ac),var(--ac2))}
 :root[data-shell] #chat .msg{max-width:100%!important;gap:0!important}
 :root[data-shell] #chat .msg .bub,:root[data-shell] #chat .msg.ai .bub,:root[data-shell] #chat .msg.me .bub{clip-path:none!important;-webkit-mask:none!important;mask:none!important;box-shadow:none!important;color:var(--fg)!important}
 :root[data-shell] #chat .msg .bub::before,:root[data-shell] #chat .msg .bub::after{display:none!important}
 :root[data-shell] #chat .msg.ai .bub{background:transparent!important;border:0!important;border-radius:0!important;padding:0!important;font-size:var(--story-size,18px)!important;line-height:2.1!important;letter-spacing:.04em}
-:root[data-shell] #chat .msg.ai .ans{font-family:var(--zh),var(--la)!important}
+:root[data-shell] #chat .msg.ai .ans,:root[data-shell] #chat .msg.ai .ans *:not(code):not(pre){font-family:var(--zh),var(--la)!important}
 :root[data-shell] #chat .msg.ai .ans p{margin:0 0 .6em}
 :root[data-shell] #chat .msg.me{justify-content:flex-end}
 :root[data-shell] #chat .msg.me .bub{background:var(--note)!important;border:0!important;border-radius:20px 20px 6px 20px!important;padding:13px 20px!important;font-size:15px!important;line-height:1.85!important;max-width:min(460px,86%)}
@@ -216,23 +227,23 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 :root[data-shell] #chat .bub hr{border:0;height:1px;background:var(--line);margin:1.6em auto;width:40%}
 :root[data-shell] #chat .bub a{color:var(--ink)}
 :root[data-shell] #chat .think{border:0!important;border-radius:16px!important;background:var(--soft)!important;padding:10px 16px!important;margin-bottom:14px!important;font-size:13.5px;line-height:1.85;color:var(--ink)}
-:root[data-shell] #chat .think>summary{color:var(--ink)!important;font-family:var(--zh)!important;font-size:13px!important;letter-spacing:.06em;cursor:pointer;list-style:none}
+:root[data-shell] #chat .think>summary{color:var(--ink)!important;font-family:var(--ui)!important;font-size:13px!important;letter-spacing:0;cursor:pointer;list-style:none}
 :root[data-shell] #chat .think-b{color:var(--fg2)!important;font-size:13.5px!important;margin-top:6px}
-:root[data-shell] #chat .status{color:var(--ink)!important;font-family:var(--zh)!important;letter-spacing:.12em}
+:root[data-shell] #chat .status{color:var(--ink)!important;font-family:var(--ui)!important;letter-spacing:0}
 :root[data-shell] #chat .status .sq{display:none}
 :root[data-shell] #chat .caret{background:var(--ac)!important}
 /* 空白页 */
 :root[data-shell] .empty{border:0!important;background:transparent!important;align-items:flex-start!important;text-align:left!important;padding:24px 0!important;gap:16px!important}
 :root[data-shell] .empty .em-mark{display:none!important}
-:root[data-shell] .empty .em-t{font-family:var(--zh)!important;font-size:clamp(34px,3.4vw,46px)!important;font-weight:500!important;line-height:1.45!important;letter-spacing:.24em!important;color:var(--fg)!important}
+:root[data-shell] .empty .em-t{font-family:var(--zh)!important;font-size:clamp(34px,3.4vw,46px)!important;font-weight:500!important;line-height:1.45!important;letter-spacing:.06em!important;color:var(--fg)!important}
 :root[data-shell] .studio-period{color:var(--ac)!important}
 :root[data-shell] .empty .em-d{color:var(--fg2)!important;font-size:15px!important;letter-spacing:.08em;line-height:2}
-:root[data-shell] .empty .em-en{font-family:var(--disp)!important;font-style:italic;color:var(--mut)!important;font-size:17px!important;letter-spacing:.04em!important;text-transform:none!important}
+:root[data-shell] .empty .em-en{font-family:var(--disp)!important;font-style:italic;color:var(--mut)!important;font-size:17px!important;letter-spacing:0!important;text-transform:none!important}
 :root[data-shell] .empty .em-chips{justify-content:flex-start!important;gap:8px!important}
 :root[data-shell] .empty .em-chips .chip{font-size:13px!important;padding:9px 16px!important}
 /* 阅读条 */
 :root[data-shell] .studio-readbar{padding:12px max(40px,calc((100% - 700px)/2)) 0!important;color:var(--mut)!important;font-size:12px!important}
-:root[data-shell] .studio-readbar b{font-family:var(--zh)!important;font-size:12px!important;letter-spacing:.2em!important;font-weight:400}
+:root[data-shell] .studio-readbar b{font-family:var(--ui)!important;font-size:12px!important;letter-spacing:0!important;font-weight:400}
 :root[data-shell] .studio-readbar button{border:0!important;font-size:12px!important;color:var(--fg2)!important;border-radius:8px!important;padding:3px 7px!important}
 :root[data-shell] .studio-readbar button:hover{background:var(--soft)!important}
 :root[data-shell] .studio-live{width:5px!important;height:5px!important;border-radius:50%;background:var(--ac)!important;animation:none!important}
@@ -250,13 +261,13 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 :root[data-shell] .send{width:48px!important;height:48px!important;min-height:48px!important;border-radius:16px!important;border:0!important;background:linear-gradient(140deg,var(--ac),var(--ac2))!important;color:#fff!important;box-shadow:0 10px 22px -10px var(--glow)!important;flex:none}
 :root[data-shell] .send svg{color:#fff!important;width:20px;height:20px}
 :root[data-shell] .send:hover{filter:brightness(1.05);transform:translateY(-1px)}
-:root[data-shell] .studio-input-meta{font-family:var(--zh)!important;font-size:11.5px!important;color:var(--mut2)!important;margin:0!important;padding-right:6px}
-:root[data-shell] .studio-input-meta kbd{font-family:var(--la)!important;font-size:11.5px!important;border:0;color:var(--mut2)}
+:root[data-shell] .studio-input-meta{font-family:var(--ui)!important;font-size:11.5px!important;color:var(--mut2)!important;margin:0!important;padding-right:6px}
+:root[data-shell] .studio-input-meta kbd{font-family:var(--ui)!important;font-size:11.5px!important;border:0;color:var(--mut2)}
 :root[data-shell] .studio-input-meta i{color:var(--line2)!important}
 .st-tpill{flex:none;height:38px;padding:0 13px 0 6px;border-radius:19px;background:var(--soft)!important;color:var(--ink)!important;font-size:13px;display:inline-flex;align-items:center;gap:7px;border:0!important}
 .st-tpill .T{width:26px;height:26px;border-radius:13px;background:linear-gradient(140deg,var(--ac),var(--ac2));color:#fff;font-family:var(--disp)!important;font-style:italic;font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center}
-.st-tpill .nm{font-family:var(--zh)!important}
-.st-tpill .v{font-family:var(--la)!important;color:var(--mut);font-variant-numeric:tabular-nums}
+.st-tpill .nm{font-family:var(--ui)!important}
+.st-tpill .v{font-family:var(--ui)!important;color:var(--mut);font-variant-numeric:tabular-nums}
 
 /* ---------- 10. 温度胶囊 ---------- */
 .st-tp{position:fixed;z-index:80;width:372px;max-width:calc(100vw - 24px);border-radius:24px;background:var(--card);box-shadow:var(--shadow-lg);padding:22px 22px 14px;display:flex;flex-direction:column;gap:14px;opacity:0;visibility:hidden;transform:translateY(14px) scale(.97);transform-origin:85% 100%;transition:opacity .45s var(--ez),transform .6s var(--ez),visibility 0s linear .45s}
@@ -264,7 +275,7 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 .st-tp .top{display:flex;align-items:flex-end;gap:10px;position:relative}
 .st-tp .nmx{display:flex;flex-direction:column;gap:2px}
 .st-tp .nmx .lat{font-size:15px;color:var(--mut);letter-spacing:.06em}
-.st-tp .nmx b{font-family:var(--zh)!important;font-size:21px;font-weight:600;letter-spacing:.14em;color:var(--fg)}
+.st-tp .nmx b{font-family:var(--ui)!important;font-size:21px;font-weight:600;letter-spacing:0;color:var(--fg)}
 .st-tp .val{margin-left:auto;font-family:var(--disp)!important;font-style:italic;font-size:34px;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
 .st-bulb{position:relative;width:38px;height:38px;border-radius:19px;border:1px solid var(--line2)!important;display:flex;align-items:center;justify-content:center;color:var(--mut)!important;transition:background 1s var(--ez),border-color 1s var(--ez),color 1s var(--ez),transform .4s var(--ez)!important}
 .st-bulb:hover{border-color:var(--ac)!important}
@@ -298,7 +309,7 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 .st-cap .txt span{display:inline-block;opacity:0;color:transparent;text-shadow:0 0 7px var(--haze);transform:translateY(5px);transition:opacity .7s var(--ez),color .8s var(--ez),text-shadow .9s var(--ez),transform .8s var(--ez)}
 .st-cap .txt.in span{opacity:1;color:var(--glyph);text-shadow:0 0 0 transparent;transform:none}
 .st-cap .txt.out span{opacity:0;color:transparent;text-shadow:0 0 6px var(--haze);transform:translateY(-5px);transition-duration:.5s;transition-delay:0s!important}
-.st-cap .txt .z{font-family:var(--zh)!important;font-size:13.5px;letter-spacing:.14em}
+.st-cap .txt .z{font-family:var(--ui)!important;font-size:13.5px;letter-spacing:0}
 .st-cap .txt .l{font-family:var(--la)!important;font-style:italic;font-size:17px;letter-spacing:.02em}
 .st-cap .txt .g{font-family:var(--la)!important;font-size:16px;letter-spacing:.03em}
 .st-cap .thumb{position:absolute;top:6px;width:32px;height:32px;border-radius:16px;background:#fff;box-shadow:0 2px 6px rgba(40,30,80,.3);transition:left .55s var(--ez),box-shadow 1.2s var(--ez);pointer-events:none}
@@ -313,10 +324,10 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 .st-ticks{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));text-align:center}
 .st-ticks button{display:flex!important;flex-direction:column;align-items:center;gap:1px;padding:2px 0!important;border:0!important;border-radius:8px!important;color:var(--mut)!important;transition:color .5s!important}
 .st-ticks button:hover{color:var(--fg)!important;background:transparent!important}
-.st-ticks small{font-family:var(--disp)!important;font-size:13px;font-weight:600;letter-spacing:.14em}
-.st-ticks span{font-family:var(--zh)!important;font-size:12px}
+.st-ticks small{font-family:var(--disp)!important;font-size:13px;font-weight:600;letter-spacing:0}
+.st-ticks span{font-family:var(--ui)!important;font-size:12px}
 .st-ticks .on{color:var(--ink)!important}
-.st-desc{font-family:var(--zh)!important;font-size:13px;line-height:1.8;color:var(--fg2);min-height:47px;transition:opacity .4s}
+.st-desc{font-family:var(--ui)!important;font-size:13px;line-height:1.8;color:var(--fg2);min-height:47px;transition:opacity .4s}
 .st-tfoot{border-top:1px solid var(--line);padding-top:10px;display:flex;align-items:center}
 .st-tfoot .lat{font-size:14px;color:var(--mut2)}
 .st-tfoot button{margin-left:auto;height:30px;padding:0 10px!important;border-radius:15px!important;border:0!important;font-size:12.5px;color:var(--mut)!important}
@@ -326,26 +337,26 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 .st-margin{grid-column:3;padding:24px 22px 18px 6px;display:flex;flex-direction:column;gap:16px;min-height:0;overflow-y:auto;scrollbar-width:none;transition:opacity .5s var(--ez)}
 .st-margin::-webkit-scrollbar{display:none}
 .st-mcard{border-radius:20px;background:var(--card);box-shadow:var(--shadow);padding:18px 20px;display:flex;flex-direction:column;gap:11px}
-.st-mh{display:flex;align-items:baseline;gap:8px;font-family:var(--zh)!important;font-size:13px;color:var(--mut)}
+.st-mh{display:flex;align-items:baseline;gap:8px;font-family:var(--ui)!important;font-size:13px;color:var(--mut)}
 .st-mh .lat{font-size:14px;color:var(--mut2)}
 .st-mh button{margin-left:auto;font-size:12px!important;color:var(--ink)!important;border:0!important;padding:2px 6px!important;border-radius:8px!important}
 .st-mh button:hover{background:var(--soft)!important}
 .st-big{display:flex;align-items:baseline;gap:6px}
-.st-big b{font-family:var(--disp)!important;font-weight:600;font-size:40px;line-height:1;font-variant-numeric:tabular-nums;color:var(--fg)}
-.st-big span{font-family:var(--zh)!important;font-size:13px;color:var(--mut)}
-.st-note{font-family:var(--zh)!important;font-size:12px;color:var(--mut)}
+.st-big b{font-family:var(--disp)!important;font-weight:600;font-size:40px;line-height:1;font-variant-numeric:lining-nums tabular-nums;color:var(--fg)}
+.st-big span{font-family:var(--ui)!important;font-size:13px;color:var(--mut)}
+.st-note{font-family:var(--ui)!important;font-size:12px;color:var(--mut)}
 .st-ring{display:flex;align-items:center;gap:16px}
 .st-ring .fg{stroke:var(--ac);transition:stroke-dashoffset 1s var(--ez)}
 .st-ring .bgc{stroke:var(--track)}
-.st-ring b{font-family:var(--disp)!important;font-weight:600;font-size:28px;line-height:1;color:var(--fg)}
-.st-thr{display:flex;align-items:center;gap:10px;font-family:var(--zh)!important;font-size:14px;color:var(--fg2);min-width:0}
+.st-ring b{font-family:var(--disp)!important;font-weight:600;font-size:28px;line-height:1;color:var(--fg);font-variant-numeric:lining-nums tabular-nums}
+.st-thr{display:flex;align-items:center;gap:10px;font-family:var(--ui)!important;font-size:14px;color:var(--fg2);min-width:0}
 .st-thr span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .st-thr i{width:8px;height:8px;border-radius:4px;flex:none;background:#d9a04a}
 .st-thr em{margin-left:auto;font-style:normal;font-size:12px;color:#a46b1e;flex:none}
 .st-thr.done{color:var(--mut)}.st-thr.done i{background:#8fbf9a}.st-thr.done em{color:#4f8a5d}
-.st-empty{font-family:var(--zh)!important;font-size:12.5px;color:var(--mut2);line-height:1.8}
+.st-empty{font-family:var(--ui)!important;font-size:12.5px;color:var(--mut2);line-height:1.8}
 .st-people{display:flex;flex-wrap:wrap;gap:8px}
-.st-people span{height:30px;padding:0 12px;border-radius:15px;background:var(--card);box-shadow:var(--shadow);font-family:var(--zh)!important;font-size:13px;display:flex;align-items:center;color:var(--fg2)}
+.st-people span{height:30px;padding:0 12px;border-radius:15px;background:var(--card);box-shadow:var(--shadow);font-family:var(--ui)!important;font-size:13px;display:flex;align-items:center;color:var(--fg2)}
 
 /* ---------- 12. 抽屉 / 面板 / 弹窗 / 提示 ---------- */
 :root[data-shell] :is(.drawer,.sheet,.tws-modal,.tws-opcard,.ctx-pop,.alert,#sheetDyn){border-radius:26px!important;clip-path:none!important;background:var(--card)!important;background-image:none!important;border:0!important;box-shadow:var(--shadow-lg)!important}
@@ -353,7 +364,7 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 :root[data-shell] :is(.toast,.tws-toast){border-radius:999px!important;background:var(--fg)!important;color:var(--bg)!important;border:0!important;box-shadow:var(--shadow-lg)!important;letter-spacing:.04em}
 :root[data-shell] .scrim{background:color-mix(in srgb,var(--fg) 22%,transparent)!important}
 :root[data-shell] :is(.sheet-head,.dr-head,.tws-modal-h){border-bottom:1px solid var(--line)!important}
-:root[data-shell] :is(.sheet-head h3,.dr-head h3,.tws-modal-h){font-family:var(--zh)!important;font-weight:600!important;letter-spacing:.14em!important;font-size:17px!important}
+:root[data-shell] :is(.sheet-head h3,.dr-head h3,.tws-modal-h){font-family:var(--zh)!important;font-weight:600!important;letter-spacing:.04em!important;font-size:17px!important}
 :root[data-shell] .sq{width:6px!important;height:6px!important;border-radius:3px!important;background:var(--ac)!important;clip-path:none!important}
 :root[data-shell] .dr-search{background:transparent!important;border:0!important}
 :root[data-shell] .dr-item{border:0!important;border-radius:14px!important;background:transparent!important;box-shadow:none!important}
@@ -364,16 +375,16 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 /* ---------- 13. 配置页与功能视图 ---------- */
 :root[data-shell] .cfg-body{padding:6px clamp(28px,4vw,52px) 40px!important}
 :root[data-shell] .cfg-sec{background:transparent!important;border:0!important;border-top:1px solid var(--line)!important;border-radius:0!important;box-shadow:none!important;padding:18px 0!important}
-:root[data-shell] .cfg-label{font-family:var(--zh)!important;letter-spacing:.14em!important;color:var(--fg2)!important;font-size:14px!important;text-transform:none!important}
+:root[data-shell] .cfg-label{font-family:var(--ui)!important;letter-spacing:0!important;color:var(--fg2)!important;font-size:14px!important;text-transform:none!important}
 :root[data-shell] .cfg-sec .row,:root[data-shell] .cfg-body .row{background:transparent!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;box-shadow:none!important}
 :root[data-shell] .row .ico{background:var(--soft)!important;border:0!important;border-radius:12px!important;clip-path:none!important;color:var(--ink)!important;box-shadow:none!important}
 :root[data-shell] .row .ico svg{stroke:currentColor;stroke-width:1.5}
-:root[data-shell] .row-ttl{font-family:var(--zh)!important}
+:root[data-shell] .row-ttl{font-family:var(--ui)!important}
 :root[data-shell] .row-sub,.cfg-hint{color:var(--mut)!important}
 :root[data-shell] :is(.tws-card,.tws-stat,.tws-book){background:var(--card)!important;border:0!important;border-radius:20px!important;box-shadow:var(--shadow)!important;clip-path:none!important}
 :root[data-shell] .tws-book{background:transparent!important;box-shadow:none!important}
 :root[data-shell] .tws-tree{background:transparent!important;border-right:1px solid var(--line)!important}
-:root[data-shell] :is(.tws-editor,.tws-content){font-family:var(--zh),var(--la)!important}
+:root[data-shell] :is(.tws-editor,.tws-content),:root[data-shell] :is(.tws-editor,.tws-content) *:not(code):not(pre){font-family:var(--zh),var(--la)!important}
 :root[data-shell] .tws-ta{font-size:var(--story-size,17px)!important;line-height:2.05!important}
 :root[data-shell] :is(.tws-tag,.tws-st){border-radius:99px!important}
 :root[data-shell] .tws-bar{background:var(--track)!important;border-radius:3px}
@@ -386,7 +397,7 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 .st-nseg small{font-family:var(--disp)!important;font-style:italic;font-size:13px;color:var(--mut)}
 .st-luxrow{display:flex;align-items:center;gap:14px;padding:12px 0}
 .st-luxrow .k{display:flex;flex-direction:column;gap:3px;min-width:0}
-.st-luxrow b{font-family:var(--zh)!important;font-weight:500;font-size:15px}
+.st-luxrow b{font-family:var(--ui)!important;font-weight:500;font-size:15px}
 .st-luxrow span{font-size:12.5px;color:var(--mut)}
 .st-luxrow button{margin-left:auto}
 
@@ -443,8 +454,8 @@ body:not(.is-loading) .st-margin{animation:inU .9s var(--ez) .14s both}
 :root[data-shell] .st-ticks button,:root[data-shell] .st-mh button,:root[data-shell] .st-tfoot button{background:transparent!important}
 :root[data-shell] .st-nseg button{background:transparent!important;border-radius:19px!important}
 :root[data-shell] .st-nseg button.on{background:var(--soft)!important}
-:root[data-shell] .studio-new{width:100%!important;display:flex!important;align-items:center;justify-content:center}
-:root[data-shell] .studio-new span{display:inline!important;font-family:var(--zh)!important}
+:root[data-shell] .studio-new{width:100%!important;flex-shrink:0!important;display:flex!important;align-items:center;justify-content:center}
+:root[data-shell] .studio-new span{display:inline!important;font-family:var(--ui)!important}
 :root[data-shell] .studio-new svg{width:16px;height:16px;stroke-width:1.8;stroke-linecap:round}
 /* 输入台排版：技能芯片 + 模板按钮一行，输入一行，提示一行 */
 :root[data-shell="desktop"] .composer{display:grid!important;grid-template-columns:minmax(0,1fr) auto;column-gap:8px;row-gap:8px}
@@ -458,7 +469,7 @@ body:not(.is-loading) .st-margin{animation:inU .9s var(--ez) .14s both}
 
 /* ---------- 16. 自动识别卡片 ---------- */
 .st-scan{margin-top:14px;border-radius:18px;background:var(--soft);padding:12px 16px 12px;display:flex;flex-direction:column;gap:8px;font-size:13.5px;line-height:1.7;animation:inU .7s var(--ez) both}
-.st-scan-h{font-family:var(--zh)!important;font-size:13px;color:var(--ink);letter-spacing:.04em;display:flex;align-items:baseline;gap:8px}
+.st-scan-h{font-family:var(--ui)!important;font-size:13px;color:var(--ink);letter-spacing:0;display:flex;align-items:baseline;gap:8px}
 .st-scan-h .lat{font-size:14px;opacity:.75}
 .st-scan-h.busy{background:linear-gradient(90deg,var(--ink) 30%,color-mix(in srgb,var(--ink) 35%,transparent) 50%,var(--ink) 70%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:stScanShimmer 2.2s linear infinite}
 @keyframes stScanShimmer{from{background-position:120% 0}to{background-position:-120% 0}}
@@ -467,14 +478,14 @@ body:not(.is-loading) .st-margin{animation:inU .9s var(--ez) .14s both}
 .st-scan-l{display:flex;align-items:flex-start;gap:10px;padding:6px 4px;border-radius:10px;cursor:pointer;transition:background .3s}
 .st-scan-l:hover{background:color-mix(in srgb,var(--card) 60%,transparent)}
 .st-scan-l input{margin-top:5px;accent-color:var(--ac);flex:none}
-.st-scan-l .tg{flex:none;font-style:normal;font-family:var(--zh)!important;font-size:11.5px;line-height:20px;height:20px;padding:0 8px;border-radius:10px;background:var(--card);color:var(--ink);margin-top:2px}
+.st-scan-l .tg{flex:none;font-style:normal;font-family:var(--ui)!important;font-size:11.5px;line-height:20px;height:20px;padding:0 8px;border-radius:10px;background:var(--card);color:var(--ink);margin-top:2px}
 .st-scan-l .tg-add_event{color:#3f7a8a}
 .st-scan-l .tg-add_thread{color:#a46b1e}
 :root[data-theme="dark"] .st-scan-l .tg-add_event{color:#86b7c4}
 :root[data-theme="dark"] .st-scan-l .tg-add_thread{color:#e0b26a}
 .st-scan-l .tg-resolve_thread{color:#4f8a4a}
 :root[data-theme="dark"] .st-scan-l .tg-resolve_thread{color:#9ccf8f}
-.st-scan-l .tx{display:flex;flex-direction:column;min-width:0;font-family:var(--zh)!important;color:var(--fg)}
+.st-scan-l .tx{display:flex;flex-direction:column;min-width:0;font-family:var(--ui)!important;color:var(--fg)}
 .st-scan-l .tx b{font-weight:600;font-size:14px}
 .st-scan-l .tx span{font-size:12.5px;color:var(--fg2);line-height:1.7}
 .st-scan-f{display:flex;gap:8px;padding-top:2px}
@@ -487,14 +498,14 @@ body:not(.is-loading) .st-margin{animation:inU .9s var(--ez) .14s both}
 .st-opus.noopus .st-book{display:none!important}
 .st-quote p{margin:0}
 .st-quote .q{font-family:var(--zh)!important;font-size:16px;line-height:1.85;letter-spacing:.08em;color:var(--fg)}
-.st-quote .q.la{font-family:var(--disp)!important;font-style:italic;font-size:21px;line-height:1.35;letter-spacing:.01em}
+.st-quote .q.la{font-family:var(--disp)!important;font-style:italic;font-size:21px;line-height:1.35;letter-spacing:0}
 .st-quote .tr{font-family:var(--zh)!important;font-size:13px;color:var(--fg2);letter-spacing:.06em}
 .st-quote .src{font-family:var(--zh)!important;font-size:12px;color:var(--mut);text-align:right}
 :root[data-shell] .st-qnew{align-self:flex-start;margin-top:4px;border:0!important;border-radius:14px!important;background:var(--soft)!important;color:var(--ink)!important;font-size:12.5px;height:30px;padding:0 12px!important}
 :root[data-shell] .st-qnew:hover{filter:brightness(1.04)}
 /* 左栏顶部「正在写 · 今日一句」切换 */
 .st-osw{display:flex;align-items:center;gap:2px;padding:0 2px!important}
-:root[data-shell] .st-osw button{border:0!important;background:transparent!important;border-radius:10px!important;padding:4px 8px!important;font-family:var(--zh)!important;font-size:12.5px;color:var(--mut)!important;letter-spacing:.04em;transition:color .35s,background .35s!important}
+:root[data-shell] .st-osw button{border:0!important;background:transparent!important;border-radius:10px!important;padding:4px 8px!important;font-family:var(--ui)!important;font-size:12.5px;color:var(--mut)!important;letter-spacing:0;transition:color .35s,background .35s!important}
 :root[data-shell] .st-osw button i{font-family:var(--disp)!important;font-style:italic;font-size:13.5px;margin-left:2px}
 :root[data-shell] .st-osw button:hover:not(:disabled){color:var(--fg2)!important}
 :root[data-shell] .st-osw button.on{color:var(--ink)!important;background:var(--soft)!important}
@@ -503,18 +514,18 @@ body:not(.is-loading) .st-margin{animation:inU .9s var(--ez) .14s both}
 /* ---------- 故事大脑 Cerebrum ---------- */
 .st-scan.br-in{display:flex;flex-direction:column;gap:9px}
 .st-scan.br-in[hidden],.br-card [hidden]{display:none}
-.br-h{display:flex;align-items:center;gap:10px;font-family:var(--zh,serif);font-size:13px;color:var(--ink,#4c42c4)}
+.br-h{display:flex;align-items:center;gap:10px;font-family:var(--ui);font-size:13px;color:var(--ink,#4c42c4)}
 .br-h>span{flex:1}
 .br-h .lat{font-family:var(--disp,serif);font-style:italic;opacity:.75}
 .br-h.undone{color:var(--mut,#7a7495)}
 .br-tags{display:flex;flex-wrap:wrap;gap:6px}
-.br-tags span{height:24px;padding:0 10px;border-radius:12px;background:var(--soft,#eceafc);color:var(--fg2,#4a4563);font-family:var(--zh,serif);font-size:12px;display:inline-flex;align-items:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.br-ask{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 12px;border-radius:12px;border:1px dashed var(--line2,#d6d2e7);font-family:var(--zh,serif);font-size:13px;color:var(--fg,#1f1b33)}
+.br-tags span{height:24px;padding:0 10px;border-radius:12px;background:var(--soft,#eceafc);color:var(--fg2,#4a4563);font-family:var(--ui);font-size:12px;display:inline-flex;align-items:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.br-ask{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 12px;border-radius:12px;border:1px dashed var(--line2,#d6d2e7);font-family:var(--ui);font-size:13px;color:var(--fg,#1f1b33)}
 .br-ask>span{flex:1;min-width:150px}
-.br-list{display:flex;flex-direction:column;gap:6px;font-family:var(--zh,serif);font-size:13px;color:var(--fg2,#4a4563)}
+.br-list{display:flex;flex-direction:column;gap:6px;font-family:var(--ui);font-size:13px;color:var(--fg2,#4a4563)}
 .br-list label{display:flex;align-items:center;gap:8px;cursor:pointer}
 .br-f{display:flex;gap:6px}
-.br-btn{height:28px;padding:0 12px;border-radius:14px;font-family:var(--zh,serif);font-size:12.5px;color:var(--mut,#7a7495);border:1px solid var(--line2,#d6d2e7);background:transparent;cursor:pointer;transition:background .3s,color .3s,border-color .3s}
+.br-btn{height:28px;padding:0 12px;border-radius:14px;font-family:var(--ui);font-size:12.5px;color:var(--mut,#7a7495);border:1px solid var(--line2,#d6d2e7);background:transparent;cursor:pointer;transition:background .3s,color .3s,border-color .3s}
 .br-btn:hover{border-color:var(--ac,#6f63e6);color:var(--ink,#4c42c4)}
 .br-btn.on{background:var(--ac,#6f63e6);border-color:transparent;color:var(--onac,#fff)}
 .br-btn.on:hover{filter:brightness(1.06);color:var(--onac,#fff)}
@@ -522,15 +533,17 @@ body:not(.is-loading) .st-margin{animation:inU .9s var(--ez) .14s both}
 .br-dock.on{opacity:1;transform:none}
 .br-card{pointer-events:auto;position:relative;border-radius:18px;background:var(--card,#fff);box-shadow:var(--shadow-lg,0 20px 50px -24px rgba(40,30,110,.4));border:1px solid var(--line,#e6e3f1);padding:14px 16px;display:flex;flex-direction:column;gap:9px}
 .br-card>div:last-child{display:flex;flex-direction:column;gap:9px}
-.br-busy{font-family:var(--zh,serif);font-size:13px;color:var(--ink,#4c42c4)}
+.br-busy{font-family:var(--ui);font-size:13px;color:var(--ink,#4c42c4)}
 .br-busy .lat{font-family:var(--disp,serif);font-style:italic;opacity:.75}
-.br-src{font-family:var(--zh,serif);font-size:12px;color:var(--mut,#7a7495);padding-right:22px}
+.br-src{font-family:var(--ui);font-size:12px;color:var(--mut,#7a7495);padding-right:22px}
 .br-x{position:absolute;top:8px;right:10px;width:24px;height:24px;border-radius:12px;color:var(--mut,#7a7495);font-size:16px;line-height:1;background:none;border:0;cursor:pointer}
 .br-x:hover{background:var(--soft,#eceafc)}
 .br-cfg .k{display:flex;flex-direction:column;gap:8px}
 .br-seg{display:flex;flex-wrap:wrap;gap:6px}
-.br-seg button{height:30px;padding:0 13px;border-radius:15px;border:1px solid var(--line2,#d6d2e7);font-family:var(--zh,serif);font-size:12.5px;color:var(--fg2,#4a4563);transition:all .35s}
+.br-seg button{height:30px;padding:0 13px;border-radius:15px;border:1px solid var(--line2,#d6d2e7);font-family:var(--ui);font-size:12.5px;color:var(--fg2,#4a4563);transition:all .35s}
 .br-seg button:hover{border-color:var(--ac,#6f63e6)}
 .br-seg button.on{background:var(--soft,#eceafc);border-color:var(--ac,#6f63e6);color:var(--ink,#4c42c4)}
 .br-desc{font-size:12.5px;color:var(--mut,#7a7495)}
 @media (prefers-reduced-motion:reduce){.br-dock{transition:none}}
+
+:root[data-shell] .st-osw button{white-space:nowrap}

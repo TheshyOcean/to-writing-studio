@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.1.0
+# To Writing Studio 写作工作台 · Beta V3.3.0
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -18,6 +18,8 @@
 ## 版本
 
 > 目前所有版本都是 **Beta（测试版）**，还没有正式发版；以前标过的 V / Preview 版本号也一律算作 Beta。
+
+**Beta V3.3.0 · 2026-10-29**（电脑版 + 手机版）：换字体。① 中文从思源宋体换成**霞鹜文楷**：原来连按钮、导航、输入框都是宋体，看起来像打开了一份 Word 文档；楷书带手写笔意，读长篇也舒服。② 英文和数字继续用 EB Garamond，拉丁小字（Colloquium、Codex 等）保留 Cormorant 斜体；西文字体只负责拉丁字母、数字和半角标点，中文引号、破折号、省略号固定由文楷来出。③ 加粗用文楷自带的 Medium 字重，不再是浏览器假粗体。④ 中文去掉额外字距；落款「写作工作台」不再折行；数字改为等高数字（0 不再像字母 O）。⑤ 不再加载思源宋体（约 4 MB），文楷按需分片加载。改动文件：`studio.css`、新增 `fonts/lxgw-wenkai/`、`fonts/OFL-LXGWWenKai.txt`；`studio.js`、`desktop.html`、`mobile.html`（版本号）。
 
 **Beta V3.2.0 · 2026-10-21**（电脑版）：① 「命运骰子」改为**命运塔罗 Arcana**：洗牌（两次交叉洗牌）→ 七张牌展开成扇形 → 凭直觉选一张 → 翻牌（约三成概率逆位）→ 牌意与剧情方向逐字浮现；配了 API Key 时再结合本书的人物、未回收伏笔和最近正文写一段专属解读。牌意只当写作提示，写进下一段时会要求 AI 不出现塔罗本身。22 张大阿卡纳均为原创线描牌面，图鉴记录抽到过的牌。② 顶栏按钮悬停：塔罗按钮小牌翻转、「命运塔罗」化作 *Arcana*；「入戏」面具摇摆、化作 *Persona*。③ 修正：顶栏按钮与弹窗主按钮的底色被通用按钮规则清掉，导致昼读 / 夜读下文字看不见。改动文件：`js/tws-fun.js`、`js/tws-fun.css`、`desktop.html`（引用版本号）。
 
@@ -127,7 +129,7 @@ js/tws.css                新视图样式（复用现有设计令牌）
 js/tws-data.js            数据层：项目/章节/卡片/伏笔/版本/统计/导出文本
 js/tws-features.js        开写模板 + 真 .docx 生成 + 一致性检查
 js/tws-views.js           书稿 / 设定库 / 伏笔三视图 + 采纳按钮 + 导航
-fonts/                    自托管字体分包子集（63 个 woff2）
+fonts/                    自托管字体分包子集（霞鹜文楷 + EB Garamond / Cormorant；旧的思源宋体子集仅供 index.html）
 ```
 
 **没有构建步骤**：改文件即生效。脚本用 `<script>` 顺序加载，挂在 `window.TWS` 命名空间下。
