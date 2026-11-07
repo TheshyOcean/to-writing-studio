@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.3.0
+# To Writing Studio 写作工作台 · Beta V3.4.0
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -18,6 +18,8 @@
 ## 版本
 
 > 目前所有版本都是 **Beta（测试版）**，还没有正式发版；以前标过的 V / Preview 版本号也一律算作 Beta。
+
+**Beta V3.4.0 · 2026-11-07**（电脑版 + 手机版）：重做开场动画。① 「让故事，在此发生。」改为**泼墨落笔**：每个字落笔前先在原位溅开一团墨（沿笔画晕开的墨团 + 四周飞溅的墨点），笔画再按真实笔顺从墨里写出来，笔锋前面带一层湿墨晕染，字写完墨晕散去，只留干净的霞鹜文楷（笔顺取自 Hanzi Writer 的笔画数据，把文楷字形的每个像素分给最近的一笔，所以写完就是完整的文楷字，不缺笔、不重影）。字与字错开起笔、连着写，首次约 1.4 秒写完，之后再打开约 0.8 秒。② 揭幕不再让标题「飞」到卷首（原来像整块字被克隆过去）：开屏的字先在纸面上原地淡去，纸面变透明，卷首那句再在自己的位置逐字由淡到浓显现，谁都不挪位置。③ 标识与细线照常先出场，字体一到就落笔；字体 1.6 秒内没到则退回原来的「墨晕凝字」。点任意处仍可跳过。④ 流畅度：写字的准备工作分帧做（每帧最多 6 ms），等页面主程序初始化完、帧率稳住再落笔；每帧只写回动到的那块画布，湿墨层半分辨率；泼墨的模糊直接画进位图，纸面淡出、墨团溅开都只动 opacity / transform；主线程偶尔卡一下时动画原地稍等、不跳笔；结束后释放画布内存。另外，工作台进场时正文区、右栏、输入框不再整块做模糊动画（只淡入 + 上移），集显电脑和手机上不再掉帧。实测（Chromium，CPU 降速 4–6 倍模拟中低端手机）：写字与揭幕全程约 60 帧。改动文件：`boot-ink.js`（重写）、`boot-ink.css`、`studio.css`（大面板进场动画）；新增 `boot-strokes.js`（7 个字的笔顺数据，约 3 KB）、`tools/build-boot-strokes.py`、`tools/hanzi-strokes/`、`ARPHICPL-strokes.txt`；`desktop.html`、`mobile.html`（引用与版本号）、`studio.js`（版本号）。
 
 **Beta V3.3.0 · 2026-10-29**（电脑版 + 手机版）：换字体。① 中文从思源宋体换成**霞鹜文楷**：原来连按钮、导航、输入框都是宋体，看起来像打开了一份 Word 文档；楷书带手写笔意，读长篇也舒服。② 英文和数字继续用 EB Garamond，拉丁小字（Colloquium、Codex 等）保留 Cormorant 斜体；西文字体只负责拉丁字母、数字和半角标点，中文引号、破折号、省略号固定由文楷来出。③ 加粗用文楷自带的 Medium 字重，不再是浏览器假粗体。④ 中文去掉额外字距；落款「写作工作台」不再折行；数字改为等高数字（0 不再像字母 O）。⑤ 不再加载思源宋体（约 4 MB），文楷按需分片加载。改动文件：`studio.css`、新增 `fonts/lxgw-wenkai/`、`fonts/OFL-LXGWWenKai.txt`；`studio.js`、`desktop.html`、`mobile.html`（版本号）。
 
@@ -130,6 +132,8 @@ js/tws-data.js            数据层：项目/章节/卡片/伏笔/版本/统计/
 js/tws-features.js        开写模板 + 真 .docx 生成 + 一致性检查
 js/tws-views.js           书稿 / 设定库 / 伏笔三视图 + 采纳按钮 + 导航
 fonts/                    自托管字体分包子集（霞鹜文楷 + EB Garamond / Cormorant；旧的思源宋体子集仅供 index.html）
+boot-ink.css/js           开场动画「泼墨落笔」
+boot-strokes.js           开场标题的笔顺数据（由 tools/build-boot-strokes.py 生成）
 ```
 
 **没有构建步骤**：改文件即生效。脚本用 `<script>` 顺序加载，挂在 `window.TWS` 命名空间下。
@@ -184,3 +188,4 @@ chromium.launch({ channel: 'msedge' })   // 独立调试端口，不会被转发
 ## 许可证 · License
 
 [MIT](LICENSE)。`fonts/` 中的字体另行遵循 SIL Open Font License 1.1。
+开场动画的笔顺数据（`boot-strokes.js`、`tools/hanzi-strokes/`）来自 [Hanzi Writer](https://github.com/chanind/hanzi-writer-data) / Make Me a Hanzi，遵循 Arphic Public License（见 [ARPHICPL-strokes.txt](ARPHICPL-strokes.txt)）。

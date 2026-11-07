@@ -430,6 +430,9 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 body:not(.is-loading) .rail{animation:inL .9s var(--ez) both}
 body:not(.is-loading) .stage{animation:inU .9s var(--ez) .06s both}
 body:not(.is-loading) .st-margin{animation:inU .9s var(--ez) .14s both}
+/* 大面板进场只动 opacity / transform：整块面板做模糊动画，在集显电脑和手机上会掉帧（Beta V3.4.0） */
+@keyframes inUs{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+body:not(.is-loading) .stage,body:not(.is-loading) .st-margin,body:not(.is-loading) .composer{animation-name:inUs}
 
 /* 金光扩散 */
 .st-wave{position:fixed;z-index:90;width:44px;height:44px;border-radius:50%;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(0)}
