@@ -1,4 +1,4 @@
-/* 开屏「泼墨落笔」· Beta V3.4.0（电脑版 + 手机版） */
+/* 开屏「泼墨落笔」· Beta V3.3.2（电脑版 + 手机版） */
 #loader{position:fixed;inset:0;z-index:999;overflow:hidden;cursor:pointer}
 /* 纸面单独一层：揭幕时只改透明度（走显卡），不逐帧重绘整屏背景色 */
 #loader::before{content:"";position:absolute;inset:0;background:var(--bg,#efeef6);will-change:opacity}
