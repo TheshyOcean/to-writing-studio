@@ -106,20 +106,42 @@
   var navHl=null;
   if(rail&&!mobile){
     navHl=document.createElement('i');navHl.className='nav-highlight';navHl.setAttribute('aria-hidden','true');rail.prepend(navHl);
-    var moveHl=function(){
+    /* 按钮按下时会 scale(.96)，直接量 getBoundingClientRect 得到的是缩小后的框，
+       连点时高亮就会偏窄、偏移。缩放以中心为原点，中心点不受影响：
+       尺寸取不含缩放的 offsetWidth/offsetHeight，位置由中心点倒推，精确到小数像素；
+       再补上左栏的滚动量，左栏滚动时同样对得上。 */
+    var hlFrame=0,hlLast='';
+    var placeHl=function(){
+      hlFrame=0;
       var t=api.S.drawerOpen?document.getElementById('studioHistory'):rail.querySelector('.rail-btn.active');
-      if(!t)return;
+      if(!t||!t.offsetHeight)return;
       var rr=rail.getBoundingClientRect(),tr=t.getBoundingClientRect();
-      if(!tr.height)return;
-      navHl.style.left=(tr.left-rr.left)+'px';
-      navHl.style.width=tr.width+'px';
-      navHl.style.height=tr.height+'px';
-      navHl.style.transform='translateY('+(tr.top-rr.top)+'px)';
+      var w=t.offsetWidth,h=t.offsetHeight;
+      var x=(tr.left+tr.right)/2-rr.left-rail.clientLeft+rail.scrollLeft-w/2;
+      var y=(tr.top+tr.bottom)/2-rr.top-rail.clientTop+rail.scrollTop-h/2;
+      x=Math.round(x*100)/100;y=Math.round(y*100)/100;
+      var key=x+'|'+y+'|'+w+'|'+h;
+      if(key===hlLast)return;
+      hlLast=key;
+      navHl.style.left=x+'px';
+      navHl.style.width=w+'px';
+      navHl.style.height=h+'px';
+      navHl.style.transform='translateY('+y+'px)';
       navHl.style.opacity='1';
     };
-    new MutationObserver(moveHl).observe(rail,{subtree:true,attributes:true,attributeFilter:['class']});
+    /* 同一帧里的多次触发合并成一次，连点时只认最后的选中项 */
+    var moveHl=function(){if(!hlFrame)hlFrame=requestAnimationFrame(placeHl);};
+    new MutationObserver(moveHl).observe(rail,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','hidden']});
     var drEl=document.getElementById('drawer');
     if(drEl)new MutationObserver(moveHl).observe(drEl,{attributes:true,attributeFilter:['class']});
+    /* 上方卡片换行、字体晚加载、按钮晚插入，都会让按钮整体下移：只要左栏里任何一块尺寸变了就重新对齐 */
+    if(window.ResizeObserver){
+      var hlRO=new ResizeObserver(moveHl);
+      var watchKids=function(){Array.prototype.forEach.call(rail.children,function(c){if(c!==navHl)hlRO.observe(c);});};
+      hlRO.observe(rail);watchKids();
+      new MutationObserver(watchKids).observe(rail,{childList:true});
+    }
+    if(document.fonts&&document.fonts.ready)document.fonts.ready.then(moveHl);
     window.addEventListener('resize',moveHl);
     window.addEventListener('load',moveHl);
     moveHl();setTimeout(moveHl,180);setTimeout(moveHl,700);

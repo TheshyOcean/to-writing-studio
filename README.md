@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.3.2
+# To Writing Studio 写作工作台 · Beta V3.3.3
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,9 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.3.3 · 2026-11-08**（电脑版）：修复左栏选中高亮块跑偏。快速连点导航时，淡紫色高亮块会变窄、错位，甚至卡在两项之间。原因有二：① 按钮按下时有 `scale(.96)` 的按压效果，高亮块正好在按钮缩小时测量位置；② 高亮块只在切换选中项时才重新定位，左栏上方卡片换行、字体晚加载或按钮晚插入后，下面的按钮整体下移，高亮块却停在原地。现改为由按钮中心点倒推位置（不受按压缩放影响，精确到小数像素），并用 `ResizeObserver` 监听左栏各块尺寸，任何布局变化都会自动重新对齐；同一帧内的多次触发合并为一次。同时把 `terminal-redesign.js` 的缓存参数从 `?v=2.3.0` 更新为 `?v=3.3.3`，确保浏览器拿到新文件。
+改动文件：`terminal-redesign.js`（侧栏滑动高亮）、`desktop.html` / `mobile.html` / `studio.js`（版本号）。
 
 **Beta V3.3.2 · 2026-11-07**（电脑版 + 手机版）：重做开场动画。① 「让故事，在此发生。」改为**泼墨落笔**：每个字落笔前先在原位溅开一团墨（沿笔画晕开的墨团 + 四周飞溅的墨点），笔画再按真实笔顺从墨里写出来，笔锋前面带一层湿墨晕染，字写完墨晕散去，只留干净的霞鹜文楷（笔顺取自 Hanzi Writer 的笔画数据，把文楷字形的每个像素分给最近的一笔，所以写完就是完整的文楷字，不缺笔、不重影）。字与字错开起笔、连着写，首次约 1.4 秒写完，之后再打开约 0.8 秒。② 揭幕不再让标题「飞」到卷首（原来像整块字被克隆过去）：开屏的字先在纸面上原地淡去，纸面变透明，卷首那句再在自己的位置逐字由淡到浓显现，谁都不挪位置。③ 标识与细线照常先出场，字体一到就落笔；字体 1.6 秒内没到则退回原来的「墨晕凝字」。点任意处仍可跳过。④ 流畅度：写字的准备工作分帧做（每帧最多 6 ms），等页面主程序初始化完、帧率稳住再落笔；每帧只写回动到的那块画布，湿墨层半分辨率；泼墨的模糊直接画进位图，纸面淡出、墨团溅开都只动 opacity / transform；主线程偶尔卡一下时动画原地稍等、不跳笔；结束后释放画布内存。另外，工作台进场时正文区、右栏、输入框不再整块做模糊动画（只淡入 + 上移），集显电脑和手机上不再掉帧。实测（Chromium，CPU 降速 4–6 倍模拟中低端手机）：写字与揭幕全程约 60 帧。改动文件：`boot-ink.js`（重写）、`boot-ink.css`、`studio.css`（大面板进场动画）；新增 `boot-strokes.js`（7 个字的笔顺数据，约 3 KB）、`tools/build-boot-strokes.py`、`tools/hanzi-strokes/`、`ARPHICPL-strokes.txt`；`desktop.html`、`mobile.html`（引用与版本号）、`studio.js`（版本号）。
 
