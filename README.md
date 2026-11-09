@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.3.3
+# To Writing Studio 写作工作台 · Beta V3.3.4
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,9 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.3.4 · 2026-11-10**（电脑版 + 手机版）：换上新 logo「半是羽毛，半是水墨」，去掉旧版蓝紫渐变方块里的“To”。一支羽毛笔，右半是英伦铜版画的细线，左半化成浓淡不一的水墨；堇紫笔尖落下一滴淡墨，墨心透出紫光（古人评墨讲究「紫光为上」）。全套图标：`favicon.svg`（简化版，随系统深浅色切换）、`favicon-32.png`、`apple-touch-icon.png` / `icon-192.png`（手机桌面上只有约 60 px，用简化版）、`icon-512.png`（完整细节版，用于安装弹窗和启动画面）。左栏底部和入口页的品牌标记也换成新 logo，笔尖和墨心跟随主题色，灵光模式下会一起变金。同时修复入口页浅色模式被旧主题配色盖住、显示成黄绿色的问题。图标和 manifest 的缓存参数更新为 `?v=3.3.4`。
+新增：`logo/to-mark.svg`（完整版源文件）、`logo/to-icon.svg`（简化版源文件）、`tools/build-logo.py`（改了源文件后运行它重新生成 PNG 图标）。
 
 **Beta V3.3.3 · 2026-11-08**（电脑版）：修复左栏选中高亮块跑偏。快速连点导航时，淡紫色高亮块会变窄、错位，甚至卡在两项之间。原因有二：① 按钮按下时有 `scale(.96)` 的按压效果，高亮块正好在按钮缩小时测量位置；② 高亮块只在切换选中项时才重新定位，左栏上方卡片换行、字体晚加载或按钮晚插入后，下面的按钮整体下移，高亮块却停在原地。现改为由按钮中心点倒推位置（不受按压缩放影响，精确到小数像素），并用 `ResizeObserver` 监听左栏各块尺寸，任何布局变化都会自动重新对齐；同一帧内的多次触发合并为一次。同时把 `terminal-redesign.js` 的缓存参数从 `?v=2.3.0` 更新为 `?v=3.3.3`，确保浏览器拿到新文件。
 改动文件：`terminal-redesign.js`（侧栏滑动高亮）、`desktop.html` / `mobile.html` / `studio.js`（版本号）。

@@ -550,3 +550,11 @@ body:not(.is-loading) .stage,body:not(.is-loading) .st-margin,body:not(.is-loadi
 @media (prefers-reduced-motion:reduce){.br-dock{transition:none}}
 
 :root[data-shell] .st-osw button{white-space:nowrap}
+
+/* 品牌标记（Beta V3.3.4）：半是羽毛半是水墨的简化版，源文件 logo/to-icon.svg。
+   浓墨羽毛跟随正文色；堇紫笔尖和紫光墨心跟随主题色（灵光模式下随之变金）；
+   淡墨墨滴在深色模式下提亮一档。 */
+.to-mark .q{fill:var(--fg)}
+.to-mark .n,.to-mark .c{fill:var(--ac)}
+.to-mark .d{fill:#5B5650}
+:root[data-theme="dark"] .to-mark .d{fill:#8A847C}

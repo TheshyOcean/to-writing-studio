@@ -1,10 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 42 42" width="64" height="64" role="img" aria-label="To写作工作台">
-  <!-- To 写作工作台 · 品牌标记：堇紫圆角方印里一笔手写的「To」——
-       T 的横是一笔带锋的毛笔横，竖画末尾回钩；o 微微倾斜；右上一点星光 -->
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6f63e6"/><stop offset="1" stop-color="#7f93ff"/></linearGradient></defs>
-  <rect width="42" height="42" rx="11" fill="url(#g)"/>
-  <path d="M7.6 15.4C13 12.8 22 11.2 32.2 11.5c1.5.07 1.8 1.9.3 2.2-8.6.9-17 2-23.4 3.9-1.6.5-2.6-1.6-1.5-2.2z" fill="#fff"/>
-  <path d="M19.4 14.4c-.4 5.2-.7 10.6-.3 15.9.1 1.6 1.6 2.3 2.8 1.1" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
-  <ellipse cx="27.6" cy="26.6" rx="4.6" ry="4.9" transform="rotate(-18 27.6 26.6)" fill="none" stroke="#fff" stroke-width="3"/>
-  <circle cx="34" cy="8" r="2" fill="#fff" opacity=".9"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="13.5 14 223 223" width="64" height="64" role="img" aria-label="To写作工作台">
+  <!-- To 写作工作台 · 标签页图标（简化版，源文件 logo/to-icon.svg）：
+       实心羽毛笔，羽轴留一道细缝；堇紫笔尖下方落一滴淡墨，墨心透出紫光。
+       深色标签栏下羽毛换成宣纸色，墨滴提亮一档，保证看得清。 -->
+  <style>
+    .q{fill:#1E1B1A}.n,.c{fill:#6F63E6}.d{fill:#5B5650}
+    @media (prefers-color-scheme:dark){.q{fill:#EEEAE1}.n,.c{fill:#8A7FF2}.d{fill:#8A847C}}
+  </style>
+  <defs>
+    <mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="240" height="240">
+      <rect width="240" height="240" fill="#fff"/>
+      <path d="M1 -80 C2 -30 2 20 1 58" transform="translate(140 100) rotate(28)" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/>
+    </mask>
+  </defs>
+  <g mask="url(#cut)"><g class="q" transform="translate(140 100) rotate(28)">
+    <path d="M0 -95 C34 -66 42 -16 24 34 C18 48 8 58 2 62 L-2 62 C-16 52 -30 36 -34 14 C-42 -24 -26 -68 0 -95 Z"/>
+  </g></g>
+  <path class="n" d="M-3.5 62 L5.5 62 L1.6 102 L0.4 102 Z" transform="translate(140 100) rotate(28)"/>
+  <circle class="d" cx="80" cy="214" r="21"/>
+  <circle class="c" cx="80" cy="214" r="9"/>
 </svg>

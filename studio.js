@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Beta V3.3.3';
+var VERSION='Beta V3.3.4';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -26,7 +26,8 @@ var CN='零一二三四五六七八九十';
 function cnNum(n){ if(n<=10) return CN[n]; if(n<20) return '十'+(n%10?CN[n%10]:''); if(n<100) return CN[Math.floor(n/10)]+'十'+(n%10?CN[n%10]:''); return String(n); }
 function icon(p,w){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(w||1.6)+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>'; }
 
-var LOGO='<svg viewBox="0 0 42 42" aria-hidden="true"><defs><linearGradient id="stLg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--ac)"/><stop offset="1" style="stop-color:var(--ac2)"/></linearGradient></defs><rect width="42" height="42" rx="13" fill="url(#stLg)"/><path d="M8.5 15.6C13.5 13.2 22 11.6 31.5 11.9c1.1.05 1.3 1.4.2 1.6-8.2.8-16.2 1.9-22.3 3.7-1.2.4-1.8-1.1-.9-1.6z" fill="#fff"/><path d="M19.6 14.6c-.4 5-.7 10.4-.3 15.6.1 1.4 1.3 2 2.3 1" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="27.4" cy="26.6" rx="4.3" ry="4.6" transform="rotate(-18 27.4 26.6)" fill="none" stroke="#fff" stroke-width="2.2"/><circle cx="33.6" cy="8.6" r="1.6" fill="#fff" opacity=".85"/></svg>';
+/* 品牌标记：半是羽毛半是水墨的简化版（源文件 logo/to-icon.svg），配色见 studio.css 的 .to-mark */
+var LOGO='<svg class="to-mark" viewBox="13.5 14 223 223" aria-hidden="true"><defs><mask id="stCut" maskUnits="userSpaceOnUse" x="0" y="0" width="240" height="240"><rect width="240" height="240" fill="#fff"/><path d="M1 -80 C2 -30 2 20 1 58" transform="translate(140 100) rotate(28)" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/></mask></defs><g mask="url(#stCut)"><g class="q" transform="translate(140 100) rotate(28)"><path d="M0 -95 C34 -66 42 -16 24 34 C18 48 8 58 2 62 L-2 62 C-16 52 -30 36 -34 14 C-42 -24 -26 -68 0 -95 Z"/></g></g><path class="n" d="M-3.5 62 L5.5 62 L1.6 102 L0.4 102 Z" transform="translate(140 100) rotate(28)"/><circle class="d" cx="80" cy="214" r="21"/><circle class="c" cx="80" cy="214" r="9"/></svg>';
 /* 统一的模型标识：一架小星盘（原创） */
 var MARK='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.1" opacity=".35"/><g class="orb"><ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(-28 12 12)" stroke="currentColor" stroke-width="1.2"/><circle cx="20.6" cy="7.6" r="1.5" fill="currentColor"/></g><path class="star" d="M12 6.6c.5 3 1.9 4.4 4.9 5.4-3 1-4.4 2.4-4.9 5.4-.5-3-1.9-4.4-4.9-5.4 3-1 4.4-2.4 4.9-5.4z" fill="currentColor"/></svg>';
 

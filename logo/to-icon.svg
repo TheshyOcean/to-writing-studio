@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="To写作工作台">
+<!-- To 写作工作台 · 品牌标记（简化版，用于 16–64 px 的小图标）：实心羽毛笔，羽轴留一道细缝；堇紫笔尖下方落一滴淡墨，墨心透出紫光。 -->
+<defs><mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="240" height="240"><rect width="240" height="240" fill="#fff"/><path d="M1 -80 C2 -30 2 20 1 58" transform="translate(140 100) rotate(28)" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/></mask></defs>
+<g mask="url(#cut)"><g transform="translate(140 100) rotate(28)" fill="#1E1B1A"><path d="M0 -95 C34 -66 42 -16 24 34 C18 48 8 58 2 62 L-2 62 C-16 52 -30 36 -34 14 C-42 -24 -26 -68 0 -95 Z"/></g></g>
+<path d="M-3.5 62 L5.5 62 L1.6 102 L0.4 102 Z" transform="translate(140 100) rotate(28)" fill="#6F63E6"/>
+<circle cx="80" cy="214" r="21" fill="#5B5650"/>
+<circle cx="80" cy="214" r="9" fill="#6F63E6"/>
+</svg>
