@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.4.0
+# To Writing Studio 写作工作台 · Beta V3.4.1
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,8 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.4.1 · 2026-11-10**（电脑版 + 手机版）：开屏动画换上新 logo。V3.3.4 换 logo 时漏了开屏「泼墨落笔」里的标识，一直还是旧的渐变方块「To」。现在换成完整版的「半是羽毛，半是水墨」（铜版画羽毛 + 水墨 + 落墨），颜色跟主题走：深色模式下羽毛变成宣纸色，灵光模式下笔尖和墨心变金。去掉了旧标识的紫色投影。新增 `tools/build-boot-logo.py`：改了 `logo/to-mark.svg` 后运行它，会重新生成 `boot-ink.js` 里的开屏标识。改动文件：`boot-ink.js`、`boot-ink.css`、`desktop.html` / `mobile.html`（缓存参数、版本号）、`studio.js`（版本号）。
 
 **Beta V3.4.0 · 2026-11-10**（电脑版 + 手机版）：一次上线四个功能，升大版本号。
 ① **全书备份与恢复**（系统配置 →「全书备份 / Backup」）。以前只有「配置串」能在设备间搬，书稿、设定、伏笔和对话都只在一个浏览器里，清一次缓存就没了。**备份**：把所有作品（卷、章、正文、版本历史、章节摘要）、设定卡片、伏笔、时间线、智能定义、故事大脑记住的别名、对话记录、外观设置和角色形象图打包成一个 `.json` 文件下载；**API Key 不会写进备份**（对话接口和图片模型的都会去掉）。**恢复**：选一个备份文件，先看到「备份里有什么」和「这台设备上现在有什么」的对比，确认后整体替换（不是合并），本机已填的 API Key 保留；弹窗里可以先把现在的数据也备份一份；存储空间不够时会还原成恢复前的样子。**提醒**：写了 500 字以上却从没备份过，或距离上次备份超过 7 天又有新内容时，打开页面提醒一次（一天最多一次）。

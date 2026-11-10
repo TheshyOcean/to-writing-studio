@@ -4,7 +4,10 @@
 #loader::before{content:"";position:absolute;inset:0;background:var(--bg,#efeef6);will-change:opacity}
 #loader.done{display:none}
 #loader .bi-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px}
-#loader .bi-logo{width:64px;height:64px;filter:drop-shadow(0 10px 20px var(--glow,rgba(111,99,230,.45)));opacity:0;transform:scale(.8)}
+#loader .bi-logo{height:112px;width:auto;aspect-ratio:136/234;overflow:visible;opacity:0;transform:scale(.92)}
+/* 开屏标记的淡墨色：深色模式提亮一档（标记由 tools/build-boot-logo.py 从 logo/to-mark.svg 生成） */
+#loader{--bi-dan:#5B5650}
+:root[data-theme="dark"] #loader{--bi-dan:#8A847C}
 #loader .bi-title{font-family:var(--zh,'Noto Serif SC',serif);font-size:clamp(28px,3.4vw,44px);font-weight:500;letter-spacing:.24em;line-height:1.45;color:var(--fg,#1f1b33);text-align:left;padding-left:.24em}
 #loader .bi-title span{display:inline-block;position:relative;opacity:0;color:transparent}
 #loader .bi-line{width:0;height:1px;background:linear-gradient(90deg,transparent,var(--ac,#6f63e6),transparent)}
