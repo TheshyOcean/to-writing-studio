@@ -1451,6 +1451,10 @@
   T.runOps = runOps;
   T.refreshViews = function () { try { renderTree(); renderLore(); renderThreads(); renderGoalChip(); } catch (e) {} };
   T.currentChapter = function () { return ui.chapterId || D.D.activeChapter || ''; };
+  /* 给 tws-flow.js / tws-search.js 用：落盘编辑器、重画编辑器、打开某一章 */
+  T.flushSave = function () { try { flushSave(); } catch (e) {} };
+  T.renderEditor = function () { try { renderEditor(); } catch (e) {} };
+  T.openChapter = function (id) { try { openChapter(id); } catch (e) {} };
 
   /* ============================================================
      挂载

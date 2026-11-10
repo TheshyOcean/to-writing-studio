@@ -558,3 +558,90 @@ body:not(.is-loading) .stage,body:not(.is-loading) .st-margin,body:not(.is-loadi
 .to-mark .n,.to-mark .c{fill:var(--ac)}
 .to-mark .d{fill:#5B5650}
 :root[data-theme="dark"] .to-mark .d{fill:#8A847C}
+
+/* ---------- 全书备份与恢复（js/tws-backup.js） ---------- */
+.tws-bk .tws-modal{max-width:460px}
+.tws-bk .tws-modal-b{padding-top:16px!important}
+.tws-bk-card{display:flex;flex-direction:column;gap:5px;padding:14px 16px;border-radius:16px;background:var(--soft);color:var(--fg)}
+.tws-bk-card.old{background:transparent;border:1px dashed var(--line2)}
+.tws-bk-card em{font-style:normal;font-size:12px;color:var(--mut);letter-spacing:.04em}
+.tws-bk-card b{font-size:16px;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tws-bk-card.old b{color:var(--fg)}
+.tws-bk-card span{font-size:13px;color:var(--fg2);line-height:1.6}
+.tws-bk-card .tws-bk-nil{color:var(--mut)}
+.tws-bk-arrow{text-align:center;font-size:12px;color:var(--mut);padding:8px 0;letter-spacing:.1em}
+.tws-bk-note{margin:14px 2px 0;font-size:13px;line-height:1.8;color:var(--fg2)}
+.tws-bk-note b{color:var(--ink);font-weight:600}
+.tws-bk .tws-modal-f{flex-wrap:wrap}
+.tws-bk .tws-modal-f [data-save]{margin-right:auto}
+.tws-bk .tws-btn:disabled{opacity:.6;cursor:default}
+.tws-bk-nag{position:fixed;left:50%;bottom:28px;z-index:7900;transform:translate(-50%,18px);opacity:0;
+  display:flex;align-items:center;gap:12px;width:max-content;max-width:min(560px,calc(100vw - 28px));padding:12px 14px 12px 20px;
+  border-radius:20px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-lg);
+  color:var(--fg);font-size:13.5px;line-height:1.6;transition:opacity .4s var(--ez,ease),transform .4s var(--ez,ease)}
+.tws-bk-nag.on{opacity:1;transform:translate(-50%,0)}
+.tws-bk-nag span{flex:1;min-width:0}
+.tws-bk-nag .tws-btn{flex:none;white-space:nowrap}
+:root[data-device="phone"] .tws-bk-nag{left:14px;right:14px;width:auto;max-width:none;bottom:auto;top:calc(12px + env(safe-area-inset-top,0px));transform:translateY(-18px)}
+:root[data-device="phone"] .tws-bk-nag.on{transform:none}
+#bkHint{white-space:normal}
+
+/* ---------- 自动采纳 / 长篇记忆（js/tws-flow.js） ---------- */
+.fl-ad{margin-top:14px;border-radius:16px;background:var(--soft);padding:9px 10px 9px 16px;display:flex;align-items:center;gap:12px;font-size:13px;line-height:1.6;color:var(--ink);animation:inU .7s var(--ez) both}
+.fl-ad span{flex:1;min-width:0}
+.fl-ad.off{background:transparent;border:1px dashed var(--line2);color:var(--mut);padding:9px 16px}
+.fl-ad-undo{flex:none;height:28px;padding:0 14px!important;border-radius:14px!important;border:1px solid color-mix(in srgb,var(--ink) 30%,transparent)!important;background:transparent!important;color:var(--ink)!important;font-size:12.5px;cursor:pointer}
+.fl-ad-undo:hover{background:var(--card)!important}
+.fl-mem .tws-modal{max-width:640px}
+.fl-mem-tip{margin:14px 2px 10px;font-size:13px;line-height:1.8;color:var(--fg2)}
+.fl-mem-nil{color:var(--mut);font-size:13.5px;padding:18px 2px}
+.fl-mem-row{padding:14px 0;border-top:1px solid var(--line)}
+.fl-mem-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.fl-mem-h b{font-size:14.5px;font-weight:600;color:var(--fg)}
+.fl-mem-h i{font-style:normal;font-size:12px;color:var(--mut)}
+.fl-mem-h em{font-style:normal;font-size:12px;color:var(--mut)}
+.fl-mem-h em.st-stale{color:#b7791f}
+.fl-mem-h button{margin-left:auto}
+.fl-mem-row textarea{width:100%;box-sizing:border-box;resize:vertical;min-height:76px;padding:10px 14px;border-radius:14px;border:1px solid var(--line2);background:var(--paper);color:var(--fg);font:inherit;font-size:13.5px;line-height:1.75}
+.fl-mem-row textarea:focus{outline:none;border-color:var(--ac)}
+.fl-mem .tws-modal-f [data-all]{margin-right:auto}
+.fl-mem .tws-btn:disabled{opacity:.55;cursor:default}
+#flMemOpen{margin-left:8px}
+
+/* ---------- 全书搜索与替换（js/tws-search.js） ---------- */
+.tws-sr{align-items:flex-start!important;padding-top:min(12vh,96px)!important}
+.tws-sr .tws-modal{max-width:620px;max-height:min(76vh,720px)}
+.tws-sr-top{padding:14px 18px 10px;display:flex;flex-direction:column;gap:10px;flex:none}
+.tws-sr-q,.tws-sr-foot input{height:42px;padding:0 16px;border-radius:21px;border:1px solid var(--line2);background:var(--paper);color:var(--fg);font:inherit;font-size:15px;min-width:0}
+.tws-sr-q:focus,.tws-sr-foot input:focus{outline:none;border-color:var(--ac)}
+.tws-sr-scope{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.tws-sr-scope button{height:28px;padding:0 12px!important;border-radius:14px!important;border:1px solid var(--line2)!important;background:transparent!important;color:var(--mut)!important;font-size:12.5px;cursor:pointer}
+.tws-sr-scope button.on{background:var(--soft)!important;border-color:transparent!important;color:var(--ink)!important}
+.tws-sr-scope span{margin-left:auto;font-size:12.5px;color:var(--mut)}
+.tws-sr-list{padding:0 18px 14px!important;min-height:120px}
+.tws-sr-nil{color:var(--mut);font-size:13.5px;line-height:1.9;padding:22px 2px}
+.tws-sr-g{padding:12px 0 6px;border-top:1px solid var(--line)}
+.tws-sr-gh{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+.tws-sr-gh b{font-size:14px;font-weight:600;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tws-sr-gh i{font-style:normal;font-size:12px;color:var(--mut);flex:none}
+.tws-sr-it{display:flex;gap:10px;align-items:baseline;width:100%;text-align:left;padding:7px 12px!important;border:0!important;border-radius:12px!important;background:transparent!important;color:var(--fg2)!important;font:inherit;font-size:13.5px;line-height:1.7;height:auto!important;box-shadow:none!important;transform:none!important}
+.tws-sr-it.go{cursor:pointer}
+.tws-sr-it.go:hover{background:var(--soft)!important}
+.tws-sr-it em{font-style:normal;font-size:12px;color:var(--mut);flex:none}
+.tws-sr-it span{min-width:0;overflow-wrap:anywhere}
+.tws-sr-it mark{background:color-mix(in srgb,var(--ac) 24%,transparent);color:var(--ink);border-radius:4px;padding:0 2px;font-weight:600}
+.tws-sr-more{margin:2px 0 6px 12px;border:0!important;background:transparent!important;color:var(--ink)!important;font-size:12.5px;cursor:pointer;padding:4px 0!important;height:auto!important;box-shadow:none!important}
+.tws-sr-foot{align-items:center;flex-wrap:wrap}
+.tws-sr-foot input{flex:1 1 200px}
+.tws-sr-foot .tws-btn:disabled{opacity:.5;cursor:default}
+.tws-sr-foot .tws-btn.warn{background:#c2553f!important;border-color:#c2553f!important;color:#fff!important}
+:root[data-device="phone"] .tws-sr{padding-top:calc(16px + env(safe-area-inset-top,0px))!important}
+:root[data-device="phone"] .tws-sr .tws-modal{max-height:calc(100dvh - 120px)}
+
+/* 提高优先级：盖过上面对按钮的统一样式 */
+:root[data-shell] .tws-sr-scope button{background:transparent!important;border:1px solid var(--line2)!important;color:var(--mut)!important;box-shadow:none!important}
+:root[data-shell] .tws-sr-scope button.on{background:var(--soft)!important;border-color:transparent!important;color:var(--ink)!important}
+:root[data-shell] .tws-sr-foot .tws-btn.warn{background:#c2553f!important;background-image:none!important;border-color:#c2553f!important;color:#fff!important;box-shadow:none!important}
+:root[data-shell] .br-seg button{margin-left:0!important}
+:root[data-shell] #flMemOpen{margin-left:10px!important}
+:root[data-device="phone"] .tws-toast{white-space:normal!important;width:max-content;max-width:calc(100vw - 48px);text-align:center;line-height:1.6;border-radius:22px!important}

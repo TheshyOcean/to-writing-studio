@@ -1783,7 +1783,7 @@ html.kb-open .chat{padding-bottom:2px;}
 <link rel="stylesheet" href="terminal-redesign.css?v=2.3.1">
 <link rel="stylesheet" href="boot-ink.css?v=3.3.4">
 <link rel="stylesheet" href="js/tws.css?v=2.5.1">
-<link rel="stylesheet" href="studio.css?v=3.3.4">
+<link rel="stylesheet" href="studio.css?v=3.4.0">
 <link rel="stylesheet" href="js/tws-define.css?v=3.0.0">
 <link rel="stylesheet" href="js/tws-fun.css?v=3.2.5">
 </head>
@@ -1978,6 +1978,15 @@ html.kb-open .chat{padding-bottom:2px;}
               <button class="mini-btn" id="btnExport">导出</button>
               <button class="mini-btn" id="btnImport">导入</button>
             </div>
+            <div class="row" style="margin-top:8px">
+              <span class="ico" style="--c:var(--i7)" data-ico="book">备</span>
+              <span class="row-main">
+                <span class="row-ttl">全书备份 / Backup</span>
+                <span class="row-sub" id="bkHint">把整本书存成一个文件，换设备也能接着写</span>
+              </span>
+              <button class="mini-btn" id="btnBackup">备份</button>
+              <button class="mini-btn" id="btnRestore">恢复</button>
+            </div>
           </div>
 
           <div class="cfg-sec">
@@ -2030,7 +2039,7 @@ html.kb-open .chat{padding-bottom:2px;}
     <span class="sb hide-sm">MODEL <b id="sbModel">deepseek-chat</b></span>
     <span class="sp"></span>
     <span class="hz"></span>
-    <span class="sb hide-sm">BUILD <b>Beta V3.3.4</b></span>
+    <span class="sb hide-sm">BUILD <b>Beta V3.4.0</b></span>
     <span class="sb">© To写作工作台</span>
   </footer>
 </div>
@@ -2691,6 +2700,8 @@ function buildMessages(conv){
   }catch(e){}
   /* 灵光模式：带上全部设定、未回收伏笔与更多前文（studio.js） */
   try{ if(window.TWSLux&&window.TWSLux.on()) sys+=window.TWSLux.extra(); }catch(e){}
+  /* 长篇记忆：前面各章的摘要（js/tws-flow.js） */
+  try{ if(window.TWS&&window.TWS.memory) sys+=window.TWS.memory.prompt(); }catch(e){}
   if(sys.trim()) msgs.push({role:'system',content:sys});
   conv.msgs.forEach(function(m){
     if(m.stream) return;
@@ -4135,12 +4146,15 @@ window.__ENDF__={S:S,save:save,renderDrawer:renderDrawer,renderChat:renderChat,g
 <script src="terminal-redesign.js?v=3.3.4"></script>
 <script src="js/tws-data.js?v=2.3.0"></script>
 <script src="js/tws-features.js?v=3.0.0"></script>
-<script src="js/tws-views.js?v=3.0.0"></script>
+<script src="js/tws-views.js?v=3.4.0"></script>
 <script src="js/tws-define.js?v=3.0.0"></script>
 <script src="js/tws-brain.js?v=3.0.0"></script>
 <script src="js/tws-fun.js?v=3.2.2"></script>
 <script src="js/tws-persona.js?v=3.2.2"></script>
-<script src="studio.js?v=3.3.4"></script>
+<script src="js/tws-backup.js?v=3.4.0"></script>
+<script src="js/tws-flow.js?v=3.4.0"></script>
+<script src="js/tws-search.js?v=3.4.0"></script>
+<script src="studio.js?v=3.4.0"></script>
 <!-- 手机版外壳：只改布局与手势，功能模块与电脑版共用 -->
 <link rel="stylesheet" href="mobile.css?v=1.0.0">
 <script src="mobile.js?v=1.0.0"></script>
