@@ -64,3 +64,10 @@
 #loader.bi-leave .bi-title{transition:opacity .5s ease,filter .5s ease;opacity:0;filter:blur(4px)}
 #loader.bi-leave-fast{transition:opacity .28s ease;opacity:0}
 @media (prefers-reduced-motion:reduce){#loader{display:none}}
+
+
+/* UX refinement · mobile boot animation budget */
+@media (max-width:600px) and (prefers-reduced-motion:no-preference){
+  #loader.bi-write .bi-title span{animation-duration:.72s!important}
+  #loader.bi-leave{transition-duration:.42s!important}
+}
