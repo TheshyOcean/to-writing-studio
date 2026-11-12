@@ -833,3 +833,39 @@ body:not(.is-loading) .composer{animation:inU .9s var(--lq-out) .12s both}
 :root[data-shell="desktop"] #chat::-webkit-scrollbar-thumb{min-height:80px;border-radius:8px;border:3px solid transparent;background:var(--bd-s) padding-box}
 :root[data-shell="desktop"] #chat::-webkit-scrollbar-thumb:hover{background:var(--ac) padding-box}
 :root[data-shell="desktop"] #chat::-webkit-scrollbar-thumb:active{background:var(--ac-deep) padding-box}
+
+
+/* UX refinement · shared desktop/mobile motion budget · V3.4.1 */
+:root[data-shell] .view,
+:root[data-shell] .view.active{
+  filter:none!important;
+  transition:opacity .24s ease,transform .32s cubic-bezier(.22,1,.36,1),visibility 0s .32s!important;
+}
+:root[data-shell] .view.active{transition:opacity .24s ease,transform .32s cubic-bezier(.22,1,.36,1),visibility 0s!important}
+:root[data-shell] .drawer,
+:root[data-shell] .sheet,
+:root[data-shell] .tws-modal,
+:root[data-shell] .tws-opcard,
+:root[data-shell] .tws-temp-pop,
+:root[data-shell] .toast,
+:root[data-shell] .tws-toast{
+  filter:none!important;
+}
+:root[data-shell] .drawer,
+:root[data-shell] .drawer.open,
+:root[data-shell] .drawer.on,
+:root[data-shell] .drawer.show{
+  transition:transform .34s cubic-bezier(.22,1,.36,1),opacity .22s ease,visibility 0s!important;
+}
+:root[data-shell] .sheet{transition:transform .34s cubic-bezier(.22,1,.36,1)!important}
+:root[data-shell] .tws-modal,
+:root[data-shell] .tws-opcard,
+:root[data-shell] .tws-temp-pop,
+:root[data-shell] .toast,
+:root[data-shell] .tws-toast{animation-duration:.28s!important}
+:root[data-shell] .scrim{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;transition:opacity .22s ease!important}
+@media (prefers-reduced-motion:reduce){
+  :root[data-shell] *, :root[data-shell] *::before, :root[data-shell] *::after{
+    animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important;filter:none!important;
+  }
+}
