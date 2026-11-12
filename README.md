@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.6.0
+# To Writing Studio 写作工作台 · Beta V3.7.0
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,13 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.7.0 · 2026-11-13**（电脑版 + 手机版）：新功能 **账号 To Account**，连接你自己搭的账号服务 `to-account`（单独的 Node 项目，不在这个仓库里）。
+入口：电脑版左栏底部的头像；系统配置 →「账号 / Account」（手机版从这里进）。
+**登录页**：整屏纸面，羽毛 logo + 大号斜体「To Account」，「登录 · 注册」下划线滑动切换；输入框只有一条底线，标签悬浮在线上，聚焦时一道主题色细线划过；服务器地址收在底部一行小字里，带在线状态小圆点，点开可改（隧道地址会变）。服务器要邀请码时注册页才出现「邀请码」一栏。
+**用户页**：大头像（8 个表情可选，或上传图片，自动裁成 160×160）、文楷大字昵称、用户名 / 加入时间 / 管理员标记；下面是资料、修改密码（改完其他设备全部退出）、登录设备（可移除）、邀请码（仅管理员：生成、复制、看谁用了），最底下退出登录 / 所有设备退出（都要点两次确认）。
+**登录凭证**：access token 只放内存；refresh token 放在 `tws_account_v1`，过期自动换新；多个标签页用 Web Locks 排队刷新，不会互相顶掉。`tws_account_v1` 里有登录凭证，**不进全书备份**。
+新增：`js/tws-account.js`、`js/tws-account.css`；改动 `desktop.html` / `mobile.html`、`sw.js`。
 
 **Beta V3.6.0 · 2026-11-13**（电脑版 + 手机版）：新功能 **剧情完成 Finis**。写完一段剧情时，屏幕中间展开一条横幅：两条细线从中间铺开，「剧情完成」，《剧情名》逐字浮现，再出现一行烫金花体 *Finis*（两侧卷草花饰描出、金字从左到右显现、一道金属反光扫过），下面是章节名和一句话小结，配一段轻声和弦；可以点「开始下一章」（本卷没有下一章就新建一章）。几秒后自动收起，鼠标停在横幅上就不收，点任意处或按 Esc 关闭。系统开启「减少动效」时直接显示、不做动画。
 **怎么识别**：某一章保存后停笔 40 秒，且这章已有 1200 字以上、比上次检查又多写了 400 字以上，才用便宜的快模型（DeepSeek 用 `deepseek-flash`、不开思考）读本章开头和最新 3000 字，判断一段剧情是否收束并起名；做过「智能定义 → 情节图」的会参考情节图的段落名。判断要求比较严：只是换场景、留钩子都不算；把握低于 0.72 就不弹。每章只庆祝一次，结果存在章节的 `finis` 字段（`{cw, done:{title,line,at}}`）。

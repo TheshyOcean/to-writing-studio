@@ -1,0 +1,187 @@
+/* ============================================================
+   To Account · 登录页与用户页（js/tws-account.js）
+   极简：整屏纸面、一栏居中、大字标题、只有底线的输入框、一个主按钮
+   全站的按钮 / 输入框规则带 !important，这里统一挂在 .ac-layer 下面覆盖
+   ============================================================ */
+.ac-layer{--ez:cubic-bezier(.22,1,.36,1);position:fixed;inset:0;z-index:9600;overflow-y:auto;overscroll-behavior:contain;
+  background:var(--bg,#efeef6);opacity:0;transition:opacity .42s ease;color:var(--fg,#1f1b33);-webkit-font-smoothing:antialiased}
+.ac-layer.on{opacity:1}
+/* 纸面上两团极淡的光，不抢内容 */
+.ac-layer::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(60vmax 40vmax at 50% -12%,color-mix(in srgb,var(--ink,#4c42c4) 9%,transparent),transparent 70%),
+             radial-gradient(40vmax 30vmax at 110% 110%,color-mix(in srgb,var(--ac2,#7f93ff) 7%,transparent),transparent 70%)}
+.ac-layer :is(button,input){font-family:var(--ui,inherit)}
+:root .ac-layer button{background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;height:auto!important;width:auto!important;
+  min-width:0!important;min-height:0!important;padding:0!important;margin:0;color:inherit!important;cursor:pointer;letter-spacing:inherit;transform:none!important;background-image:none!important}
+:root .ac-layer button:focus-visible{outline:1.5px solid var(--ink,#4c42c4)!important;outline-offset:4px}
+
+.ac-x{position:fixed!important;top:22px;right:24px;z-index:2;display:grid!important;place-items:center;width:42px!important;height:42px!important;
+  border-radius:50%!important;color:var(--mut,#7a7495)!important;transition:color .25s,background-color .25s!important}
+.ac-x svg{width:20px;height:20px}
+.ac-x:hover{color:var(--fg,#1f1b33)!important;background:color-mix(in srgb,var(--fg,#1f1b33) 6%,transparent)!important}
+
+.ac-stage{position:relative;min-height:100%;display:flex;align-items:center;justify-content:center;padding:88px 24px 64px;box-sizing:border-box}
+.ac-col{width:min(380px,100%)}
+.ac-col.ac-user{width:min(460px,100%)}
+/* 进场：每一块依次浮上来 */
+.ac-stage.in .ac-col>*{animation:acRise .8s var(--ez) both}
+.ac-stage.in .ac-col>*:nth-child(1){animation-delay:.04s}.ac-stage.in .ac-col>*:nth-child(2){animation-delay:.1s}
+.ac-stage.in .ac-col>*:nth-child(3){animation-delay:.16s}.ac-stage.in .ac-col>*:nth-child(4){animation-delay:.22s}
+.ac-stage.in .ac-col>*:nth-child(5){animation-delay:.28s}.ac-stage.in .ac-col>*:nth-child(6){animation-delay:.34s}
+.ac-stage.in .ac-col>*:nth-child(n+7){animation-delay:.4s}
+@keyframes acRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ---------------- 登录 / 注册 ---------------- */
+.ac-mark{display:block;width:54px;height:54px;margin:0 auto 26px;opacity:.92}
+/* 羽毛 logo 是深色墨线：夜读时反相成浅色，色相转回来保留一点紫 */
+:root[data-theme="dark"] .ac-mark{filter:invert(.9) hue-rotate(180deg);opacity:.85}
+.ac-title{margin:0;text-align:center;font-family:var(--disp,serif)!important;font-style:italic;font-weight:400;font-size:clamp(44px,9vw,58px);line-height:1;
+  letter-spacing:.005em;color:var(--fg,#1f1b33)}
+.ac-title em{color:var(--ink,#4c42c4);font-style:italic;margin-right:.08em}
+.ac-sub{position:relative;margin:30px 0 46px;text-align:center;font-size:13.5px;letter-spacing:.42em;padding-left:.42em;color:var(--mut,#7a7495)}
+.ac-sub::before{content:"";position:absolute;left:50%;top:-16px;width:26px;height:1px;margin-left:-13px;background:var(--ink,#4c42c4);opacity:.55}
+
+.ac-tabs{position:relative;display:flex;justify-content:center;gap:40px;margin:0 0 30px}
+:root .ac-layer .ac-tabs button{padding:6px 2px 10px!important;font-size:15px;letter-spacing:.3em;padding-left:.3em!important;color:var(--mut,#7a7495)!important;transition:color .3s!important}
+:root .ac-layer .ac-tabs button.on{color:var(--fg,#1f1b33)!important}
+.ac-tabline{position:absolute;left:0;bottom:0;height:1.5px;background:var(--ink,#4c42c4);transition:transform .5s var(--ez),width .5s var(--ez)}
+
+/* 只有一条底线的输入框；标签平时在线上，聚焦或有内容时缩小上移 */
+.ac-f{position:relative;display:block;margin:0 0 22px}
+#acLayer .ac-f input,#acLayer .ac-f input:focus{display:block;width:100%;box-sizing:border-box;height:46px;padding:16px 30px 4px 0!important;margin:0;border:0!important;border-radius:0!important;
+  border-bottom:1px solid var(--line2,#d6d2e7)!important;background:transparent!important;box-shadow:none!important;outline:none!important;
+  font-size:16px;color:var(--fg,#1f1b33);letter-spacing:.02em;transition:border-color .3s!important}
+.ac-f span{position:absolute;left:0;top:18px;font-size:15px;color:var(--mut,#7a7495);pointer-events:none;transform-origin:0 0;letter-spacing:.06em;
+  transition:transform .35s var(--ez),color .3s}
+.ac-f input:focus+span,.ac-f input:not(:placeholder-shown)+span{transform:translateY(-17px) scale(.78);color:var(--mut2,#a7a2bb)}
+.ac-f input:focus+span{color:var(--ink,#4c42c4)}
+.ac-f::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1.5px;background:var(--ink,#4c42c4);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ez)}
+.ac-f:focus-within::after{transform:scaleX(1)}
+#acLayer .ac-f input::placeholder{color:transparent}
+:root .ac-layer .ac-eye{position:absolute;right:0;bottom:8px;width:24px!important;height:24px!important;color:var(--mut2,#a7a2bb)!important}
+.ac-eye svg{width:19px;height:19px}
+:root .ac-layer .ac-eye:hover{color:var(--fg2,#4a4563)!important}
+.ac-f.hide{display:none}
+.ac-inv input{text-transform:uppercase;letter-spacing:.18em!important}
+
+:root .ac-layer .ac-go{display:flex!important;align-items:center;justify-content:center;gap:10px;width:100%!important;height:54px!important;margin-top:36px!important;
+  border-radius:999px!important;background:var(--ink,#4c42c4)!important;color:#fff!important;font-size:15.5px;letter-spacing:.32em;padding-left:.32em!important;
+  box-shadow:0 18px 36px -20px color-mix(in srgb,var(--ink,#4c42c4) 80%,transparent)!important;transition:transform .35s var(--ez),box-shadow .35s,filter .3s!important}
+:root[data-theme="dark"] .ac-layer .ac-go{color:var(--bg,#121019)!important}
+.ac-go svg{width:18px;height:18px;transition:transform .35s var(--ez)}
+:root .ac-layer .ac-go:hover{transform:translateY(-1px)!important;filter:brightness(1.06)}
+.ac-go:hover svg{transform:translateX(3px)}
+:root .ac-layer .ac-go:active{transform:scale(.985)!important}
+.ac-go.ac-done svg{width:22px;height:22px;stroke-dasharray:24;stroke-dashoffset:24;animation:acCheck .45s ease forwards}
+@keyframes acCheck{to{stroke-dashoffset:0}}
+.ac-busy{pointer-events:none}
+.ac-busy i{width:6px;height:6px;border-radius:50%;background:currentColor;animation:acDot 1s ease-in-out infinite}
+.ac-busy i:nth-child(2){animation-delay:.15s}.ac-busy i:nth-child(3){animation-delay:.3s}
+@keyframes acDot{0%,80%,100%{opacity:.25;transform:scale(.8)}40%{opacity:1;transform:none}}
+
+.ac-msg{min-height:22px;margin:16px 0 0;text-align:center;font-size:13px;line-height:1.6;color:#c0563f;letter-spacing:.04em}
+.ac-msg.good{color:var(--ink,#4c42c4)}
+.ac-msg.shake{animation:acShake .4s ease}
+@keyframes acShake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+
+/* 服务器：底部一行小字 */
+.ac-srv{margin-top:40px;text-align:center}
+:root .ac-layer .ac-srv-t{display:inline-flex!important;align-items:center;gap:8px;font-size:12px;letter-spacing:.06em;color:var(--mut2,#a7a2bb)!important;transition:color .25s!important}
+:root .ac-layer .ac-srv-t:hover{color:var(--fg2,#4a4563)!important}
+.ac-dot{width:6px;height:6px;border-radius:50%;background:var(--mut2,#a7a2bb)}
+.ac-dot.ok{background:#4caf7d;box-shadow:0 0 0 3px color-mix(in srgb,#4caf7d 22%,transparent)}
+.ac-dot.bad{background:#c0563f}
+.ac-dot.wait{animation:acDot 1.2s ease-in-out infinite}
+.ac-srv-edit{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .45s var(--ez),opacity .3s,margin .45s var(--ez);text-align:left}
+.ac-srv-edit>*{min-height:0;overflow:hidden}
+.ac-srv.open .ac-srv-edit{grid-template-rows:1fr;opacity:1;margin-top:14px}
+.ac-srv-edit{grid-template-columns:1fr auto;column-gap:14px;align-items:end}
+.ac-srv-edit .ac-f{margin:0}
+:root .ac-layer .ac-srv-ok{padding:0 2px 12px!important;font-size:13.5px;letter-spacing:.2em;color:var(--ink,#4c42c4)!important}
+
+/* ---------------- 用户页 ---------------- */
+.ac-hero{text-align:center;margin-bottom:46px}
+:root .ac-layer .ac-ava-btn{position:relative;display:inline-block!important;border-radius:50%!important;margin-bottom:22px}
+.ac-ava-btn i{position:absolute;inset:0;display:grid;place-items:center;border-radius:50%;font-style:normal;font-size:12.5px;letter-spacing:.3em;padding-left:.3em;
+  color:#fff;background:rgba(20,16,36,.42);opacity:0;transition:opacity .3s}
+.ac-ava-btn:hover i{opacity:1}
+.ac-ava{display:inline-grid;place-items:center;border-radius:50%;overflow:hidden;flex:none;vertical-align:middle;
+  background:linear-gradient(140deg,color-mix(in srgb,var(--ink,#4c42c4) 16%,var(--card,#fff)),color-mix(in srgb,var(--ac2,#7f93ff) 14%,var(--card,#fff)));
+  color:var(--ink,#4c42c4);font-family:var(--zh,serif)}
+.ac-ava img{width:100%;height:100%;object-fit:cover;display:block}
+.ac-ava.xl{width:104px;height:104px;font-size:42px;box-shadow:0 0 0 6px var(--bg,#efeef6),0 0 0 7px var(--line2,#d6d2e7),0 24px 50px -24px color-mix(in srgb,var(--ink,#4c42c4) 60%,transparent)}
+.ac-ava.xl.emoji{font-size:50px}
+.ac-ava.sm{width:26px;height:26px;font-size:13px}
+.ac-ava.sm.emoji{font-size:15px}
+.ac-ava.sm.empty{background:none;color:currentColor}
+.ac-ava.sm.empty svg{width:20px;height:20px}
+.ac-nick{margin:0;font-family:var(--zh,serif)!important;font-weight:600;font-size:clamp(28px,6vw,36px);letter-spacing:.08em;line-height:1.25;color:var(--fg,#1f1b33);word-break:break-all}
+.ac-meta{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:12px 0 0;font-size:13px;color:var(--mut,#7a7495);letter-spacing:.06em}
+.ac-meta i{width:3px;height:3px;border-radius:50%;background:var(--mut2,#a7a2bb)}
+.ac-badge{color:#a87f36;font-family:var(--disp,serif);font-style:italic;letter-spacing:.12em}
+.ac-stage.welcome .ac-ava.xl{animation:acPop .9s var(--ez) both}
+@keyframes acPop{from{transform:scale(.6);opacity:0}60%{transform:scale(1.04)}to{transform:none;opacity:1}}
+
+.ac-sec{padding:26px 0 22px;border-top:1px solid var(--line,#e6e3f1);transition:background-color .6s}
+.ac-sec.flash{background:color-mix(in srgb,var(--ink,#4c42c4) 5%,transparent)}
+.ac-sec h2{display:flex;align-items:baseline;gap:10px;margin:0 0 18px;font-size:13px;font-weight:500;letter-spacing:.32em;color:var(--mut,#7a7495)}
+.ac-sec h2 em{font-family:var(--disp,serif);font-size:15px;letter-spacing:.04em;color:var(--mut2,#a7a2bb)}
+.ac-row{display:flex;align-items:flex-end;gap:16px}
+.ac-row .ac-f{flex:1;margin:0}
+.ac-row.end{justify-content:flex-end;align-items:center;margin-top:6px}
+:root .ac-layer .ac-link{font-size:13.5px;letter-spacing:.16em;color:var(--ink,#4c42c4)!important;padding:4px 0 10px!important;white-space:nowrap;transition:opacity .25s!important}
+:root .ac-layer .ac-link:hover{opacity:.7}
+:root .ac-layer .ac-link.mute{color:var(--mut,#7a7495)!important}
+:root .ac-layer .ac-link.mute:hover{color:var(--fg,#1f1b33)!important;opacity:1}
+:root .ac-layer .ac-open{padding:0!important}
+:root .ac-layer .ac-pill{padding:9px 22px!important;border-radius:999px!important;font-size:13.5px;letter-spacing:.16em;
+  background:var(--ink,#4c42c4)!important;color:#fff!important;display:inline-flex!important;align-items:center;gap:5px;min-height:36px!important}
+:root[data-theme="dark"] .ac-layer .ac-pill{color:var(--bg,#121019)!important}
+.ac-hint{margin:12px 0 0;font-size:12px;color:var(--mut2,#a7a2bb);letter-spacing:.04em}
+.ac-row .ac-hint{margin:0}
+.ac-pw .ac-f{margin-bottom:16px}
+
+.ac-emoji{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:22px}
+:root .ac-layer .ac-emoji button{width:36px!important;height:36px!important;border-radius:50%!important;font-size:19px;line-height:36px;transition:background-color .2s,transform .25s var(--ez)!important}
+:root .ac-layer .ac-emoji button:hover{background:color-mix(in srgb,var(--ink,#4c42c4) 8%,transparent)!important;transform:translateY(-2px)!important}
+:root .ac-layer .ac-emoji .ac-up{width:auto!important;padding:0 10px!important;margin-left:auto;font-size:12.5px;letter-spacing:.14em;color:var(--mut,#7a7495)!important;border-radius:999px!important}
+
+.ac-devs,.ac-invs{list-style:none;margin:0;padding:0}
+.ac-devs li{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line,#e6e3f1)}
+.ac-devs li:last-child{border-bottom:0}
+.ac-devs li>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ac-devs b{font-weight:500;font-size:14.5px;color:var(--fg,#1f1b33);letter-spacing:.03em}
+.ac-devs span{font-size:12px;color:var(--mut,#7a7495);letter-spacing:.04em}
+.ac-devs em{font-style:normal;font-size:12px;letter-spacing:.2em;color:var(--ink,#4c42c4)}
+.ac-devs li.cur b::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#4caf7d;margin-left:8px;vertical-align:2px}
+.ac-ph{color:var(--mut2,#a7a2bb);font-size:13px;padding:8px 0!important;border:0!important}
+
+.ac-code{display:flex;align-items:center;justify-content:center;gap:14px;margin:0 0 18px;padding:18px 0;border:1px dashed color-mix(in srgb,var(--ink,#4c42c4) 40%,transparent);border-radius:16px}
+.ac-code span{font-family:var(--disp,serif);font-size:30px;letter-spacing:.24em;color:var(--fg,#1f1b33)}
+.ac-code.pop{animation:acPop .6s var(--ez)}
+:root .ac-layer .ac-copy{width:34px!important;height:34px!important;border-radius:50%!important;display:grid!important;place-items:center;color:var(--mut,#7a7495)!important}
+:root .ac-layer .ac-copy:hover{color:var(--ink,#4c42c4)!important;background:color-mix(in srgb,var(--ink,#4c42c4) 8%,transparent)!important}
+.ac-copy svg{width:18px;height:18px}
+.ac-invs{margin-top:16px}
+.ac-invs li{display:flex;align-items:baseline;gap:14px;padding:6px 0;font-size:12.5px;color:var(--mut,#7a7495)}
+#acLayer .ac-invs code{background:none!important;padding:0!important;border:0!important;font-family:var(--disp,serif)!important;font-size:15px;letter-spacing:.14em;color:var(--fg2,#4a4563)}
+.ac-invs li.used code,.ac-invs li.expired code{text-decoration:line-through;opacity:.55}
+
+.ac-foot{display:flex;align-items:center;justify-content:center;gap:22px;padding-top:30px;border-top:1px solid var(--line,#e6e3f1)}
+.ac-foot i{width:1px;height:12px;background:var(--line2,#d6d2e7)}
+.ac-umsg{min-height:20px}
+.ac-srvline{margin:18px 0 0;text-align:center;font-size:11.5px;letter-spacing:.08em;color:var(--mut2,#a7a2bb)}
+
+/* ---------------- 左栏底部的头像入口 ---------------- */
+:root[data-shell] .st-acct{display:grid!important;place-items:center;color:var(--fg2)}
+.st-acct.in .ac-ava{box-shadow:0 0 0 1.5px var(--card,#fff),0 0 0 2.5px color-mix(in srgb,var(--ink,#4c42c4) 50%,transparent)}
+
+@media (max-width:520px){
+  .ac-stage{padding:76px 22px 48px;align-items:flex-start}
+  .ac-sub{margin-bottom:38px}
+  .ac-x{top:12px;right:12px}
+  :root .ac-layer .ac-emoji .ac-up{margin-left:0!important;margin-top:4px!important}
+}
+@media (prefers-reduced-motion:reduce){
+  .ac-layer,.ac-layer *{animation:none!important;transition:none!important}
+}
