@@ -4,7 +4,11 @@
 
 /* ---------- 暖纸：紫色只做强调，加朱砂点缀与纸纹 ---------- */
 :root:root{--zhu:#c4472f;--zhu-soft:rgba(196,71,47,.1)}
-:root:root[data-theme="light"]{--bg:#efece6;--paper:#fcfaf5;--card:#fffdf8;--line:#e8e2d6;--line2:#d8d0c1;--fg:#221f1b;--fg2:#4e4840;--mut:#8b8274;--mut2:#b3aa9b;--note:#f1ede4;--track:#ebe6db}
+/* V3.7.4：正文色由 #221f1b（纸面上 15.7:1，接近纯黑）放浅到 #37332d（12:1）。文楷笔画有粗细变化，墨色太重时远看容易连成一片；
+   12:1 仍远高于无障碍 AAA 的 7:1。--fg-strong 留着原来的深色，给正文里的加粗用（字重只差一档，再靠墨色拉开） */
+:root:root{--fg-strong:var(--fg)}
+:root:root[data-theme="light"]{--fg-strong:#221f1b}
+:root:root[data-theme="light"]{--bg:#efece6;--paper:#fcfaf5;--card:#fffdf8;--line:#e8e2d6;--line2:#d8d0c1;--fg:#37332d;--fg2:#4e4840;--mut:#8b8274;--mut2:#b3aa9b;--note:#f1ede4;--track:#ebe6db}
 :root:root[data-theme="dark"]{--zhu:#e07a5f;--zhu-soft:rgba(224,122,95,.14)}
 :root[data-shell="desktop"] .stage{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .35 0 0 0 0 .3 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")!important}
 .st-mcard{box-shadow:none!important;border:1px solid var(--line)}

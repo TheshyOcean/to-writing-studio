@@ -77,6 +77,10 @@
 html body,html body *:not(pre):not(code):not(kbd):not(samp):not(svg):not(svg *){font-family:var(--ui)!important}
 html body :is(pre,code,kbd,samp){font-family:var(--code)!important}
 html,body{background:var(--bg)!important;color:var(--fg)}
+/* 文楷只有 Regular(400) 和 Medium(500) 两档。样式里写 600 / 700 的地方找不到那么粗的字，
+   浏览器会在 Medium 上再描一圈假粗体：实测墨量比真正的 Medium 多一半，笔画挤成一团，远看发糊。
+   关掉假粗体，加粗一律落在文楷自带的 Medium 上（斜体合成不动）。第一行给不认识 small-caps 写法的旧浏览器 */
+html{font-synthesis:style;font-synthesis:style small-caps}
 body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";transition:background .6s var(--ez),color .6s var(--ez)}
 ::selection{background:color-mix(in srgb,var(--ac) 24%,transparent)}
 .lat{font-family:var(--disp)!important;font-style:italic}
@@ -702,3 +706,6 @@ body:not(.is-loading) .stage,body:not(.is-loading) .st-margin,body:not(.is-loadi
 :root[data-shell="desktop"] .rail .st-foot{padding-left:2px}
 :root[data-shell="desktop"] .rail .st-colophon{padding-left:10px;gap:10px}
 /* 展开后三行文字的起点也和导航文字对齐（60px） */
+
+/* 正文里的加粗：文楷只有常规 / 中粗两档，差别不大，再用深一点的墨色拉开 */
+:root[data-shell] :is(#chat .bub,.tws-ai-out,.tws-modal-b) :is(strong,b){color:var(--fg-strong);font-weight:500}

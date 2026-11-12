@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.7.3
+# To Writing Studio 写作工作台 · Beta V3.7.4
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,12 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.7.4 · 2026-11-13**（电脑版 + 手机版）：修正文字发糊、颜色过重。
+① **去掉假粗体**（主要原因）。霞鹜文楷只有 Regular（400）和 Medium（500）两档，样式里却有几十处写了 `font-weight:600 / 700`。浏览器找不到那么粗的字，就在 Medium 上再描一圈假粗体。实测同一行字的墨量：常规 6.4%、真 Medium 7.9%、600 / 700 是 12.2%（比真 Medium 多一半，接近常规的两倍），笔画挤在一起，远看连成一片。现在全站 `font-synthesis:style small-caps`（不合成粗体，斜体不变），加粗一律落在文楷自带的 Medium 上，600 / 700 的墨量回到 7.9%。V3.3.0 说的「加粗用文楷自带的 Medium，不再是浏览器假粗体」当时并没有生效，这次才是。
+② **正文色放浅**：昼读的 `--fg` 由 `#221f1b`（纸面上对比度 15.7:1，接近纯黑）改为 `#37332d`（12:1，仍远高于无障碍 AAA 的 7:1）。次要文字、说明文字不变。夜读配色不变。
+③ 对话回复、AI 输出和弹窗正文里的加粗用 Medium + 原来的深墨色（`--fg-strong`），字重只差一档，再靠墨色拉开。
+排查时排除的：鼠标视差（入场动画把正文区的变形锁成了不动，倾斜并未生效）、文字阴影和描边（只用在温度胶囊的显影动画和隐藏的旧元素上）。改动文件：`studio.css`、`js/tws-fun.css`、`desktop.html` / `mobile.html`（版本号）、`sw.js`（缓存版本）。
 
 **Beta V3.7.3 · 2026-11-13**（电脑版）：① 左栏展开后点导航不再立刻收回，可以连着点；鼠标移出左栏才收起。收起状态下直接点图标仍然只是跳转。② 左栏顺序调整：「创作对话」排到第一位，「智能定义」第二。③ 左栏底部的账号、昼夜切换、落款羽毛三个图标和导航图标对齐到同一条竖线（原来差 1～3 px）。改动文件：`studio.js`、`studio.css`、`js/tws-define.js`、`js/tws-account.css`、`desktop.html` / `mobile.html`（版本号）、`sw.js`。
 
