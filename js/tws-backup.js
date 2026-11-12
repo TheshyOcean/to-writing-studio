@@ -33,7 +33,7 @@
     IMG_KEY,
     'endfield_theme_v2', 'tws_night', 'tws_lux', 'tws_autolore',
     'tws_autoadopt', 'tws_memory',   // 自动采纳、长篇记忆的开关（js/tws-flow.js）
-    'tws_prompts_v1', 'tws_sens_v1', 'tws_usage_v1', 'tws_pomo_v1', 'tws_pub_v1',   // V3.5.0：指令库、敏感词表、用量、番茄钟、发布格式
+    'tws_prompts_v1', 'tws_sens_v1', 'tws_usage_v1', 'tws_pomo_v1', 'tws_pub_v1', 'tws_finis',   // V3.5.0：指令库、敏感词表、用量、番茄钟、发布格式
     'liangye_studio_fontsize', 'liangye_studio_initialized', 'tws_boot_seen'
   ];
 

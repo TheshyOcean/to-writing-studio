@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.5.5
+# To Writing Studio 写作工作台 · Beta V3.6.0
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,10 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.6.0 · 2026-11-13**（电脑版 + 手机版）：新功能 **剧情完成 Finis**。写完一段剧情时，屏幕中间展开一条横幅：两条细线从中间铺开，「剧情完成」，《剧情名》逐字浮现，再出现一行烫金花体 *Finis*（两侧卷草花饰描出、金字从左到右显现、一道金属反光扫过），下面是章节名和一句话小结，配一段轻声和弦；可以点「开始下一章」（本卷没有下一章就新建一章）。几秒后自动收起，鼠标停在横幅上就不收，点任意处或按 Esc 关闭。系统开启「减少动效」时直接显示、不做动画。
+**怎么识别**：某一章保存后停笔 40 秒，且这章已有 1200 字以上、比上次检查又多写了 400 字以上，才用便宜的快模型（DeepSeek 用 `deepseek-flash`、不开思考）读本章开头和最新 3000 字，判断一段剧情是否收束并起名；做过「智能定义 → 情节图」的会参考情节图的段落名。判断要求比较严：只是换场景、留钩子都不算；把握低于 0.72 就不弹。每章只庆祝一次，结果存在章节的 `finis` 字段（`{cw, done:{title,line,at}}`）。
+**开关**：系统配置 →「剧情完成 Finis」，默认开启，需要 API Key；旁边「看看效果」可以预览动画。新增文件 `js/tws-finis.js`；改动 `js/tws-kit.css`（动画样式）、`js/tws-backup.js`（备份清单加 `tws_finis`）、`desktop.html` / `mobile.html`、`sw.js`。
 
 **Beta V3.5.5 · 2026-11-13**（电脑版）：页边的「读者 Lectores」卡和读者弹幕下线：追更人数是按字数编的，弹幕和留言是让 AI 扮读者现写的，每写一段还要额外花一次 Token。原位置换成 **「节奏 Rhythmus」** 卡：把当前章画成段落条码（每段一根竖条，越长越高；对白段紫色、叙述段灰色、超过 350 字没分段的橙色），下面是读完约几分钟、对白占比、段均字数，以及一句按实际节奏给的提示（连续长段、连续对白、长段没分段、段落长短太整齐等）。点一根条跳到正文里那一段；「体检」打开文笔体检。全在本地算，不用 API Key。改动文件：`js/tws-meter.js`（节奏卡）、`js/tws-fun.js`（停用读者卡与弹幕）、`js/tws-kit.css`、`desktop.html` / `mobile.html`（版本号）、`sw.js`（缓存版本）。
 
