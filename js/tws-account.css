@@ -113,8 +113,8 @@
 .ac-ava.xl.emoji{font-size:50px}
 .ac-ava.sm{width:26px;height:26px;font-size:13px}
 .ac-ava.sm.emoji{font-size:15px}
-.ac-ava.sm.empty{background:none;color:currentColor}
-.ac-ava.sm.empty svg{width:20px;height:20px}
+.ac-ava.sm.ac-none{background:none;color:currentColor}
+.ac-ava.sm.ac-none svg{width:20px;height:20px}
 .ac-nick{margin:0;font-family:var(--zh,serif)!important;font-weight:600;font-size:clamp(28px,6vw,36px);letter-spacing:.08em;line-height:1.25;color:var(--fg,#1f1b33);word-break:break-all}
 .ac-meta{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:12px 0 0;font-size:13px;color:var(--mut,#7a7495);letter-spacing:.06em}
 .ac-meta i{width:3px;height:3px;border-radius:50%;background:var(--mut2,#a7a2bb)}
@@ -172,9 +172,21 @@
 .ac-umsg{min-height:20px}
 .ac-srvline{margin:18px 0 0;text-align:center;font-size:11.5px;letter-spacing:.08em;color:var(--mut2,#a7a2bb)}
 
-/* ---------------- 左栏底部的头像入口 ---------------- */
-:root[data-shell] .st-acct{display:grid!important;place-items:center;color:var(--fg2)}
-.st-acct.in .ac-ava{box-shadow:0 0 0 1.5px var(--card,#fff),0 0 0 2.5px color-mix(in srgb,var(--ink,#4c42c4) 50%,transparent)}
+/* ---------------- 左栏：个人资料行（在昼夜切换那行上面） ---------------- */
+/* 头像中心对齐导航图标（左栏内边距 18 + 按钮内边距 12 + 图标半宽 9 = 39px） */
+:root[data-shell] .rail .st-acct{display:flex!important;align-items:center;gap:12px;width:100%!important;height:46px!important;min-height:0!important;
+  padding:0 0 0 8px!important;margin:0!important;border:0!important;border-radius:12px!important;background:transparent!important;box-shadow:none!important;
+  color:var(--fg2)!important;text-align:left;cursor:pointer;flex:none!important;transform:none}
+:root[data-shell] .rail .st-acct:hover{background:var(--soft)!important}
+.st-acct .ac-ava.sm{width:28px;height:28px;font-size:14px}
+.st-acct .ac-ava.sm.emoji{font-size:16px}
+.st-acct .ac-ava.sm.ac-none{color:var(--fg2)}
+.st-acct.in .ac-ava{box-shadow:0 0 0 1.5px var(--card,#fff),0 0 0 2.5px color-mix(in srgb,var(--ink,#4c42c4) 45%,transparent)}
+.st-acct-t{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.st-acct-t b{font-weight:500;font-size:14px;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--ui)}
+.st-acct-t em{font-family:var(--disp);font-size:12.5px;color:var(--mut2);font-style:italic}
+:root.rail-mini[data-shell="desktop"] .st-acct-t{transition:opacity .22s ease .08s}
+:root.rail-mini:not(.rail-open)[data-shell="desktop"] .st-acct-t{opacity:0;transition-delay:0s}
 
 @media (max-width:520px){
   .ac-stage{padding:76px 22px 48px;align-items:flex-start}

@@ -432,7 +432,8 @@
     var u = loggedIn() ? user() : null;
     var b = $('stAcct');
     if (b) {
-      b.innerHTML = u ? avatarHtml(u, 'sm') : '<span class="ac-ava sm empty">' + I.user + '</span>';
+      b.innerHTML = (u ? avatarHtml(u, 'sm') : '<span class="ac-ava sm ac-none">' + I.user + '</span>') +
+        '<span class="st-acct-t"><b>' + esc(u ? (u.nick || u.name) : '登录 / 注册') + '</b><em>To Account</em></span>';
       b.title = u ? (u.nick || u.name) + ' · 账号' : '登录 To Account';
       b.classList.toggle('in', !!u);
     }
@@ -442,12 +443,13 @@
   }
   function mount() {
     var ok = true;
+    /* 左栏：单独一行「个人资料」，放在昼夜切换那行上面；收起时只露出头像，和导航图标对齐 */
     var foot = document.querySelector('.st-foot');
     if (foot && !$('stAcct') && root.getAttribute('data-device') !== 'phone') {
       var b = document.createElement('button');
-      b.type = 'button'; b.className = 'icon-btn st-acct'; b.id = 'stAcct';
+      b.type = 'button'; b.className = 'st-acct'; b.id = 'stAcct';
       b.addEventListener('click', function () { open(); });
-      foot.insertBefore(b, foot.firstChild);
+      foot.parentNode.insertBefore(b, foot);
     } else if (!foot && root.getAttribute('data-device') !== 'phone') ok = false;
     var bk = $('btnBackup'), row = bk && bk.closest('.row');
     if (row && !$('btnAcct')) {

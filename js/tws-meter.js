@@ -357,28 +357,63 @@
     var dChars = paras.reduce(function (a, p) { return a + (p.d ? p.n : 0); }, 0);
     return { paras: paras, chars: chars, dialog: chars ? Math.round(dChars / chars * 100) : 0, avg: paras.length ? Math.round(chars / paras.length) : 0 };
   }
-  function rhythmTip(r) {
-    var ps = r.paras, n = ps.length;
-    if (!n) return '';
-    var tail = ps.slice(-4);
-    if (tail.length === 4 && tail.every(function (p) { return p.n > 180; })) return '最近四段都在 180 字以上，读者会喘不过气，可以切一刀。';
-    if (tail.length === 4 && tail.every(function (p) { return p.d; })) return '最近一直是对白，可以插一个动作或神态，让人物「动」一下。';
-    var big = ps.filter(function (p) { return p.n > 350; })[0];
-    if (big) return '有一段写到 ' + big.n + ' 字还没分段，点高的那根条看看。';
-    if (r.chars > 800 && r.dialog < 5) return '这一章几乎没有对白，全是叙述。';
-    if (r.chars > 800 && r.dialog > 75) return '这一章大部分是对白，叙述有点少。';
-    if (n >= 8) {
-      var sd = Math.sqrt(ps.reduce(function (a, p) { return a + Math.pow(p.n - r.avg, 2); }, 0) / n);
-      if (sd < r.avg * 0.25) return '段落长短太整齐了，长短交错读起来更有呼吸。';
-    }
-    return '长短有致，节奏不错。';
+  /* ---------- 点评：交给 AI 真正读一遍这一章（用系统配置里选的模型，不换便宜模型） ----------
+     同一章改动不到 300 字就沿用上次的点评；改动多了，停笔 6 秒后重读。
+     结果存在章节的 rh 字段：{ len: 当时正文长度, text: 点评, at } —— 换设备、恢复备份也还在。
+     没有 API Key 时不显示点评，不拿固定的句子凑数。 */
+  var RH_SYS = '你是一位严格、懂行的中文小说编辑，只看节奏：段落长短、句子快慢、叙述与对白的交替、信息密度、场面推进的速度。\n' +
+    '要求：\n1. 只根据下面这一章的真实内容说话，必须引用原文（用「」括住原文里的几个字）指明你说的是哪一处；\n' +
+    '2. 写 2～3 句：先说这一章节奏上最值得改的一个地方、为什么、具体怎么改；如果确实有处理得好的地方，再用一句点出来；\n' +
+    '3. 不要客套，不要泛泛而谈（「节奏不错」「张弛有度」这类话不许出现），不要复述剧情，不要分点，不要加标题；\n' +
+    '4. 全部不超过 140 个字。';
+  var rhBusy = {}, rhTimer = 0, rhErr = {};
+  function hasKey() { var A = window.__ENDF__ && window.__ENDF__.S; return !!(A && A.apiKey); }
+  function rhStale(c, text) { return !c.rh || !c.rh.text || Math.abs(text.length - (c.rh.len || 0)) >= 300; }
+  function rhAsk(cid, force) {
+    var d = D(), c = d.getChapter(cid); if (!c || !hasKey() || !T.checker) return;
+    var A = window.__ENDF__ && window.__ENDF__.S; if (A && A.gen) { rhSchedule(cid, 4000); return; }   // 正在写正文就先别抢
+    if (rhBusy[cid]) return;
+    var ta = document.getElementById('twsContent');
+    var text = (ta && T.currentChapter() === cid && ta.value) || c.content || '';
+    if (!force && !rhStale(c, text)) return;
+    var r = rhythmOf(text); if (r.chars < 200) return;
+    rhBusy[cid] = true; delete rhErr[cid]; rhLast = ''; paintRhythm();
+    var shape = r.paras.slice(-120).map(function (p, k) { return (k + 1) + ':' + p.n + (p.d ? '对' : '叙'); }).join(' ');
+    var body = text.length > 9000 ? text.slice(0, 3000) + '\n……（中间略）……\n' + text.slice(-6000) : text;
+    T.checker.callLLM([
+      { role: 'system', content: RH_SYS },
+      { role: 'user', content: '【章节】' + c.title + '\n【段落长度（第几段:字数，对=对白段，叙=叙述段）】' + shape +
+        '\n【整体】' + r.paras.length + ' 段，' + r.chars + ' 字，对白占 ' + r.dialog + '%\n\n【正文】\n' + body }
+    ]).then(function (out) {
+      out = String(out || '').replace(/```[\s\S]*?```/g, '').replace(/^\s*(点评|意见|编辑意见)[:：]\s*/, '').replace(/\s*\n+\s*/g, '').trim().slice(0, 220);
+      if (!out) throw new Error('模型没有给出点评');
+      var cur = D().getChapter(cid); if (!cur) return;
+      cur.rh = { len: text.length, text: out, at: Date.now() };
+      D().save();
+    }).catch(function (e) { rhErr[cid] = e && e.message === 'NO_KEY' ? '' : (e && e.message) || '点评没有生成'; })
+      .then(function () { delete rhBusy[cid]; rhLast = ''; paintRhythm(); });
+  }
+  function rhSchedule(cid, ms) { clearTimeout(rhTimer); rhTimer = setTimeout(function () { rhAsk(cid); }, ms || 6000); }
+  function rhTipHtml(c, text) {
+    if (!hasKey()) return '<p class="rh-tip mute">配置 API Key 后，AI 会读这一章，在这里写下节奏上的具体意见。</p>';
+    var stale = rhStale(c, text);
+    if (stale && !rhBusy[c.id] && !rhErr[c.id]) rhSchedule(c.id);
+    var head = '';
+    if (rhBusy[c.id]) head = '<p class="rh-tip wait"><i></i><i></i><i></i>AI 正在读这一章</p>';
+    else if (rhErr[c.id]) head = '<p class="rh-tip mute">点评没有生成：' + esc(rhErr[c.id]) + ' <button type="button" data-rh="again">再试一次</button></p>';
+    var old = c.rh && c.rh.text
+      ? '<p class="rh-tip ai' + (stale ? ' old' : '') + '">' + esc(c.rh.text) + '</p>' +
+        '<div class="rh-ai-f"><span>' + (stale ? '正文改了不少，停笔后会重新读' : 'AI 读过 · ' + (D().timeAgo ? D().timeAgo(c.rh.at) : '')) + '</span>' +
+        (rhBusy[c.id] ? '' : '<button type="button" data-rh="again">重新读</button>') + '</div>'
+      : '';
+    return (rhBusy[c.id] && old ? '' : head) + (rhBusy[c.id] && old ? head : '') + old;
   }
   function paintRhythm() {
     var box = document.getElementById('rhBody'); if (!box) return;
     var d = D(), cid = T.currentChapter && T.currentChapter(), c = cid && d.getChapter(cid);
     var ta = document.getElementById('twsContent');
     var text = c ? ((ta && document.getElementById('v-book') && T.currentChapter() === c.id && ta.value) || c.content || '') : '';
-    var key = (c ? c.id : '') + '|' + text.length + '|' + text.slice(-40);
+    var key = (c ? c.id : '') + '|' + text.length + '|' + text.slice(-40) + '|' + (c && c.rh ? c.rh.at : '') + '|' + hasKey();
     if (key === rhLast) return;
     rhLast = key;
     if (!c) { box.innerHTML = '<p class="rh-tip">选一章，这里会画出它的节奏。</p>'; return; }
@@ -393,7 +428,7 @@
     box.innerHTML = '<div class="rh-bars" role="img" aria-label="本章段落长短：共 ' + r.paras.length + ' 段">' + bars + '</div>' +
       '<div class="rh-leg"><span><i></i>叙述</span><span><i class="d"></i>对白</span>' + (r.paras.length > RH_MAX ? '<em>最近 ' + RH_MAX + ' 段</em>' : '<em>' + r.paras.length + ' 段</em>') + '</div>' +
       '<div class="rh-stats"><span><b>' + mins + '</b> 分钟读完</span><span>对白 <b>' + r.dialog + '%</b></span><span>段均 <b>' + r.avg + '</b> 字</span></div>' +
-      '<p class="rh-tip">' + esc(rhythmTip(r)) + '</p>';
+      '<div class="rh-ai">' + rhTipHtml(c, text) + '</div>';
     box._paras = ps; box._cid = c.id;
   }
   function mountRhythm() {
@@ -406,6 +441,7 @@
     m.insertBefore(card, first ? first.nextSibling : m.firstChild);
     card.querySelector('#rhProse').addEventListener('click', function () { T.craft && T.craft.openProse(); });
     card.querySelector('#rhBody').addEventListener('click', function (e) {
+      if (e.target.closest('[data-rh="again"]')) { if (this._cid) rhAsk(this._cid, true); return; }
       var b = e.target.closest('[data-k]'); if (!b) return;
       var box = this, p = box._paras && box._paras[Number(b.getAttribute('data-k'))];
       if (p && T.craft) T.craft.jumpTo(box._cid, p.i, p.s.length);
@@ -429,5 +465,5 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 
-  T.meter = { openStats: openStats, openUsage: openUsage, openPrompts: openPrompts, _record: record, _usage: usage, _est: estTokens };
+  T.meter = { rhAsk: rhAsk, openStats: openStats, openUsage: openUsage, openPrompts: openPrompts, _record: record, _usage: usage, _est: estTokens };
 })();
