@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.7.1
+# To Writing Studio 写作工作台 · Beta V3.7.2
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,8 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.7.2 · 2026-11-13**（电脑版）：修正左栏收起后容易点错。原因：鼠标停留展开时，顶部的作品卡滑出来，把所有导航按钮往下推了约 180 px，鼠标底下的按钮瞬间换成了别的。现在收起和展开时每个按钮的位置完全不变：作品卡 / 今日一句改为出现在导航下方的空白处；窗口太矮放不下时，悬停展开就不显示它（「固定展开」时仍在顶部原位）。另外去掉了左栏的「新建对话」按钮（和「创作对话」重叠；新开对话用右上角「聊天记录」里的「+ 新建对话」）。改动文件：`studio.css`、`studio.js`、`desktop.html` / `mobile.html`（版本号）、`sw.js`。
 
 **Beta V3.7.1 · 2026-11-13**（电脑版）：① **节奏卡的点评改由 AI 来写**：原来那句「长短有致，节奏不错」是几条固定规则拼出来的，并没有读正文。现在用系统配置里选的模型（不换便宜模型）真正读这一章，写 2～3 句具体意见，必须引用原文指明是哪一处；同一章改动不到 300 字就沿用上次的点评，改多了停笔 6 秒后重读，也可以点「重新读」。点评存在章节的 `rh` 字段。没配 API Key 时不显示点评，只显示条码和数字。② 修正：左栏收起时，账号按钮把昼夜切换挤出了可见区域，没登录时的空心头像也被全站的 `.empty` 样式撑歪。账号改为单独一行「个人资料」，放在昼夜切换上面，收起时只露出头像，和导航图标对齐。改动文件：`js/tws-meter.js`、`js/tws-kit.css`、`js/tws-account.js`、`js/tws-account.css`、`desktop.html` / `mobile.html`、`sw.js`。
 

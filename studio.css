@@ -663,7 +663,12 @@ body:not(.is-loading) .stage,body:not(.is-loading) .st-margin,body:not(.is-loadi
 :root.rail-mini:not(.rail-open)[data-shell="desktop"] .studio-new{background:transparent!important;box-shadow:none!important}
 /* 作品卡 / 今日一句：收起时收拢，展开时滑出来 */
 :root.rail-mini[data-shell="desktop"] .st-opus{max-height:420px;overflow:hidden;transition:max-height .34s cubic-bezier(.22,1,.36,1),opacity .25s ease .06s,margin .34s}
-:root.rail-mini:not(.rail-open)[data-shell="desktop"] .st-opus{max-height:0;opacity:0;margin-bottom:-22px;transition-delay:0s;pointer-events:none}
+:root.rail-mini:not(.rail-open.rail-roomy)[data-shell="desktop"] .st-opus{max-height:0;opacity:0;margin-top:-22px;transition-delay:0s;pointer-events:none}
+/* 展开时图标不能动（否则鼠标底下的按钮会换成别的，容易点错）：
+   作品卡挪到导航下面的空白里；空白不够高（studio.js 量过，没有 rail-roomy）就不显示 */
+:root.rail-mini[data-shell="desktop"] .rail .rail-spacer{order:4}
+:root.rail-mini[data-shell="desktop"] .rail .st-opus{order:5}
+:root.rail-mini[data-shell="desktop"] .rail :is(.studio-stamp,.rail-vert,#stAcct,.st-foot,.st-colophon){order:6}
 /* 选中高亮：收起时缩成图标大小的方块（覆盖脚本写的行内宽度） */
 :root.rail-mini:not(.rail-open)[data-shell="desktop"] .nav-highlight{width:44px!important}
 /* 底部：落款只留 logo，分隔线跟着缩短 */

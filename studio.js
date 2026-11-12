@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Beta V3.7.1';
+var VERSION='Beta V3.7.2';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -174,6 +174,11 @@ function railMini(rail, foot){
   var openT=0, closeT=0;
   function setOpen(v){
     clearTimeout(openT); clearTimeout(closeT); openT=0;
+    if(v){
+      /* 导航下面的空白放得下作品卡才显示它，保证展开时上下的图标都不挪位置 */
+      var sp=rail.querySelector('.rail-spacer'), op=rail.querySelector('.st-opus');
+      root.classList.toggle('rail-roomy', !!(sp&&op&&sp.offsetHeight>=op.scrollHeight+30));
+    }
     root.classList.toggle('rail-open', !!v);
   }
   function paintPin(){
