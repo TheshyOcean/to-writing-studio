@@ -84,6 +84,7 @@
         '<span class="sec-meta"><span class="sec-en">// Manuscript</span><span class="sec-cn">书稿</span></span>' +
         '<span class="sec-right">' +
           '<span class="chip tws-goal-chip" id="twsGoalChip">今日 0 字</span>' +
+          '<button class="mini-btn" id="twsBtnKit">工具</button>' +
           '<button class="mini-btn" id="twsBtnExport">导出</button>' +
           '<button class="mini-btn" id="twsBtnNewCh">新建章节</button>' +
         '</span>' +
@@ -171,7 +172,7 @@
           '<div class="tws-chs">';
       chs.forEach(function (c) {
         html +=
-          '<div class="tws-ch' + (c.id === ui.chapterId ? ' on' : '') + '" data-ch="' + c.id + '">' +
+          '<div class="tws-ch' + (c.id === ui.chapterId ? ' on' : '') + '" data-ch="' + c.id + '" draggable="true">' +
             '<span class="tws-ch-n">' + esc(c.title) + '</span>' +
             '<span class="tws-st st-' + c.status + '">' + T.exporters.statusName(c.status) + '</span>' +
             '<span class="tws-ch-w">' + (c.words || 0) + '</span>' +
@@ -205,10 +206,10 @@
       if (act === 'addch') promptNewChapter(vid);
       if (act === 'delvol') {
         var v = D.D.volumes.filter(function (x) { return x.id === vid; })[0];
-        confirmBox('删除「' + (v ? v.title : '') + '」及其中所有章节？此操作不可撤销。', function () {
+        confirmBox('删除「' + (v ? v.title : '') + '」及其中所有章节？会先放进回收站，30 天内可以恢复。', function () {
           D.removeVolume(vid);
           if (ui.chapterId && !D.getChapter(ui.chapterId)) ui.chapterId = null;
-          renderTree(); toast('已删除');
+          renderTree(); toast('已移到回收站（工具 → 回收站）');
         });
       }
       return;
@@ -339,6 +340,8 @@
           '<span class="tws-spacer"></span>' +
           '<button class="tws-btn sm ai" id="twsBtnPolish">润色</button>' +
           '<button class="tws-btn sm ai" id="twsBtnIdeate">构思</button>' +
+          '<button class="tws-btn sm" id="twsBtnFocus" title="专注模式（Ctrl / ⌘ + Shift + Enter）">专注</button>' +
+          '<button class="tws-btn sm" id="twsBtnRead" title="朗读正文（有选中就读选中，否则从光标处读）">朗读</button>' +
           '<button class="tws-btn sm" id="twsBtnHist">历史</button>' +
           '<button class="tws-btn sm" id="twsBtnCheck">检查</button>' +
           '<button class="tws-btn sm ghost" id="twsBtnDelCh">删除</button>' +
@@ -366,10 +369,13 @@
     $('twsBtnPolish').addEventListener('click', openPolish);
     $('twsBtnIdeate').addEventListener('click', openIdeate);
     $('twsBtnHist').addEventListener('click', openHistory);
+    $('twsBtnFocus').addEventListener('click', function () { if (T.kit) T.kit.toggleFocus(); });
+    $('twsBtnRead').addEventListener('click', function () { if (T.kit) T.kit.readAloud(); });
+    if (T.kit && T.kit.onEditor) T.kit.onEditor(ta);
     $('twsBtnCheck').addEventListener('click', openCheck);
     $('twsBtnDelCh').addEventListener('click', function () {
-      confirmBox('删除「' + c.title + '」？正文与版本记录都会删除。', function () {
-        D.removeChapter(c.id); ui.chapterId = null; renderTree(); toast('已删除');
+      confirmBox('删除「' + c.title + '」？会先放进回收站，30 天内可以恢复。', function () {
+        D.removeChapter(c.id); ui.chapterId = null; renderTree(); toast('已移到回收站（工具 → 回收站）');
       });
     });
   }
@@ -968,25 +974,50 @@
   function openExport() {
     var pid = D.D.activeProject;
     if (!pid) { toast('先建一部作品'); return; }
-    modal('导出',
+    var FM = [['docx', 'Word .docx'], ['epub', '电子书 .epub'], ['md', 'Markdown .md'], ['txt', '纯文本 .txt']];
+    var fmt = 'docx';
+    var m = modal('导出',
+      '<div class="tws-chips" id="xFmt">' + FM.map(function (f, i) {
+        return '<span class="chip' + (i ? '' : ' on') + '" data-fmt="' + f[0] + '">' + f[1] + '</span>';
+      }).join('') + '</div>' +
       '<label class="tws-chk"><input type="checkbox" id="xTitles" checked> 章节标题</label>' +
       '<label class="tws-chk"><input type="checkbox" id="xVol" checked> 卷标题</label>' +
-      '<label class="tws-chk"><input type="checkbox" id="xMeta"> 章节状态与字数</label>' +
-      '<p class="tws-p" style="margin-top:12px">导出整本：Word 会按卷分段，正文首行缩进两字。</p>',
+      '<label class="tws-chk" id="xMetaL"><input type="checkbox" id="xMeta"> 章节状态与字数</label>' +
+      '<p class="tws-p" style="margin-top:12px" id="xTip"></p>',
       {
-        okText: '导出 .docx',
+        okText: '导出',
         onOk: function (w) {
           var p = D.getProject(pid);
-          var blob = T.exporters.docx(pid, {
+          var o = {
             titles: w.querySelector('#xTitles').checked,
             volumeTitles: w.querySelector('#xVol').checked,
             meta: w.querySelector('#xMeta').checked
-          });
+          };
+          var name = (p ? p.name : 'book');
+          if (fmt === 'txt') { exportTxt(); return; }
+          var blob = fmt === 'docx' ? T.exporters.docx(pid, o)
+            : (T.io ? (fmt === 'epub' ? T.io.epub(pid, o) : T.io.markdown(pid, o)) : null);
           if (!blob) { toast('导出失败'); return false; }
-          T.exporters.download(blob, (p ? p.name : 'book') + '.docx');
-          toast('已导出');
+          T.exporters.download(blob, name + '.' + fmt);
+          toast('已导出 .' + fmt);
         }
       });
+    var TIP = {
+      docx: '导出整本：Word 会按卷分段，正文首行缩进两字。',
+      epub: '导出整本电子书：带目录，每章一页，可以放进手机阅读器、微信读书、Kindle（新款）里看。',
+      md: '导出整本 Markdown：书名是一级标题，卷是二级，章是三级，段落之间空一行。',
+      txt: '导出整本纯文本：段首空两格。'
+    };
+    function paint() {
+      m.el.querySelector('#xTip').textContent = TIP[fmt];
+      m.el.querySelector('#xMetaL').style.display = fmt === 'docx' ? '' : 'none';
+      m.el.querySelectorAll('[data-fmt]').forEach(function (x) { x.classList.toggle('on', x.getAttribute('data-fmt') === fmt); });
+    }
+    m.el.querySelector('#xFmt').addEventListener('click', function (e) {
+      var c = e.target.closest('[data-fmt]'); if (!c) return;
+      fmt = c.getAttribute('data-fmt'); paint();
+    });
+    paint();
   }
 
   function exportTxt() {
@@ -1013,6 +1044,7 @@
   }
 
   function openStats() {
+    if (T.meter && T.meter.openStats) { T.meter.openStats(); return; }
     var l7 = D.last7();
     var max = Math.max.apply(null, l7.map(function (x) { return x.words; }).concat([1]));
     var bars = l7.map(function (x) {
@@ -1453,6 +1485,10 @@
   T.currentChapter = function () { return ui.chapterId || D.D.activeChapter || ''; };
   /* 给 tws-flow.js / tws-search.js 用：落盘编辑器、重画编辑器、打开某一章 */
   T.flushSave = function () { try { flushSave(); } catch (e) {} };
+  /* 给 V3.5.0 的工具模块用 */
+  T.ui = { toast: toast, modal: modal, confirm: confirmBox, needKeyGuide: needKeyGuide, openPolish: openPolish,
+    allChapters: allChapters, renderGoalChip: renderGoalChip, sendToChat: sendToChat,
+    setChapter: function (id) { ui.chapterId = id; } };
   T.renderEditor = function () { try { renderEditor(); } catch (e) {} };
   T.openChapter = function (id) { try { openChapter(id); } catch (e) {} };
 
@@ -1490,6 +1526,7 @@
     });
     $('twsBtnExport').addEventListener('contextmenu', function (e) { e.preventDefault(); exportTxt(); });
     $('twsGoalChip').addEventListener('click', openStats);
+    $('twsBtnKit').addEventListener('click', function (e) { if (T.kit) T.kit.openMenu(e.currentTarget); });
 
     $('twsBtnNewCard').addEventListener('click', function () { promptCard(null); });
     $('twsBtnExtract').addEventListener('click', openExtract);

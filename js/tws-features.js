@@ -116,7 +116,7 @@
   }
 
   /* 极简 ZIP 写入器（STORE，不压缩） */
-  function makeZip(files) {
+  function makeZip(files, type) {
     var parts = [], central = [], offset = 0;
     function u16(n) { return [n & 255, (n >> 8) & 255]; }
     function u32(n) { return [n & 255, (n >> 8) & 255, (n >> 16) & 255, (n >>> 24) & 255]; }
@@ -153,7 +153,7 @@
       u32(cdSize), u32(cdStart), u16(0)
     )));
 
-    return new Blob(parts, { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    return new Blob(parts, { type: type || 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
   }
 
   function xesc(s) {
@@ -571,7 +571,7 @@
   }
 
   T.templates = { LIST: TEMPLATES, STYLES: STYLES, build: buildPrompt };
-  T.exporters = { docx: buildDocx, download: download, statusName: statusName };
+  T.exporters = { docx: buildDocx, download: download, statusName: statusName, zip: makeZip };
   T.checker = { run: runCheck, callLLM: callLLM };
   T.ops = { parse: parseOps, describe: describeOp, LABEL: OP_LABEL, DOC: OP_DOC };
   T.ai = { polish: polish, ideate: ideate, extract: extract, needKey: needKey,

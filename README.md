@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.4.1
+# To Writing Studio 写作工作台 · Beta V3.5.0
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,10 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.5.0 · 2026-11-12**（电脑版 + 手机版，**开发中：已通过冒烟测试，尚未逐项细测**）：一次加入 17 个实用功能，入口大多在「书稿」右上角新增的「工具」菜单。
+① **导入书稿**（.txt / .md / .docx，自动识别编码，按「第X章 / 第X卷」或 Word 标题样式切章，可新建作品或追加到当前作品）。② **回收站**（删掉的卷 / 章保留 30 天，连版本历史一起恢复）。③ **离线可用**（`sw.js`，断网也能打开写；AI 仍需联网）。④ **自动备份到本地文件夹**（系统配置 →「自动备份」，Chrome / Edge 电脑版；停笔 20 秒自动写入，每天留一份、保留 14 天）。⑤ **专注模式**（编辑器「专注」或 Ctrl / ⌘ + Shift + Enter，光标行保持在屏幕中间）。⑥ **章节拖拽排序、跨卷移动**（手机用「工具 → 移动本章」）。⑦ **选中文字的浮动菜单**（润色 / 扩写 / 缩写 / 换个说法 / 朗读）。⑧ **朗读正文**。⑨ **起名器**（本地词库 + 可选 AI）。⑩ **写作统计**（全年热力图、每章字数、预计完稿）。⑪ **用量与花费**（系统配置 →「用量与花费」，单价自己填）。⑫ **导出 .epub / .md**。⑬ **文笔体检**（纯本地）。⑭ **番茄钟**。⑮ **发布格式**（缩进 / 空行 / 标点修正，一键复制）。⑯ **敏感词自查**（内置短词表 + 自定义）。⑰ **指令库**（对话输入框上方「指令」）。不做云同步。
+新增：`js/tws-kit.js`、`js/tws-io.js`、`js/tws-craft.js`、`js/tws-meter.js`、`js/tws-sync.js`、`js/tws-kit.css`、`sw.js`。改动：`js/tws-data.js`（回收站 `trash[]`、`placeChapter`、`onSave`）、`js/tws-views.js`（工具按钮、导出格式、对外暴露 `TWS.ui`）、`js/tws-features.js`（暴露 ZIP）、`js/tws-backup.js`（备份清单加新键）、`desktop.html` / `mobile.html`。新增 localStorage 键：`tws_prompts_v1`、`tws_sens_v1`、`tws_usage_v1`、`tws_pomo_v1`、`tws_pub_v1`（均已进备份清单）、`tws_tts_rate`、`tws_fsbackup_last`。**发新版时记得把 `sw.js` 里的 `CACHE` 版本号一起改。**
 
 **Beta V3.4.1 · 2026-11-10**（电脑版 + 手机版）：开屏动画换上新 logo。V3.3.4 换 logo 时漏了开屏「泼墨落笔」里的标识，一直还是旧的渐变方块「To」。现在换成完整版的「半是羽毛，半是水墨」（铜版画羽毛 + 水墨 + 落墨），颜色跟主题走：深色模式下羽毛变成宣纸色，灵光模式下笔尖和墨心变金。去掉了旧标识的紫色投影。新增 `tools/build-boot-logo.py`：改了 `logo/to-mark.svg` 后运行它，会重新生成 `boot-ink.js` 里的开屏标识。改动文件：`boot-ink.js`、`boot-ink.css`、`desktop.html` / `mobile.html`（缓存参数、版本号）、`studio.js`（版本号）。
 

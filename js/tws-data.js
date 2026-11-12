@@ -50,6 +50,7 @@
       projects: [], volumes: [], chapters: [],
       cards: [], threads: [], events: [],
       versions: {},               // { chapterId: [ {id,label,content,source,created} ] }
+      trash: [],                  // 回收站：[ {id,kind:'chapter'|'volume',at,projectId,title,words,volume,chapters[],versions{}} ]
       stats: {},                  // { 'YYYY-MM-DD': words }
       goal: 2000,
       activeProject: null,
@@ -63,15 +64,19 @@
   /* ---------------- 持久化 ---------------- */
   function bytes(s) { return s.length * 2; }   // UTF-16 估算
 
+  var saveHooks = [];          // 每次保存后通知（自动备份用）
+  function onSave(fn) { saveHooks.push(fn); }
   function save() {
     D.updated = Date.now();
+    setTimeout(function () { saveHooks.forEach(function (f) { try { f(); } catch (e) {} }); }, 0);
     var raw = JSON.stringify(D);
     try {
       localStorage.setItem(KEY, raw);
       return true;
     } catch (e) {
-      // 配额满了：先砍版本历史，再试
+      // 配额满了：先砍版本历史和回收站里的版本，再试
       trimVersions(0.5);
+      (D.trash || []).forEach(function (t) { t.versions = {}; });
       try {
         localStorage.setItem(KEY, JSON.stringify(D));
         console.warn('[TWS] 存储接近上限，已自动清理旧版本快照');
@@ -140,6 +145,7 @@
     D.threads = D.threads.filter(function (t) { return t.projectId !== id; });
     D.events = D.events.filter(function (e) { return e.projectId !== id; });
     D.projects = D.projects.filter(function (p) { return p.id !== id; });
+    D.trash = (D.trash || []).filter(function (t) { return t.projectId !== id; });
     if (D.activeProject === id) D.activeProject = D.projects[0] ? D.projects[0].id : null;
     save();
   }
@@ -160,9 +166,95 @@
     Object.assign(v, patch); save();
   }
   function removeVolume(id) {
+    var v = D.volumes.filter(function (x) { return x.id === id; })[0];
+    if (v) {
+      var chs = listChapters(id);
+      toTrash('volume', v.projectId, v.title, v, chs);
+      chs.forEach(function (c) { delete D.versions[c.id]; });
+    }
     D.chapters = D.chapters.filter(function (c) { return c.volumeId !== id; });
-    D.volumes = D.volumes.filter(function (v) { return v.id !== id; });
+    D.volumes = D.volumes.filter(function (x) { return x.id !== id; });
+    if (D.activeChapter && !getChapter(D.activeChapter)) D.activeChapter = null;
     save();
+  }
+
+  /* ---------------- 回收站 ---------------- */
+  var TRASH_MAX = 40, TRASH_DAYS = 30;
+  /* 删除的卷 / 章先放进回收站（连同版本记录），30 天后或超过 40 项时才真正清掉 */
+  function toTrash(kind, projectId, title, volume, chapters) {
+    if (!Array.isArray(D.trash)) D.trash = [];
+    var vers = {}, words = 0;
+    chapters.forEach(function (c) {
+      words += c.words || 0;
+      if (D.versions[c.id]) vers[c.id] = D.versions[c.id];
+    });
+    D.trash.push({
+      id: uid('r'), kind: kind, at: Date.now(), projectId: projectId, title: title, words: words,
+      volume: volume ? JSON.parse(JSON.stringify(volume)) : null,
+      chapters: JSON.parse(JSON.stringify(chapters)), versions: vers
+    });
+    purgeTrash();
+  }
+  function purgeTrash() {
+    if (!Array.isArray(D.trash)) { D.trash = []; return; }
+    var dead = Date.now() - TRASH_DAYS * 864e5;
+    D.trash = D.trash.filter(function (t) { return t.at > dead; });
+    if (D.trash.length > TRASH_MAX) D.trash = D.trash.slice(D.trash.length - TRASH_MAX);
+  }
+  function listTrash(projectId) {
+    purgeTrash();
+    return D.trash.filter(function (t) { return !projectId || t.projectId === projectId; })
+      .sort(function (a, b) { return b.at - a.at; });
+  }
+  /* 放回原处：原来的卷还在就回原卷，不在了就放进「回收站恢复」卷 */
+  function restoreTrash(id) {
+    var t = (D.trash || []).filter(function (x) { return x.id === id; })[0];
+    if (!t || !getProject(t.projectId)) return null;
+    var first = null;
+    if (t.kind === 'volume' && t.volume) {
+      var v = t.volume;
+      if (D.volumes.some(function (x) { return x.id === v.id; })) v.id = uid('v');
+      v.ord = D.volumes.filter(function (x) { return x.projectId === t.projectId; }).length;
+      D.volumes.push(v);
+      t.chapters.forEach(function (c) { c.volumeId = v.id; D.chapters.push(c); first = first || c; });
+    } else {
+      t.chapters.forEach(function (c) {
+        var home = D.volumes.filter(function (x) { return x.id === c.volumeId; })[0];
+        if (!home) {
+          home = listVolumes(t.projectId).filter(function (x) { return x.title === '回收站恢复'; })[0] ||
+            addVolume(t.projectId, '回收站恢复');
+          c.volumeId = home.id;
+        }
+        D.chapters.push(c); first = first || c;
+        renumber(c.volumeId);
+      });
+    }
+    Object.keys(t.versions || {}).forEach(function (cid) { D.versions[cid] = t.versions[cid]; });
+    D.trash = D.trash.filter(function (x) { return x.id !== id; });
+    save();
+    return first;
+  }
+  function dropTrash(id) {
+    D.trash = (D.trash || []).filter(function (x) { return id && x.id !== id; });
+    save();
+  }
+  /* 把一卷里的章节序号重排成 0..n-1（保持现有先后） */
+  function renumber(volumeId) {
+    listChapters(volumeId).forEach(function (c, i) { c.ord = i; });
+  }
+  /* 把章节放到某一卷的第 index 位（拖拽排序 / 跨卷移动） */
+  function placeChapter(id, volumeId, index) {
+    var c = getChapter(id); if (!c) return false;
+    if (!D.volumes.some(function (v) { return v.id === volumeId; })) return false;
+    var from = c.volumeId;
+    var list = listChapters(volumeId).filter(function (x) { return x.id !== id; });
+    index = Math.max(0, Math.min(list.length, index == null ? list.length : index));
+    list.splice(index, 0, c);
+    c.volumeId = volumeId;
+    list.forEach(function (x, i) { x.ord = i; });
+    if (from !== volumeId) renumber(from);
+    save();
+    return true;
   }
 
   /* ---------------- 章 ---------------- */
@@ -216,6 +308,11 @@
     save();
   }
   function removeChapter(id) {
+    var gone = getChapter(id);
+    if (gone) {
+      var gv = D.volumes.filter(function (v) { return v.id === gone.volumeId; })[0];
+      toTrash('chapter', gv ? gv.projectId : D.activeProject, gone.title, null, [gone]);
+    }
     D.chapters = D.chapters.filter(function (c) { return c.id !== id; });
     delete D.versions[id];
     if (D.activeChapter === id) D.activeChapter = null;
@@ -428,7 +525,7 @@
   window.TWS.data = {
     D: D,
     KEY: KEY,
-    load: load, save: save, blank: blank, usage: usage,
+    load: load, save: save, onSave: onSave, blank: blank, usage: usage,
     uid: uid, esc: esc, today: today, countWords: countWords, fmtNum: fmtNum, timeAgo: timeAgo,
     CARD_KINDS: CARD_KINDS,
     // 项目
@@ -438,7 +535,9 @@
     // 章
     addChapter: addChapter, getChapter: getChapter, listChapters: listChapters,
     saveChapterContent: saveChapterContent, updateChapter: updateChapter,
-    removeChapter: removeChapter, moveChapter: moveChapter,
+    removeChapter: removeChapter, moveChapter: moveChapter, placeChapter: placeChapter,
+    // 回收站
+    listTrash: listTrash, restoreTrash: restoreTrash, dropTrash: dropTrash,
     projectWords: projectWords, projectChapterCount: projectChapterCount,
     // 卡片
     addCard: addCard, listCards: listCards, updateCard: updateCard, removeCard: removeCard,
