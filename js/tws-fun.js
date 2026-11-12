@@ -146,6 +146,7 @@
   var NICK = ['老书虫', '追更到凌晨', '匿名读者', '不吃香菜', '蹲回收的人', '今天也在等更新', '路过的编辑', '第一章就入坑'];
   var seenReply = {}, dmBusy = false;
   function onReply(text, key) {
+    return;   // 已下线，见 tick() 上的说明
     if (!dmOn() || !hasKey() || dmBusy || seenReply[key]) return;
     seenReply[key] = 1;
     var t = String(text || '').replace(/```[\s\S]*?```/g, '').trim();
@@ -407,7 +408,8 @@
   document.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-iv]'); if (b) { e.stopPropagation(); openIv(b.dataset.iv); } }, true);
 
   var lastPid = null;
-  function tick() { mountHead(); mountReader(); if (pid() !== lastPid) { lastPid = pid(); paintReader(0); } }
+  /* V3.5.5：「读者」卡和弹幕已下线（人数和留言都是编的，还要额外花 Token），页边那个位置换成了「节奏」卡（js/tws-meter.js） */
+  function tick() { mountHead(); }
 
   T.fun = {
     llm: llm, json: json, toast: toast, esc: esc, modal: modal, openModal: openModal, closeModal: closeModal, portrait: portrait,

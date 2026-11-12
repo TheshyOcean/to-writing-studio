@@ -338,8 +338,90 @@
     return true;
   }
 
+  /* ============================================================
+     页边「节奏」卡：把当前章画成段落条码
+     每段一根竖条，长度越长越高；对话段用主题色。点一根跳到那一段。
+     ============================================================ */
+  var RH_MAX = 90;          // 最多画最近多少段
+  var READ_SPEED = 400;     // 中文阅读速度，字 / 分钟
+  var rhLast = '';
+  function isDialog(p) {
+    var t = p.replace(/\s/g, ''), q = 0, m, re = /“[^”]*”|「[^」]*」|"[^"]*"/g;
+    while ((m = re.exec(t))) q += m[0].length;
+    return t.length > 0 && (q / t.length > 0.45 || /^[“「"]/.test(t));
+  }
+  function rhythmOf(text) {
+    var paras = [], re = /[^\n]+/g, m;
+    while ((m = re.exec(text))) { var s = m[0].trim(); if (s) paras.push({ s: s, i: m.index + m[0].indexOf(s), n: s.replace(/\s/g, '').length, d: isDialog(s) }); }
+    var chars = paras.reduce(function (a, p) { return a + p.n; }, 0);
+    var dChars = paras.reduce(function (a, p) { return a + (p.d ? p.n : 0); }, 0);
+    return { paras: paras, chars: chars, dialog: chars ? Math.round(dChars / chars * 100) : 0, avg: paras.length ? Math.round(chars / paras.length) : 0 };
+  }
+  function rhythmTip(r) {
+    var ps = r.paras, n = ps.length;
+    if (!n) return '';
+    var tail = ps.slice(-4);
+    if (tail.length === 4 && tail.every(function (p) { return p.n > 180; })) return '最近四段都在 180 字以上，读者会喘不过气，可以切一刀。';
+    if (tail.length === 4 && tail.every(function (p) { return p.d; })) return '最近一直是对白，可以插一个动作或神态，让人物「动」一下。';
+    var big = ps.filter(function (p) { return p.n > 350; })[0];
+    if (big) return '有一段写到 ' + big.n + ' 字还没分段，点高的那根条看看。';
+    if (r.chars > 800 && r.dialog < 5) return '这一章几乎没有对白，全是叙述。';
+    if (r.chars > 800 && r.dialog > 75) return '这一章大部分是对白，叙述有点少。';
+    if (n >= 8) {
+      var sd = Math.sqrt(ps.reduce(function (a, p) { return a + Math.pow(p.n - r.avg, 2); }, 0) / n);
+      if (sd < r.avg * 0.25) return '段落长短太整齐了，长短交错读起来更有呼吸。';
+    }
+    return '长短有致，节奏不错。';
+  }
+  function paintRhythm() {
+    var box = document.getElementById('rhBody'); if (!box) return;
+    var d = D(), cid = T.currentChapter && T.currentChapter(), c = cid && d.getChapter(cid);
+    var ta = document.getElementById('twsContent');
+    var text = c ? ((ta && document.getElementById('v-book') && T.currentChapter() === c.id && ta.value) || c.content || '') : '';
+    var key = (c ? c.id : '') + '|' + text.length + '|' + text.slice(-40);
+    if (key === rhLast) return;
+    rhLast = key;
+    if (!c) { box.innerHTML = '<p class="rh-tip">选一章，这里会画出它的节奏。</p>'; return; }
+    var r = rhythmOf(text);
+    if (!r.paras.length) { box.innerHTML = '<p class="rh-tip">「' + esc(c.title) + '」还是空的。写几段，这里会画出它的节奏。</p>'; return; }
+    var ps = r.paras.slice(-RH_MAX), mx = Math.max.apply(null, ps.map(function (p) { return p.n; }).concat([60]));
+    var bars = ps.map(function (p, k) {
+      var h = Math.max(8, Math.round(Math.sqrt(p.n / mx) * 100));
+      return '<i class="' + (p.d ? 'd' : '') + (p.n > 350 ? ' x' : '') + '" style="height:' + h + '%" data-k="' + k + '" title="' + esc(p.s.slice(0, 18)) + '…（' + p.n + ' 字）"></i>';
+    }).join('');
+    var mins = Math.max(1, Math.round(r.chars / READ_SPEED));
+    box.innerHTML = '<div class="rh-bars" role="img" aria-label="本章段落长短：共 ' + r.paras.length + ' 段">' + bars + '</div>' +
+      '<div class="rh-leg"><span><i></i>叙述</span><span><i class="d"></i>对白</span>' + (r.paras.length > RH_MAX ? '<em>最近 ' + RH_MAX + ' 段</em>' : '<em>' + r.paras.length + ' 段</em>') + '</div>' +
+      '<div class="rh-stats"><span><b>' + mins + '</b> 分钟读完</span><span>对白 <b>' + r.dialog + '%</b></span><span>段均 <b>' + r.avg + '</b> 字</span></div>' +
+      '<p class="rh-tip">' + esc(rhythmTip(r)) + '</p>';
+    box._paras = ps; box._cid = c.id;
+  }
+  function mountRhythm() {
+    var m = document.getElementById('stMargin');
+    if (!m || document.getElementById('rhBody')) return !!m;
+    var card = document.createElement('div');
+    card.className = 'st-mcard rh-card';
+    card.innerHTML = '<div class="st-mh">节奏 <span class="lat">Rhythmus</span><button type="button" id="rhProse">体检</button></div><div id="rhBody"></div>';
+    var first = m.querySelector('.st-mcard');
+    m.insertBefore(card, first ? first.nextSibling : m.firstChild);
+    card.querySelector('#rhProse').addEventListener('click', function () { T.craft && T.craft.openProse(); });
+    card.querySelector('#rhBody').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-k]'); if (!b) return;
+      var box = this, p = box._paras && box._paras[Number(b.getAttribute('data-k'))];
+      if (p && T.craft) T.craft.jumpTo(box._cid, p.i, p.s.length);
+    });
+    paintRhythm();
+    return true;
+  }
+
   hookFetch();
   function init() {
+    var tries = 0;
+    (function tryMount() { if (!mountRhythm() && tries++ < 40) setTimeout(tryMount, 250); })();
+    if (D() && D().onSave) D().onSave(paintRhythm);
+    document.addEventListener('input', function (e) { if (e.target && e.target.id === 'twsContent') { clearTimeout(init._t); init._t = setTimeout(paintRhythm, 600); } });
+    document.addEventListener('click', function () { setTimeout(paintRhythm, 200); }, true);
+    setInterval(paintRhythm, 5000);
     var n = 0;
     (function tryAdd() { if (!addPromptEntry() && n++ < 20) setTimeout(tryAdd, 300); })();
     var b = document.getElementById('btnUsage');
