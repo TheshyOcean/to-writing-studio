@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Beta V3.5.2';
+var VERSION='Beta V3.5.3';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -195,7 +195,7 @@ function railMini(rail, foot){
   });
   /* 鼠标在栏里停够时间就展开；点过导航后鼠标没移出去，再停一会儿也照样展开 */
   function arm(){
-    if(!root.classList.contains('rail-mini') || root.classList.contains('studio-focused')) return;
+    if(!root.classList.contains('rail-mini')) return;
     clearTimeout(closeT);
     if(root.classList.contains('rail-open') || openT) return;
     openT=setTimeout(function(){ openT=0; setOpen(true); }, RAIL_OPEN_DELAY);
@@ -249,7 +249,7 @@ function buildHead(){
     '<span class="sp"></span><span class="st-tools" id="stTools"></span>';
   stage.insertBefore(h,stage.firstChild);
   var tools=$('stTools');
-  ['twsChapterChip','btnMore','studioFocus','btnDrawer'].forEach(function(id){ var e=$(id); if(e) tools.appendChild(e); });
+  ['twsChapterChip','btnMore','btnDrawer'].forEach(function(id){ var e=$(id); if(e) tools.appendChild(e); });
   var mc=$('modelChip'); if(mc) mc.style.display='none';
   $('stLuxChip').addEventListener('click',function(){ setLux(false,this); });
 }

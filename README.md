@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.5.2
+# To Writing Studio 写作工作台 · Beta V3.5.3
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,8 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.5.3 · 2026-11-13**（电脑版 + 手机版）：删除顶栏右上角的「专注阅读」（全屏）按钮及其全部样式。书稿编辑器里的「专注」写作模式（Ctrl / ⌘ + Shift + Enter）不受影响。改动文件：`terminal-redesign.js`、`terminal-redesign.css`、`studio.js`、`studio.css`、`mobile.css`、`desktop.html` / `mobile.html`（版本号）、`sw.js`（缓存版本）。
 
 **Beta V3.5.2 · 2026-11-13**（电脑版）：修复 V3.5.1 的问题：点右上角「全屏」后，收起的左栏图标叠在正文上。原因是全屏模式靠把左栏那一列设成 0 宽来隐藏，而收起样式给左栏写死了 76 px 宽。现在全屏时左栏宽度强制归零并彻底隐藏，鼠标停在左边也不会展开。另外：手机版不启用左栏收起（手机页也带 `data-shell="desktop"`，靠 `data-device="phone"` 区分）。改动文件：`studio.css`、`studio.js`、`desktop.html` / `mobile.html`（版本号）、`sw.js`（缓存版本）。
 

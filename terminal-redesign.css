@@ -210,7 +210,6 @@ body{letter-spacing:.005em}
 .icon-btn{border:1px solid var(--bd);width:36px;height:36px;background:transparent;clip-path:none}
 .icon-btn.on{background:var(--ac-sub);color:var(--tx-1);border-color:var(--bd-s);clip-path:none}
 .icon-btn:hover{color:var(--tx-1);background:var(--bg-3);border-color:var(--bd-s)}
-.icon-btn.studio-focus>span{display:none}
 .icon-btn .badge{background:var(--tx-2);color:var(--bg-2);border-radius:0;top:-3px;right:-3px;font-size:8px}
 .clock{font-size:10px;border-left:0;padding-left:10px}
 .rec{font-size:9px;color:var(--tx-2)}
@@ -333,18 +332,6 @@ button,.chip,.mini-btn{transition:background .18s ease,border-color .18s ease,co
 button:active{transform:translateY(1px)}
 #stage.parallax{will-change:auto;transition:transform .4s var(--studio-ease)}
 .frame{display:none}
-:root.studio-focused[data-shell="desktop"] .viewport{grid-template-columns:0 minmax(0,1fr)}
-:root.studio-focused .rail{padding-left:0;padding-right:0;border:0;opacity:0;pointer-events:none}
-:root.studio-focused .sec-head{min-height:72px;padding-top:13px;padding-bottom:13px}
-:root.studio-focused .sec-no{font-size:37px}
-:root.studio-focused .chat{background-image:none}
-:root.studio-focused .studio-stamp{display:none}
-:root.studio-focused #stage{transform:none!important}
-:root.studio-focused .msg.ai .bub{border:0;background:transparent}
-:root.studio-focused .msg.ai .mini{display:none}
-:root.studio-focused .composer::before{display:none}
-:root.studio-focused .studio-readbar{padding-top:8px}
-:root.studio-focused .topbar .res,:root.studio-focused .topbar .clock,:root.studio-focused .rec{display:none}
 @media(min-width:901px){.sheet{max-width:680px;margin:auto;border:1px solid var(--bd-s);border-top:3px solid var(--ac);bottom:24px;transform:translateY(calc(100% + 28px))}.sheet.show{transform:translateY(0)}}
 @media(max-width:1100px){.res,.clock{display:none!important}.brand .cn{display:none}}
 @media(max-width:900px){:root[data-shell="desktop"]{--rail-w:64px}.studio-stamp{display:none}:root[data-shell="desktop"] .rail{padding:20px 7px}:root[data-shell="desktop"] .rail-btn{justify-content:center;padding:0;width:48px;height:46px}:root[data-shell="desktop"] .rail-btn span,:root[data-shell="desktop"] .rail-btn small{display:none}:root[data-shell="desktop"] .studio-new{width:46px;padding:0;margin:15px 1px}:root[data-shell="desktop"] .studio-new span{display:none}.sec-head{min-height:92px}.empty{padding-left:23px}.empty::before{left:23px}.studio-readbar{padding:11px 24px 0}.chat{padding:22px 25px}.composer{padding:13px 25px 10px}.sec-head::after{left:24px}}
@@ -391,8 +378,6 @@ button:active{transform:translateY(1px)}
 :root[data-shell="mobile"] .mini-btn{font-size:11px;min-height:38px}
 :root[data-shell="mobile"] #themeSeg button{font-size:10px;padding:10px 8px}
 :root[data-shell="mobile"] .drawer{width:100vw;max-width:100vw;left:0;top:0;bottom:0}
-:root[data-shell="mobile"].studio-focused .sec-head{min-height:56px}
-:root[data-shell="mobile"].studio-focused .sec-no{font-size:28px}
 @media(max-height:670px){:root[data-shell="mobile"] .empty{justify-content:flex-start;min-height:265px;margin-top:17px}.studio-readbar{padding-top:6px}}
 @media(max-width:360px){:root[data-shell="mobile"] .brand .name{font-size:11px}:root[data-shell="mobile"] .top-right{gap:2px}:root[data-shell="mobile"] .top-right .icon-btn{width:28px}:root[data-shell="mobile"] .empty .em-t{font-size:31px}}
 .sec-meta{flex:1;min-width:0;overflow:hidden}
@@ -677,8 +662,6 @@ input:focus,textarea:focus,select:focus,.field:focus-within{border-color:color-m
 #chat .msg.me .mini{background:var(--lq-lime)}
 #chat .think{border-radius:14px}
 /* 专注阅读：保持无框手稿 */
-:root.studio-focused #chat .msg.ai .bub{background:transparent;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;padding-left:0;padding-right:0}
-:root.studio-focused #chat .msg.ai .bub::before{display:none}
 :root[data-shell="mobile"] #chat .msg.ai .bub{padding:15px 17px 14px}
 :root[data-shell="mobile"] #chat .msg.me .bub{padding:11px 16px}
 @media(max-width:620px){:root[data-shell="desktop"] #chat .msg.ai .bub{padding:14px 16px}}

@@ -175,7 +175,6 @@ html:root[data-device="phone"][data-shell] #stHead #stTools{
 html:root[data-device="phone"][data-shell] #stHead #stTools::-webkit-scrollbar{display:none}
 html:root[data-device="phone"][data-shell] #stHead #stTools>*{flex:none!important}
 html:root[data-device="phone"][data-shell] #stHead #btnMore{display:inline-flex!important}
-html:root[data-device="phone"][data-shell] #stHead #studioFocus{display:none!important}
 
 /* ---------- 5. 对话区与输入框 ---------- */
 html:root[data-device="phone"][data-shell] .chat{padding:18px var(--m-pad) 24px!important;gap:22px!important}

@@ -88,8 +88,6 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 :root[data-shell="desktop"] .app{grid-template-rows:minmax(0,1fr)!important;padding-top:0}
 :root[data-shell="desktop"] .app>.viewport{grid-row:1!important}
 :root[data-shell="desktop"] .viewport{grid-template-columns:var(--rail-w) minmax(0,1fr) 300px!important;background:transparent!important}
-:root.studio-focused[data-shell="desktop"] .viewport{grid-template-columns:0 minmax(0,1fr) 0!important}
-:root.studio-focused .st-margin{opacity:0;pointer-events:none}
 @media (max-width:1240px){:root[data-shell="desktop"] .viewport{grid-template-columns:var(--rail-w) minmax(0,1fr) 0!important}.st-margin{display:none!important}}
 :root[data-shell="desktop"] .stage{margin:14px 0!important;border-radius:28px!important;background:var(--paper)!important;box-shadow:var(--shadow-lg)!important;border:0!important;overflow:hidden!important;transition:background .6s var(--ez)}
 :root[data-shell] .stage>.view{top:var(--st-head)!important}
@@ -689,6 +687,3 @@ body:not(.is-loading) .stage,body:not(.is-loading) .st-margin,body:not(.is-loadi
 :root[data-shell="desktop"] .tws-cmp-tools>.tws-tpl-btn{height:30px!important;padding:0 12px!important;font-size:12.5px!important;border-radius:15px!important;
   border:1px dashed var(--line2)!important;color:var(--fg2)!important;width:auto!important;margin:0!important}
 
-/* 全屏（专注写作）时左栏彻底藏起来：宽度归零、不可见、不响应鼠标 */
-:root.studio-focused[data-shell="desktop"] .rail,
-:root.studio-focused.rail-mini[data-shell="desktop"] .rail{width:0!important;min-width:0!important;padding:0!important;visibility:hidden;opacity:0!important;pointer-events:none!important;box-shadow:none!important}

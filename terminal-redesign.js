@@ -57,16 +57,8 @@
     rail.insertBefore(stamp,rail.querySelector('.rail-vert'));
   }
   var top=document.querySelector('.top-right');
-  var focus=button('studioFocus','专注阅读','focus','icon-btn studio-focus');
-  focus.setAttribute('aria-pressed','false');top.insertBefore(focus,top.firstChild);
-  function toggleFocus(){
-    var on=root.classList.toggle('studio-focused');
-    focus.setAttribute('aria-pressed',String(on));focus.classList.toggle('on',on);
-    focus.setAttribute('aria-label',on?'退出专注阅读':'专注阅读');focus.title=on?'退出专注阅读':'专注阅读';
-  }
-  focus.onclick=toggleFocus;
   var theme=document.getElementById('btnTheme');
-  if(mobile&&theme){theme.classList.add('studio-mobile-theme');top.insertBefore(theme,focus);}
+  if(mobile&&theme){theme.classList.add('studio-mobile-theme');top.insertBefore(theme,top.firstChild);}
   var version=document.createElement('span');version.className='studio-version';version.textContent='Beta V2.3.0';version.style.cssText='font:9px var(--mono);color:var(--tx-3);margin-left:4px;white-space:nowrap';if(mobile){version.style.fontSize='8px';document.querySelector('#v-chat .sec-head').appendChild(version);}else{document.querySelector('.brand').appendChild(version);}
   var title=document.querySelector('#v-chat .sec-en');if(title)title.textContent='CREATIVE OPERATIONS / WRITING CONSOLE';
   var composer=document.querySelector('.composer');
