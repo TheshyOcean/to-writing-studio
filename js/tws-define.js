@@ -581,7 +581,7 @@
     b.className = 'rail-btn'; b.id = 'railDef'; b.type = 'button'; b.dataset.go = 'v-def'; b.title = '智能定义';
     b.innerHTML = ICON + '<span>智能定义</span><small>00</small><em>Definitio</em>';
     b.onclick = function () { window.showView('v-def'); };
-    rail.insertBefore(b, first);
+    rail.insertBefore(b, first.nextSibling);   /* 排在「创作对话」后面：创作对话是左栏第一项 */
     $('railLore').classList.add('df-merged');   /* 设定库并进智能定义，左栏不再单独占一项 */
     return true;
   }

@@ -697,3 +697,8 @@ body:not(.is-loading) .stage,body:not(.is-loading) .st-margin,body:not(.is-loadi
    新开对话：右上角「聊天记录」抽屉里的「+ 新建对话」；新建章节也会自动配一段对话。
    手机版顶栏的「＋」还是这个按钮（mobile.js 把它挪到了顶栏），不受影响。 */
 :root[data-shell="desktop"]:not([data-device="phone"]) .rail #studioNew{display:none!important}
+
+/* 左栏底部三个图标（账号 / 昼夜 / 落款羽毛）和导航图标对齐到同一条竖线：中心都在 39px */
+:root[data-shell="desktop"] .rail .st-foot{padding-left:2px}
+:root[data-shell="desktop"] .rail .st-colophon{padding-left:10px;gap:10px}
+/* 展开后三行文字的起点也和导航文字对齐（60px） */

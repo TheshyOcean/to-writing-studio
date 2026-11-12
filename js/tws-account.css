@@ -174,8 +174,8 @@
 
 /* ---------------- 左栏：个人资料行（在昼夜切换那行上面） ---------------- */
 /* 头像中心对齐导航图标（左栏内边距 18 + 按钮内边距 12 + 图标半宽 9 = 39px） */
-:root[data-shell] .rail .st-acct{display:flex!important;align-items:center;gap:12px;width:100%!important;height:46px!important;min-height:0!important;
-  padding:0 0 0 8px!important;margin:0!important;border:0!important;border-radius:12px!important;background:transparent!important;box-shadow:none!important;
+:root[data-shell] .rail .st-acct{display:flex!important;align-items:center;gap:7px;width:100%!important;height:46px!important;min-height:0!important;
+  padding:0 0 0 7px!important;margin:0!important;border:0!important;border-radius:12px!important;background:transparent!important;box-shadow:none!important;
   color:var(--fg2)!important;text-align:left;cursor:pointer;flex:none!important;transform:none}
 :root[data-shell] .rail .st-acct:hover{background:var(--soft)!important}
 .st-acct .ac-ava.sm{width:28px;height:28px;font-size:14px}

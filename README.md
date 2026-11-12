@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.7.2
+# To Writing Studio 写作工作台 · Beta V3.7.3
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,8 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.7.3 · 2026-11-13**（电脑版）：① 左栏展开后点导航不再立刻收回，可以连着点；鼠标移出左栏才收起。收起状态下直接点图标仍然只是跳转。② 左栏顺序调整：「创作对话」排到第一位，「智能定义」第二。③ 左栏底部的账号、昼夜切换、落款羽毛三个图标和导航图标对齐到同一条竖线（原来差 1～3 px）。改动文件：`studio.js`、`studio.css`、`js/tws-define.js`、`js/tws-account.css`、`desktop.html` / `mobile.html`（版本号）、`sw.js`。
 
 **Beta V3.7.2 · 2026-11-13**（电脑版）：修正左栏收起后容易点错。原因：鼠标停留展开时，顶部的作品卡滑出来，把所有导航按钮往下推了约 180 px，鼠标底下的按钮瞬间换成了别的。现在收起和展开时每个按钮的位置完全不变：作品卡 / 今日一句改为出现在导航下方的空白处；窗口太矮放不下时，悬停展开就不显示它（「固定展开」时仍在顶部原位）。另外去掉了左栏的「新建对话」按钮（和「创作对话」重叠；新开对话用右上角「聊天记录」里的「+ 新建对话」）。改动文件：`studio.css`、`studio.js`、`desktop.html` / `mobile.html`（版本号）、`sw.js`。
 

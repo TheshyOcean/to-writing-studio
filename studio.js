@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Beta V3.7.2';
+var VERSION='Beta V3.7.3';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -212,11 +212,11 @@ function railMini(rail, foot){
     if(!root.classList.contains('rail-open')) return;
     closeT=setTimeout(function(){ setOpen(false); }, RAIL_CLOSE_DELAY);
   });
-  /* 点了导航就收回，免得盖着刚打开的页面 */
-  rail.addEventListener('click',function(e){
-    if(!root.classList.contains('rail-mini')) return;
-    if(e.target.closest('.rail-btn,.studio-new,.st-book,#stQNew')) setOpen(false);
-    else { clearTimeout(openT); openT=0; }
+  /* 展开着的时候点导航不收回（方便连着点），鼠标移出左栏才收；
+     收起状态下点图标只是跳转，取消这一次的展开计时 */
+  rail.addEventListener('click',function(){
+    if(!root.classList.contains('rail-mini') || root.classList.contains('rail-open')) return;
+    clearTimeout(openT); openT=0;
   });
   /* 键盘 Tab 进来时直接展开，Tab 出去就收回 */
   rail.addEventListener('focusin',function(e){
