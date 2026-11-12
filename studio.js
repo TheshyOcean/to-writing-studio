@@ -165,7 +165,8 @@ function buildRail(){
    ============================================================ */
 var RAIL_OPEN_DELAY=600, RAIL_CLOSE_DELAY=220;
 function railMini(rail, foot){
-  if(root.getAttribute('data-shell')!=='desktop') return;
+  /* 手机版也带 data-shell="desktop"，靠 data-device="phone" 区分；手机用底部标签栏，不需要这个 */
+  if(root.getAttribute('data-shell')!=='desktop' || root.getAttribute('data-device')==='phone') return;
   var pin=document.createElement('button');
   pin.type='button'; pin.className='icon-btn st-pin'; pin.id='stPin';
   pin.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M9 4.5v15"/><path class="ar" d="M13.5 10l2 2-2 2"/></svg>';
