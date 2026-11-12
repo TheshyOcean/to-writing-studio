@@ -149,3 +149,40 @@
 
 /* 弹窗内容多的时候可以滚动 */
 .tws-modal-b{overflow-y:auto}
+
+/* ============================================================
+   V3.5.4 · 章节标题与编辑器工具条
+   标题：干净的大标题，悬停出现淡下划线，编辑时下划线变成主题色
+   工具条：图标按钮，悬停浮出文字说明
+   ============================================================ */
+:root[data-shell] #v-book .tws-ch-head{padding-top:26px}
+:root[data-shell] #v-book .tws-ch-title{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;
+  padding:2px 0 8px!important;margin:0 0 6px;font-size:26px!important;font-weight:600!important;letter-spacing:.02em;color:var(--fg,var(--tx-1))!important;
+  border-bottom:1.5px solid transparent!important;transition:border-color .25s}
+:root[data-shell] #v-book .tws-ch-title:hover{border-bottom-color:var(--line,var(--bd))!important}
+:root[data-shell] #v-book .tws-ch-title:focus{border-bottom-color:var(--ink,var(--ac))!important;outline:none!important}
+/* 分隔线不要圆角，两头不再翘起来 */
+:root[data-shell] #v-book .tws-ch-row{border-radius:0!important;border-bottom:1px solid var(--line,var(--bd))!important;padding-bottom:12px;min-height:46px}
+.tws-ibar{display:inline-flex;align-items:center;gap:2px}
+.tws-ibar-sep{width:1px;height:18px;background:var(--line,var(--bd));margin:0 6px}
+:root[data-shell] .tws-ib{position:relative;width:34px!important;height:34px!important;min-width:0!important;padding:0!important;margin:0!important;display:inline-flex!important;
+  align-items:center;justify-content:center;border:0!important;border-radius:10px!important;background:transparent!important;background-image:none!important;
+  box-shadow:none!important;color:var(--fg2,var(--tx-2))!important;cursor:pointer;transition:background-color .2s,color .2s!important;transform:none!important}
+:root[data-shell] .tws-ib svg{width:19px;height:19px;flex:none;pointer-events:none}
+:root[data-shell] .tws-ib:hover,:root[data-shell] .tws-ib:focus-visible{background:var(--soft,rgba(120,110,200,.12))!important;color:var(--fg,var(--tx-1))!important}
+:root[data-shell] .tws-ib.ai{color:var(--ink,var(--ac))!important}
+:root[data-shell] .tws-ib.del:hover{background:color-mix(in srgb,#c8553d 12%,transparent)!important;color:#c8553d!important}
+:root[data-shell] .tws-ib:active{transform:scale(.92)!important}
+/* 悬停提示：停 0.35 秒才出现，鼠标扫过不会闪 */
+.tws-ib[data-tip]::after{content:attr(data-tip);position:absolute;top:calc(100% + 8px);right:50%;transform:translate(50%,-3px);z-index:30;
+  padding:6px 10px;border-radius:9px;background:var(--fg,#222);color:var(--bg,#fff);font-size:12px;line-height:1.4;white-space:nowrap;
+  font-family:var(--ui,inherit);letter-spacing:0;pointer-events:none;opacity:0;transition:opacity .15s,transform .15s;box-shadow:0 8px 22px -12px rgba(0,0,0,.45)}
+.tws-ib[data-tip]:hover::after,.tws-ib[data-tip]:focus-visible::after{opacity:1;transform:translate(50%,0);transition-delay:.35s}
+/* 最右边的按钮提示往左靠，不要超出纸面 */
+.tws-ibar .tws-ib:last-child::after{right:0;transform:translate(0,-3px)}
+.tws-ibar .tws-ib:last-child:hover::after,.tws-ibar .tws-ib:last-child:focus-visible::after{transform:translate(0,0)}
+/* 手机：没有悬停，按钮稍大好点；提示不显示 */
+:root[data-device="phone"] .tws-ib{width:38px!important;height:38px!important}
+:root[data-device="phone"] .tws-ib[data-tip]::after{display:none}
+:root[data-device="phone"] .tws-ibar{width:100%;justify-content:space-between}
+:root[data-device="phone"] .tws-ibar-sep{margin:0 2px}

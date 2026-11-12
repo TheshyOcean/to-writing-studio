@@ -338,13 +338,17 @@
           '<span class="tws-words" id="twsWords">' + (c.words || 0) + ' 字</span>' +
           '<span class="tws-upd">' + D.timeAgo(c.updated) + '</span>' +
           '<span class="tws-spacer"></span>' +
-          '<button class="tws-btn sm ai" id="twsBtnPolish">润色</button>' +
-          '<button class="tws-btn sm ai" id="twsBtnIdeate">构思</button>' +
-          '<button class="tws-btn sm" id="twsBtnFocus" title="专注模式（Ctrl / ⌘ + Shift + Enter）">专注</button>' +
-          '<button class="tws-btn sm" id="twsBtnRead" title="朗读正文（有选中就读选中，否则从光标处读）">朗读</button>' +
-          '<button class="tws-btn sm" id="twsBtnHist">历史</button>' +
-          '<button class="tws-btn sm" id="twsBtnCheck">检查</button>' +
-          '<button class="tws-btn sm ghost" id="twsBtnDelCh">删除</button>' +
+          '<span class="tws-ibar">' +
+            ib('twsBtnPolish', 'polish', '润色', 'AI 润色：选中一段就只改那一段', 'ai') +
+            ib('twsBtnIdeate', 'idea', '构思', 'AI 构思：接下来写什么', 'ai') +
+            '<i class="tws-ibar-sep"></i>' +
+            ib('twsBtnFocus', 'focus', '专注', '专注模式 · Ctrl / ⌘ + Shift + Enter') +
+            ib('twsBtnRead', 'read', '朗读', '朗读：有选中就读选中，否则从光标处读') +
+            ib('twsBtnHist', 'hist', '历史', '版本历史：对比与回滚') +
+            ib('twsBtnCheck', 'check', '检查', '一致性检查') +
+            '<i class="tws-ibar-sep"></i>' +
+            ib('twsBtnDelCh', 'del', '删除', '删除本章（先放进回收站）', 'del') +
+          '</span>' +
         '</div>' +
       '</div>' +
       '<textarea class="tws-content" id="twsContent" spellcheck="false" placeholder="从这里开始写……"></textarea>';
@@ -378,6 +382,21 @@
         D.removeChapter(c.id); ui.chapterId = null; renderTree(); toast('已移到回收站（工具 → 回收站）');
       });
     });
+  }
+
+  /* 编辑器工具条：图标按钮，悬停时浮出文字（data-tip），读屏读 aria-label */
+  var IB_ICON = {
+    polish: '<path d="M12 3.5l1.7 4.1 4.1 1.7-4.1 1.7L12 15.1l-1.7-4.1-4.1-1.7 4.1-1.7z"/><path d="M18.5 14.5l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z"/><path d="M5.5 15.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z"/>',
+    idea: '<path d="M9.5 18h5M10.5 21h3"/><path d="M12 3.2a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1v.4h5v-.4c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3.2z"/>',
+    focus: '<path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15"/><circle cx="12" cy="12" r="2.6"/>',
+    read: '<path d="M4 9.6h3.4L12 5.6v12.8l-4.6-4H4z"/><path d="M15.6 9.2a4 4 0 0 1 0 5.6M18.2 6.6a7.6 7.6 0 0 1 0 10.8"/>',
+    hist: '<path d="M3.6 12a8.4 8.4 0 1 0 2.5-6"/><path d="M3.3 4.2v4h4"/><path d="M12 7.6V12l3 1.9"/>',
+    check: '<path d="M12 3.2l7 2.9v5.2c0 4.4-2.9 7.8-7 9.5-4.1-1.7-7-5.1-7-9.5V6.1z"/><path d="M9 12.1l2.2 2.2 4-4.2"/>',
+    del: '<path d="M4.5 7h15M10 11v6M14 11v6"/><path d="M6.5 7l.9 12.2A1.5 1.5 0 0 0 8.9 20.6h6.2a1.5 1.5 0 0 0 1.5-1.4L17.5 7"/><path d="M9.5 7V4.8c0-.4.3-.8.8-.8h3.4c.5 0 .8.4.8.8V7"/>'
+  };
+  function ib(id, icon, label, tip, kind) {
+    return '<button type="button" class="tws-ib' + (kind ? ' ' + kind : '') + '" id="' + id + '" aria-label="' + esc(label) + '" data-tip="' + esc(tip) + '">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + IB_ICON[icon] + '</svg></button>';
   }
 
   function autosize(ta) {

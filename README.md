@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.5.3
+# To Writing Studio 写作工作台 · Beta V3.5.4
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,8 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.5.4 · 2026-11-13**（电脑版 + 手机版）：书稿编辑器顶部重做。① 章节标题去掉被通用输入框样式套上的边框和底色，恢复成干净的大标题；鼠标悬停出现淡下划线提示可以改，编辑时下划线变成主题色。② 标题下面的润色 / 构思 / 专注 / 朗读 / 历史 / 检查 / 删除七个文字按钮改成图标，按 AI、工具、删除分三组；鼠标停 0.35 秒浮出文字说明，读屏软件读按钮名。③ 那一行的分隔线不再带圆角（以前两头会翘成弧形）。改动文件：`js/tws-views.js`、`js/tws-kit.css`、`desktop.html` / `mobile.html`（版本号）、`sw.js`（缓存版本）。
 
 **Beta V3.5.3 · 2026-11-13**（电脑版 + 手机版）：删除顶栏右上角的「专注阅读」（全屏）按钮及其全部样式。书稿编辑器里的「专注」写作模式（Ctrl / ⌘ + Shift + Enter）不受影响。改动文件：`terminal-redesign.js`、`terminal-redesign.css`、`studio.js`、`studio.css`、`mobile.css`、`desktop.html` / `mobile.html`（版本号）、`sw.js`（缓存版本）。
 
