@@ -688,3 +688,7 @@ body:not(.is-loading) .stage,body:not(.is-loading) .st-margin,body:not(.is-loadi
 :root[data-shell="desktop"] .composer>.tws-cmp-tools{grid-column:2;grid-row:1;justify-self:end;align-self:start}
 :root[data-shell="desktop"] .tws-cmp-tools>.tws-tpl-btn{height:30px!important;padding:0 12px!important;font-size:12.5px!important;border-radius:15px!important;
   border:1px dashed var(--line2)!important;color:var(--fg2)!important;width:auto!important;margin:0!important}
+
+/* 全屏（专注写作）时左栏彻底藏起来：宽度归零、不可见、不响应鼠标 */
+:root.studio-focused[data-shell="desktop"] .rail,
+:root.studio-focused.rail-mini[data-shell="desktop"] .rail{width:0!important;min-width:0!important;padding:0!important;visibility:hidden;opacity:0!important;pointer-events:none!important;box-shadow:none!important}

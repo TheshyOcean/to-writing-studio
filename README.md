@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.5.1
+# To Writing Studio 写作工作台 · Beta V3.5.2
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,8 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.5.2 · 2026-11-13**（电脑版）：修复 V3.5.1 的问题：点右上角「全屏」后，收起的左栏图标叠在正文上。原因是全屏模式靠把左栏那一列设成 0 宽来隐藏，而收起样式给左栏写死了 76 px 宽。现在全屏时左栏宽度强制归零并彻底隐藏，鼠标停在左边也不会展开。另外：手机版不启用左栏收起（手机页也带 `data-shell="desktop"`，靠 `data-device="phone"` 区分）。改动文件：`studio.css`、`studio.js`、`desktop.html` / `mobile.html`（版本号）、`sw.js`（缓存版本）。
 
 **Beta V3.5.1 · 2026-11-13**（电脑版）：① **左栏收成图标**：平时只有一条约 76 px 宽的图标栏，鼠标在上面停 0.6 秒才展开（浮在正文上方，不挤动正文），移开就收回；点了导航会直接收回；键盘 Tab 进来时立即展开。收起时整栏只是被「裁窄」，里面的元素位置不变，展开过程不会有文字换行或跳动。左栏底部新增「固定展开」开关（记在 `tws_rail_pin`），喜欢常开的可以一直开着，外观和以前一样。② **右上角「聊天记录」**：去掉一直亮着的数字角标（那是对话总数，不是未读），图标换成「时钟 + 回转箭头」，对话数放进鼠标悬停提示。③ 修正：对话框右上角新加的「指令」按钮被撑成整行长条，现在和「模板」并排。改动文件：`studio.js`（`railMini`）、`studio.css`（末尾两段）、`js/tws-meter.js`、`desktop.html` / `mobile.html`（图标、提示、版本号）、`sw.js`（缓存版本）。
 
