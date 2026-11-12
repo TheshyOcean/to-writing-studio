@@ -645,3 +645,46 @@ body:not(.is-loading) .stage,body:not(.is-loading) .st-margin,body:not(.is-loadi
 :root[data-shell] .br-seg button{margin-left:0!important}
 :root[data-shell] #flMemOpen{margin-left:10px!important}
 :root[data-device="phone"] .tws-toast{white-space:normal!important;width:max-content;max-width:calc(100vw - 48px);text-align:center;line-height:1.6;border-radius:22px!important}
+
+/* ============================================================
+   V3.5.0 · 左栏收成图标（studio.js 的 railMini）
+   rail-mini：收起；rail-mini.rail-open：鼠标停留后展开，浮在正文上
+   收起时里面每一块保持 222px 宽、位置不动，只把整栏裁窄
+   ============================================================ */
+:root.rail-mini[data-shell="desktop"]{--rail-w:76px}
+:root[data-shell="desktop"] .viewport{transition:grid-template-columns .32s var(--ez)}
+:root.rail-mini[data-shell="desktop"] .rail{width:76px;min-width:76px;position:relative;z-index:60;justify-self:start;
+  transition:width .34s cubic-bezier(.22,1,.36,1),background-color .25s,box-shadow .3s;border-radius:0 24px 24px 0}
+:root.rail-mini[data-shell="desktop"] .rail>*:not(.nav-highlight){width:222px!important;min-width:222px;flex-shrink:0}
+:root.rail-mini.rail-open[data-shell="desktop"] .rail{width:256px;background:var(--bg)!important;box-shadow:18px 0 44px -26px rgba(30,24,60,.38)!important}
+/* 收起时：文字淡出（同时被裁掉），只留图标 */
+:root.rail-mini[data-shell="desktop"] :is(.rail-btn>span,.rail-btn em,.studio-new span,.st-model,.st-colophon b,.st-colophon .lat,.st-colophon .ver){transition:opacity .22s ease .08s}
+:root.rail-mini:not(.rail-open)[data-shell="desktop"] :is(.rail-btn>span,.rail-btn em,.studio-new span,.st-model,.st-colophon b,.st-colophon .lat,.st-colophon .ver){opacity:0;transition-delay:0s;pointer-events:none}
+/* 新建对话：收起时也是一个图标，加号对齐导航图标 */
+:root.rail-mini[data-shell="desktop"] .studio-new{justify-content:flex-start!important;padding:0 0 0 12px!important;gap:12px!important}
+:root.rail-mini:not(.rail-open)[data-shell="desktop"] .studio-new{background:transparent!important;box-shadow:none!important}
+/* 作品卡 / 今日一句：收起时收拢，展开时滑出来 */
+:root.rail-mini[data-shell="desktop"] .st-opus{max-height:420px;overflow:hidden;transition:max-height .34s cubic-bezier(.22,1,.36,1),opacity .25s ease .06s,margin .34s}
+:root.rail-mini:not(.rail-open)[data-shell="desktop"] .st-opus{max-height:0;opacity:0;margin-bottom:-22px;transition-delay:0s;pointer-events:none}
+/* 选中高亮：收起时缩成图标大小的方块（覆盖脚本写的行内宽度） */
+:root.rail-mini:not(.rail-open)[data-shell="desktop"] .nav-highlight{width:44px!important}
+/* 底部：落款只留 logo，分隔线跟着缩短 */
+:root.rail-mini:not(.rail-open)[data-shell="desktop"] .st-colophon{border-top-color:transparent;opacity:.9}
+:root.rail-mini[data-shell="desktop"] .st-colophon{transition:border-color .3s,opacity .4s}
+/* 底部工具行：收起时只显示昼夜切换，「固定」按钮展开后才出现 */
+:root.rail-mini:not(.rail-open)[data-shell="desktop"] .st-pin{opacity:0;pointer-events:none}
+.st-pin{transition:opacity .22s ease .08s,color .3s}
+.st-pin.on{color:var(--ink)!important}
+.st-pin .ar{transition:transform .3s var(--ez);transform-origin:14.5px 12px}
+.st-pin.on .ar{transform:scaleX(-1)}
+/* 右上角「聊天记录」：不再常亮数字角标，数字放进悬停提示 */
+:root[data-shell] #drBadge{display:none!important}
+@media (prefers-reduced-motion:reduce){
+  :root.rail-mini[data-shell="desktop"] .rail,:root.rail-mini[data-shell="desktop"] .st-opus{transition:none!important}
+}
+
+/* 输入框右上角：「指令」「模板」并排 */
+.tws-cmp-tools{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+:root[data-shell="desktop"] .composer>.tws-cmp-tools{grid-column:2;grid-row:1;justify-self:end;align-self:start}
+:root[data-shell="desktop"] .tws-cmp-tools>.tws-tpl-btn{height:30px!important;padding:0 12px!important;font-size:12.5px!important;border-radius:15px!important;
+  border:1px dashed var(--line2)!important;color:var(--fg2)!important;width:auto!important;margin:0!important}

@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Beta V3.5.0';
+var VERSION='Beta V3.5.1';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -151,11 +151,80 @@ function buildRail(){
   mdl.addEventListener('click',function(){ api.openModelPicker&&api.openModelPicker(); });
   foot.appendChild(mdl);
   rail.appendChild(foot);
+  railMini(rail, foot);
   var col=document.createElement('div'); col.className='st-colophon';
   col.innerHTML=LOGO+'<b>写作工作台</b><span class="lat">To Writing Studio</span><span class="ver">'+VERSION+'</span>';
   rail.appendChild(col);
   setTimeout(function(){ window.dispatchEvent(new Event('resize')); },60);
   return true;
+}
+/* ============================================================
+   左栏收成图标：鼠标停一会儿才展开（浮在正文上，不挤正文），离开就收回。
+   收起时只是把整栏「裁窄」，里面的元素位置不变，图标正好留在窄条里。
+   「固定展开」开关在左栏底部，记在 tws_rail_pin。
+   ============================================================ */
+var RAIL_OPEN_DELAY=600, RAIL_CLOSE_DELAY=220;
+function railMini(rail, foot){
+  if(root.getAttribute('data-shell')!=='desktop') return;
+  var pin=document.createElement('button');
+  pin.type='button'; pin.className='icon-btn st-pin'; pin.id='stPin';
+  pin.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M9 4.5v15"/><path class="ar" d="M13.5 10l2 2-2 2"/></svg>';
+  var mdl=$('stModel'); foot.insertBefore(pin, mdl||null);
+  var openT=0, closeT=0;
+  function setOpen(v){
+    clearTimeout(openT); clearTimeout(closeT); openT=0;
+    root.classList.toggle('rail-open', !!v);
+  }
+  function paintPin(){
+    var pinned=store('tws_rail_pin')==='1';
+    root.classList.toggle('rail-mini', !pinned);
+    pin.classList.toggle('on', pinned);
+    pin.title=pinned?'收起左栏（鼠标停一会儿再展开）':'固定展开左栏';
+    pin.setAttribute('aria-label', pin.title);
+    pin.setAttribute('aria-pressed', pinned?'true':'false');
+    if(pinned) setOpen(false);
+    setTimeout(function(){ window.dispatchEvent(new Event('resize')); },320);
+  }
+  pin.addEventListener('click',function(e){
+    e.stopPropagation();
+    var pinned=store('tws_rail_pin')==='1';
+    store('tws_rail_pin', pinned?'0':'1');
+    if(pinned) setOpen(false);
+    paintPin();
+  });
+  /* 鼠标在栏里停够时间就展开；点过导航后鼠标没移出去，再停一会儿也照样展开 */
+  function arm(){
+    if(!root.classList.contains('rail-mini')) return;
+    clearTimeout(closeT);
+    if(root.classList.contains('rail-open') || openT) return;
+    openT=setTimeout(function(){ openT=0; setOpen(true); }, RAIL_OPEN_DELAY);
+  }
+  rail.addEventListener('mouseenter',arm);
+  rail.addEventListener('mousemove',arm);
+  rail.addEventListener('mouseleave',function(){
+    clearTimeout(openT); openT=0;
+    if(!root.classList.contains('rail-open')) return;
+    closeT=setTimeout(function(){ setOpen(false); }, RAIL_CLOSE_DELAY);
+  });
+  /* 点了导航就收回，免得盖着刚打开的页面 */
+  rail.addEventListener('click',function(e){
+    if(!root.classList.contains('rail-mini')) return;
+    if(e.target.closest('.rail-btn,.studio-new,.st-book,#stQNew')) setOpen(false);
+    else { clearTimeout(openT); openT=0; }
+  });
+  /* 键盘 Tab 进来时直接展开，Tab 出去就收回 */
+  rail.addEventListener('focusin',function(e){
+    if(root.classList.contains('rail-mini') && e.target.matches && e.target.matches(':focus-visible')) setOpen(true);
+  });
+  rail.addEventListener('focusout',function(e){
+    if(root.classList.contains('rail-mini') && !rail.contains(e.relatedTarget) && !rail.matches(':hover')) setOpen(false);
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') setOpen(false); });
+  /* 收起时导航按钮没有文字，用 title 当提示 */
+  rail.querySelectorAll('.rail-btn,.studio-new').forEach(function(b){
+    var t=b.querySelector('span'); if(t && !b.title) b.title=t.textContent.trim();
+  });
+  paintPin();
 }
 var lastPv='';
 function paintModel(){

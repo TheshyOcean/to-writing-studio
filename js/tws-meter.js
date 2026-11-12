@@ -330,7 +330,11 @@
     b.id = 'twsBtnPrompts'; b.type = 'button'; b.className = 'tws-tpl-btn';
     b.textContent = '指令'; b.title = '指令库：把常用的要求存成按钮';
     b.addEventListener('click', openPrompts);
-    tpl.parentNode.insertBefore(b, tpl.nextSibling);
+    /* 「模板」在输入框右上角占一个格子：装进同一个小容器，两个按钮并排 */
+    var box = document.createElement('span');
+    box.className = 'tws-cmp-tools';
+    tpl.parentNode.insertBefore(box, tpl);
+    box.appendChild(b); box.appendChild(tpl);
     return true;
   }
 
