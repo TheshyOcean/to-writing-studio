@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.7.4
+# To Writing Studio 写作工作台 · Beta V3.7.5
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,9 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.7.5 · 2026-11-13**（电脑版 + 手机版）：换字体——霞鹜文楷整体轻一档。新的字体族「TWS Kai」把三档字重各往下挪一档：常规用文楷 **Light**（新增），中粗用 Regular，加粗用 Medium。整页更清爽，远看不发闷，气质不变、不缺字。字体都是霞鹜文楷 v1.520，SIL OFL 1.1。
+新增 `fonts/lxgw-wenkai/light/`（Light 的 342 个分片，约 15 MB；访客只下载页面上用到的字所在的分片）和三份 `tws-kai.css`（由各自的 `result.css` 改名、改字重生成，字体文件不变）。原名「LXGW WenKai」只保留中粗，给开屏动画写字用；`--zh` 里不再写它（否则新字体下载的空档里浏览器会去下后备字体，同一套字下两遍）。实测打开工作台共 72 个字体请求，没有重复。改动文件：`studio.css`、`fonts/lxgw-wenkai/`、`desktop.html` / `mobile.html`、`sw.js`。
 
 **Beta V3.7.4 · 2026-11-13**（电脑版 + 手机版）：修正文字发糊、颜色过重。
 ① **去掉假粗体**（主要原因）。霞鹜文楷只有 Regular（400）和 Medium（500）两档，样式里却有几十处写了 `font-weight:600 / 700`。浏览器找不到那么粗的字，就在 Medium 上再描一圈假粗体。实测同一行字的墨量：常规 6.4%、真 Medium 7.9%、600 / 700 是 12.2%（比真 Medium 多一半，接近常规的两倍），笔画挤在一起，远看连成一片。现在全站 `font-synthesis:style small-caps`（不合成粗体，斜体不变），加粗一律落在文楷自带的 Medium 上，600 / 700 的墨量回到 7.9%。V3.3.0 说的「加粗用文楷自带的 Medium，不再是浏览器假粗体」当时并没有生效，这次才是。
@@ -199,7 +202,7 @@ js/tws-views.js           书稿 / 设定库 / 伏笔三视图 + 采纳按钮 + 
 js/tws-backup.js          全书备份与恢复（V3.4.0）
 js/tws-flow.js            自动采纳 + 长篇记忆 / 章节摘要（V3.4.0）
 js/tws-search.js          全书搜索与替换（V3.4.0）
-fonts/                    自托管字体分包子集（霞鹜文楷 + EB Garamond / Cormorant；旧的思源宋体子集仅供 index.html）
+fonts/                    自托管字体分包子集（霞鹜文楷 Light / Regular / Medium + EB Garamond / Cormorant；旧的思源宋体子集仅供 index.html）
 boot-ink.css/js           开场动画「泼墨落笔」
 boot-strokes.js           开场标题的笔顺数据（由 tools/build-boot-strokes.py 生成）
 ```

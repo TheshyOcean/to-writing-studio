@@ -5,8 +5,13 @@
    字体：霞鹜文楷（中文）+ EB Garamond（拉丁、数字）+ Cormorant Garamond（拉丁斜体点缀）
    颜色：昼读月白 + 堇紫；夜读四套（墨夜默认）；灵光模式整页渐变为金（夜读为暗金）
    ========================================================================== */
-@import url("fonts/lxgw-wenkai/regular/result.css");
 @import url("fonts/lxgw-wenkai/medium/result.css");
+/* V3.7.5：界面和正文改用「TWS Kai」—— 文楷整体轻一档（常规 → Light，中粗 → Regular，加粗 → Medium）。
+   上面这行原名的文楷中粗只留给开屏动画（boot-ink.js 按 "LXGW WenKai" 500 写字）。
+   --zh 里不能再写 "LXGW WenKai"：新字体下载的空档里浏览器会去下排在后面的字体，同一套字就下了两遍 */
+@import url("fonts/lxgw-wenkai/light/tws-kai.css");
+@import url("fonts/lxgw-wenkai/regular/tws-kai.css");
+@import url("fonts/lxgw-wenkai/medium/tws-kai.css");
 
 /* 西文只取拉丁字母、数字和半角标点；中文引号、破折号、省略号一律留给文楷 */
 @font-face{font-family:'TWS Latin';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/garamond/eb-garamond-latin-400-normal.woff2) format('woff2');unicode-range:U+0020-007E,U+00A0-00FF,U+0100-017F,U+0131,U+0152-0153,U+20AC,U+2122}
@@ -24,7 +29,7 @@
 
 /* ---------- 1. 令牌 · 昼读 ---------- */
 :root:root{
-  --zh:"LXGW WenKai","Kaiti SC","STKaiti","KaiTi","PingFang SC","Microsoft YaHei",sans-serif;
+  --zh:"TWS Kai","Kaiti SC","STKaiti","KaiTi","PingFang SC","Microsoft YaHei",sans-serif;
   --ui:"TWS Latin",var(--zh);
   --la:"TWS Latin",var(--zh);
   --disp:"TWS Latin Disp","TWS Latin",var(--zh);
