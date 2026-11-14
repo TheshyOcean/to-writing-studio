@@ -9,7 +9,7 @@
    - 只管本站的 GET 请求；AI 接口、WebDAV 等跨站请求一律不碰。
    发新版时把 CACHE 的版本号改一下，旧缓存会被清掉。
    ============================================================ */
-var CACHE = 'tws-v3.8.1';
+var CACHE = 'tws-v3.8.2';
 var CORE = [
   './', 'index.html', 'desktop.html', 'mobile.html', 'manifest.webmanifest',
   'studio.css', 'studio.js', 'mobile.css', 'mobile.js',

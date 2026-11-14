@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Beta V3.8.1';
+var VERSION='Beta V3.8.2';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -353,11 +353,26 @@ function buildMargin(){
     '<div class="st-mcard"><div class="st-mh">上下文 <span class="lat">Memoria</span></div>'+
       '<div class="st-ring"><svg width="66" height="66" viewBox="0 0 66 66" role="img" aria-label="上下文用量"><circle class="bgc" cx="33" cy="33" r="27" fill="none" stroke-width="6"/><circle class="fg" id="stRingFg" cx="33" cy="33" r="27" fill="none" stroke-width="6" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="169.6" transform="rotate(-90 33 33)"/></svg>'+
       '<div style="display:flex;flex-direction:column;gap:4px"><b id="stCtxPct">0%</b><span class="st-note" id="stCtxTok"></span></div></div></div>'+
+    '<div class="st-mcard st-session-card"><div class="st-mh">码字状态 <span class="lat">Session</span></div><div class="st-session-times"><div><small>码字时间</small><b id="stWritingTime">00:00</b></div><div><small>空闲时间</small><b id="stIdleTime">00:00</b></div></div></div>'+
     '<div class="st-mcard"><div class="st-mh">本书伏笔 <span class="lat">Vestigia</span><button type="button" data-go="v-threads">全部</button></div><div id="stThreads" style="display:flex;flex-direction:column;gap:10px"></div></div>'+
     '<div style="display:flex;flex-direction:column;gap:10px"><div class="st-mh" style="padding:0 4px">出场人物 <span class="lat">Personae</span><button type="button" data-go="v-lore">设定库</button></div><div class="st-people" id="stPeople"></div></div>';
   vp.appendChild(m);
   m.querySelectorAll('[data-go]').forEach(function(b){ b.addEventListener('click',function(){ window.showView&&window.showView(b.dataset.go); }); });
   $('stGoalBtn').addEventListener('click',function(){ var c=$('twsGoalChip'); window.showView&&window.showView('v-book'); if(c) setTimeout(function(){ c.click(); },350); });
+  initWritingClock();
+}
+var writingClock={last:0,writing:0,idle:0,timer:null};
+function fmtClock(n){ return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0'); }
+function initWritingClock(){
+  var ta=$('twsContent'); if(!ta||ta.dataset.clockBound) return; ta.dataset.clockBound='1';
+  ta.addEventListener('input',function(){ writingClock.last=Date.now(); });
+  writingClock.timer=setInterval(function(){
+    if(!writingClock.last) return;
+    var active=Date.now()-writingClock.last<1000;
+    if(active) writingClock.writing++; else writingClock.idle++;
+    var margin=$('stMargin'); if(margin) margin.classList.toggle('st-writing-active',active);
+    var w=$('stWritingTime'),i=$('stIdleTime'); if(w) w.textContent=fmtClock(writingClock.writing); if(i) i.textContent=fmtClock(writingClock.idle);
+  },1000);
 }
 function fmtK(n){ return n>=1000?(n/1000).toFixed(n>=10000?0:1)+'K':String(n); }
 function refreshMargin(st){
