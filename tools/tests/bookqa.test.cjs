@@ -1,0 +1,9 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const q=require('../../js/tws-ask.js');
+const chapters=[{id:'c1',title:'河边',content:'林舟在河边拿到了旧钥匙。只有阿青在场。'},{id:'c2',title:'后来',content:'后来，小雨也见到了旧钥匙。'}];
+test('默认范围排除后续章节，未知章节不能默认全书',()=>{assert.deepEqual(q._scope(chapters,'c1',false),[chapters[0]]);assert.deepEqual(q._scope(chapters,'missing',false),[]);assert.equal(q._scope(chapters,'c1',true).length,2);});
+test('正文检索与真实 UTF-16 位置对应',()=>{const r=q._retrieve(q._scope(chapters,'c1',false),'旧钥匙',[],10);assert.ok(r.sources.length);for(const s of r.sources){assert.equal(s.chapterId,'c1');assert.equal(chapters[0].content.slice(s.pos,s.pos+s.text.length),s.text);}});
+test('分块不会丢失 emoji 后的原文偏移',()=>{const text='🪶\n'+('一'.repeat(900))+'旧钥匙';for(const s of q._chunks(text))assert.equal(text.slice(s.pos,s.pos+s.text.length),s.text);});
+const sources=[{id:'E1',chapterId:'c1',chapterTitle:'河边',chapterNumber:1,pos:0,text:chapters[0].content}];
+test('只接受真实存在的引文与本次证据编号',()=>{const valid={claims:[{text:'阿青在场。',sources:[{id:'E1',quote:'只有阿青在场。'}]}],insufficient:false};assert.equal(q._parseAnswer(JSON.stringify(valid),sources).claims.length,1);valid.claims[0].sources[0].quote='小雨也在场。';assert.equal(q._parseAnswer(JSON.stringify(valid),sources).claims.length,0);valid.claims[0].sources[0]={id:'E99',quote:'只有阿青在场。'};assert.equal(q._parseAnswer(JSON.stringify(valid),sources).claims.length,0);});
+test('模型返回 null、错误 JSON、无引文，按缺少依据处理',()=>{for(const raw of['null','[]','not json','{"claims":[{"text":"猜测"}]}'])assert.equal(q._parseAnswer(raw,sources).claims.length,0);});
+test('原文改变后只定位唯一匹配，不猜重复引文',()=>{assert.equal(q._locateQuote('前言。只有阿青在场。','只有阿青在场。',0),3);assert.equal(q._locateQuote('只有阿青在场。只有阿青在场。','只有阿青在场。',-1),-1);assert.equal(q._locateQuote('已删除','只有阿青在场。',0),-1);});

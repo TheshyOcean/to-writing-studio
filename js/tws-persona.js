@@ -81,6 +81,11 @@
   }
   function open() {
     if (!pid()) { F.toast('先在书稿里建一本书'); return; }
+    if (T.entrance) return T.entrance.play('persona', openNow);
+    openNow();
+  }
+  function openNow() {
+    if (!pid()) { F.toast('先在书稿里建一本书'); return; }
     var el = mount(); if (!el) return;
     el.classList.add('on'); el.setAttribute('aria-hidden', 'false');
     if (!st) pick();

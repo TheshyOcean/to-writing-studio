@@ -9,7 +9,7 @@
    - 只管本站的 GET 请求；AI 接口、WebDAV 等跨站请求一律不碰。
    发新版时把 CACHE 的版本号改一下，旧缓存会被清掉。
    ============================================================ */
-var CACHE = 'tws-v3.7.5';
+var CACHE = 'tws-v3.8.0';
 var CORE = [
   './', 'index.html', 'desktop.html', 'mobile.html', 'manifest.webmanifest',
   'studio.css', 'studio.js', 'mobile.css', 'mobile.js',
@@ -20,6 +20,9 @@ var CORE = [
   'js/tws-data.js', 'js/tws-features.js', 'js/tws-views.js', 'js/tws-define.js', 'js/tws-brain.js',
   'js/tws-fun.js', 'js/tws-persona.js', 'js/tws-backup.js', 'js/tws-flow.js', 'js/tws-search.js',
   'js/tws-kit.js', 'js/tws-io.js', 'js/tws-craft.js', 'js/tws-meter.js', 'js/tws-sync.js', 'js/tws-finis.js', 'js/tws-account.js',
+  'js/tws-entrance.js', 'js/tws-entrance.css',
+  'js/tws-action-icons.js',
+  'js/tws-revision.js', 'js/tws-revision.css', 'js/tws-desk.js', 'js/tws-desk.css', 'js/tws-ask.js', 'js/tws-ask.css',
   'favicon.svg', 'favicon-32.png', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png',
   'logo/to-icon.svg', 'logo/to-mark.svg'
 ];
@@ -60,6 +63,7 @@ self.addEventListener('fetch', function (e) {
   if (req.method !== 'GET') return;
   var url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
+  if (url.pathname.indexOf('/v1/') >= 0) return; // 账号接口不写入离线缓存
   if (req.headers.has('range')) return;
 
   if (isStatic(url)) {

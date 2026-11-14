@@ -37,6 +37,9 @@
       ['trash', '回收站' + (trashN ? '（' + trashN + '）' : ''), '删掉的卷和章，30 天内可恢复', openTrash],
       ['move', '移动本章', '换个位置，或挪到别的卷', function () { openMove(T.currentChapter()); }],
       ['写的时候'],
+      ['notes', '旁批待办', '记录需要修改的地方', function () { T.desk && T.desk.openNotes(); }],
+      ['reference', '参考页', '写作时查看章节与设定', function () { T.desk && T.desk.openReference(); }],
+      ['ask', '问自己的书', '查找正文并查看出处', function () { T.ask && T.ask.open(); }],
       ['focus', '专注模式', '只留纸面 · Ctrl / ⌘ + Shift + Enter', toggleFocus],
       ['pomo', '番茄钟', pomoLabel(), openPomo],
       ['name', '起名器', '人名、地名、门派、功法', function () { T.craft && T.craft.openNamer(); }],
@@ -311,7 +314,7 @@
     selBar.innerHTML =
       '<button type="button" data-s="polish">润色</button><button type="button" data-s="expand">扩写</button>' +
       '<button type="button" data-s="shrink">缩写</button><button type="button" data-s="again">换个说法</button>' +
-      '<button type="button" data-s="read">朗读</button><em>' + (se - ss) + ' 字</em>';
+      '<button type="button" data-s="note">旁批</button><button type="button" data-s="read">朗读</button><em>' + (se - ss) + ' 字</em>';
     document.body.appendChild(selBar);
     var r = ta.getBoundingClientRect(), a = caretXY(ta, ss), b = caretXY(ta, se);
     var w = selBar.offsetWidth, h = selBar.offsetHeight;
@@ -327,8 +330,10 @@
     selBar.addEventListener('mousedown', function (e) { e.preventDefault(); });
     selBar.addEventListener('click', function (e) {
       var k = e.target.getAttribute('data-s'); if (!k) return;
+      var saved = k === 'note' && T.desk ? T.desk.captureSelection() : null;
       hideSel();
-      if (k === 'polish') U().openPolish();
+      if (k === 'note') { if (T.desk) T.desk.addNoteFromSelection(saved); }
+      else if (k === 'polish') U().openPolish();
       else if (k === 'read') readAloud();
       else openRewrite(k);
     });
@@ -351,10 +356,10 @@
       '<div class="tws-ai-bar"><button class="tws-btn sm" id="rwAgain" disabled>再来一版</button><span class="tws-spacer"></span>' +
       '<button class="tws-btn sm" id="rwAfter" disabled>插到后面</button><button class="tws-btn primary" id="rwRep" disabled>替换选中</button></div>',
       { footer: false });
-    var out = m.el.querySelector('#rwOut'), result = '';
+    var out = m.el.querySelector('#rwOut'), result = '', review = null, originalContent = ta.value, originalProject = D().D.activeProject;
     function setBtns(on) { ['rwAgain', 'rwAfter', 'rwRep'].forEach(function (id) { m.el.querySelector('#' + id).disabled = !on; }); }
     function run() {
-      setBtns(false); result = ''; out.textContent = ''; out.classList.add('streaming');
+      setBtns(false); result = ''; review = null; out.textContent = ''; out.classList.add('streaming');
       T.checker.callLLM([
         { role: 'system', content: '你是中文小说编辑。' + R.sys + '\n保持叙事视角、人称和文风与上下文一致。只输出改写后的正文，不要解释，不要加引号，不要复述要求。' },
         { role: 'user', content: (before ? '【前文（只供参考，不要改写）】\n' + before + '\n\n' : '') +
@@ -362,6 +367,7 @@
       ], function (t) { out.textContent = t; out.scrollTop = out.scrollHeight; }).then(function (full) {
         result = String(full || out.textContent).trim();
         out.textContent = result; out.classList.remove('streaming');
+        if (result && T.revision) review = T.revision.mount(out, src, result);
         m.el.querySelector('#rwMeta').textContent = '原文 ' + src.length + ' 字 → ' + result.length + ' 字';
         setBtns(!!result);
       }).catch(function (e) {
@@ -372,10 +378,11 @@
     }
     function apply(replace) {
       var t = $('twsContent'); if (!t || !result) return;
-      if (t.value.slice(ss, se) !== src) { U().toast('正文已经变了，请重新选中再试'); return; }
+      if (T.currentChapter() !== c.id || D().D.activeProject !== originalProject || t.value !== originalContent) { U().toast('正文已经变了，请重新选中再试'); return; }
       D().saveChapterContent(c.id, t.value, 'AI ' + R.name + '前');
-      t.value = replace ? t.value.slice(0, ss) + result + t.value.slice(se)
-        : t.value.slice(0, se) + '\n\n' + result + t.value.slice(se);
+      var chosen = review ? review.getText() : result;
+      t.value = replace ? t.value.slice(0, ss) + chosen + t.value.slice(se)
+        : t.value.slice(0, se) + '\n\n' + chosen + t.value.slice(se);
       t.dispatchEvent(new Event('input', { bubbles: true }));
       T.flushSave(); m.close();
       U().toast(replace ? '已替换（旧版本已存进历史）' : '已插到选中段落后面');

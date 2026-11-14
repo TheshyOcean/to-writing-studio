@@ -1,0 +1,30 @@
+/* 问书：沿用书斋的纸面、文楷、主题色和现有弹层。 */
+.tws-ask .tws-modal{width:min(780px,calc(100vw - 32px));max-height:90dvh;background:var(--paper);color:var(--fg)}
+.tws-ask .tws-modal-b{padding:24px 28px;overflow-y:auto;overscroll-behavior:contain}
+.tws-ask .ask-intro{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}
+.tws-ask .ask-book{font-size:21px;color:var(--fg)}
+.tws-ask .ask-intro p,.tws-ask .ask-scope-note{margin:6px 0;color:var(--mut);font-size:14px;line-height:1.65}
+.tws-ask .ask-question{width:100%;min-height:82px;resize:vertical;line-height:1.8}
+.tws-ask .ask-controls{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:14px 0 8px}
+.tws-ask .ask-scope{display:flex;flex-direction:column;gap:5px;color:var(--mut);font-size:13px;min-width:0}
+.tws-ask .ask-select{width:auto;min-width:150px;padding:7px 10px}
+.tws-ask .ask-run{white-space:nowrap;min-height:40px}
+.tws-ask .ask-status{color:var(--mut);font-size:14px;line-height:1.8;margin-top:16px}
+.tws-ask :is(.ask-answer,.ask-evidence):empty{display:none}
+.tws-ask h3{font-weight:500;font-size:17px;margin:24px 0 12px;display:flex;align-items:baseline;gap:10px}
+.tws-ask h3 span{color:var(--mut);font-style:italic;font-size:15px}
+.tws-ask .ask-source{margin:0 0 14px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.tws-ask .ask-source header{margin:0 0 7px}
+.tws-ask .ask-cite{font-size:13px;white-space:normal;text-align:left;max-width:100%;color:var(--ink);line-height:1.6}
+.tws-ask .ask-source blockquote{margin:0;padding:6px 0 4px 13px;border-left:2px solid var(--line2);color:var(--fg2);font-size:15px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere}
+.tws-ask .ask-claim{padding:0 0 15px;margin-bottom:15px;border-bottom:1px solid var(--line)}
+.tws-ask .ask-claim p{margin:0 0 8px;font-size:16px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere}
+.tws-ask .ask-claim-refs{display:flex;flex-direction:column;align-items:start;gap:5px}
+.tws-ask .ask-claim-refs q{font-size:14px;line-height:1.8;color:var(--mut);padding-left:12px;overflow-wrap:anywhere}
+.tws-ask :is(button,select,textarea):focus-visible{outline:2px solid var(--ac);outline-offset:3px}
+@media(max-width:600px){
+  .tws-ask .tws-modal{width:calc(100vw - 16px);max-height:94dvh}
+  .tws-ask .tws-modal-b{padding:18px 16px}
+  .tws-ask .ask-controls{gap:10px}
+  .tws-ask .ask-source{padding:12px}
+}

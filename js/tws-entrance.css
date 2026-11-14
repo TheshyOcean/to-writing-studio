@@ -1,0 +1,61 @@
+/* 入口与过场复用原纸墨主题。 */
+:root[data-shell] #stTools :is(#fnDiceBtn,#fnRuBtn,#btnMore,#twsChapterChip){width:36px!important;min-width:36px!important;height:36px!important;padding:0!important;display:inline-flex!important;align-items:center;justify-content:center;gap:0;border-radius:11px!important;box-shadow:none!important;flex:none}
+:root[data-shell] #stTools #fnDiceBtn{border:0!important;background:transparent!important;color:var(--zhu,var(--ink))!important}
+:root[data-shell] #stTools #fnRuBtn{border:0!important;background:transparent!important;color:var(--fg2)!important}
+:root[data-shell] #stTools :is(#btnMore,#twsChapterChip){border:0!important;background:transparent!important;color:var(--fg2)!important;font-size:0!important}
+:root[data-shell] #stTools :is(#fnDiceBtn,#fnRuBtn,#btnMore,#twsChapterChip):hover{background:var(--soft)!important;color:var(--ink)!important}
+:root[data-shell] #stTools :is(#fnDiceBtn,#fnRuBtn,#btnMore,#twsChapterChip):focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+#stTools :is(#fnDiceBtn,#fnRuBtn) svg{display:block;width:22px;height:22px;pointer-events:none}
+#stTools #fnRuBtn svg{width:23px;height:23px}
+.en-running{overflow:hidden}
+.en-portal{position:fixed;inset:0;z-index:100000;display:grid;place-items:center;overflow:hidden;color:var(--fg);isolation:isolate;cursor:pointer}
+.en-panel{position:absolute;inset-block:0;width:50.2%;background:var(--paper,#f7f4ee);will-change:transform;z-index:-1}
+.en-panel-left{left:0;background:linear-gradient(100deg,color-mix(in srgb,var(--ac) 3%,var(--paper)),var(--paper))}
+.en-panel-right{right:0;background:linear-gradient(260deg,color-mix(in srgb,var(--ac) 3%,var(--paper)),var(--paper))}
+.en-seam{position:absolute;top:12%;bottom:12%;left:50%;width:1px;background:linear-gradient(transparent,var(--line2),transparent);pointer-events:none}
+.en-composition{position:relative;width:min(440px,85vw);display:flex;align-items:center;flex-direction:column;pointer-events:none;gap:0}
+.en-overline{font:10px var(--la);letter-spacing:.22em;color:var(--mut);margin-bottom:36px}
+.en-overline span{padding:0 12px;color:var(--mut2)}
+.en-object{width:min(300px,68vw);transform-origin:center;will-change:transform,opacity}
+.en-mask-art{display:block;width:100%;overflow:visible}
+.en-half{transform-box:fill-box;transform-origin:center}
+.en-surface{fill:color-mix(in srgb,var(--ink) 3%,var(--paper));opacity:.8}
+.en-draw{stroke:color-mix(in srgb,var(--fg2) 75%,var(--ac));stroke-width:1.15;stroke-linecap:round;stroke-linejoin:round}
+.en-eye{stroke-width:.85;opacity:.7}.en-detail{stroke:var(--mut);stroke-width:.65;opacity:.65}
+.en-caption{display:flex;align-items:center;flex-direction:column;gap:12px;margin-top:24px}
+.en-caption em{font-family:var(--disp,var(--la));font-size:clamp(40px,5vw,56px);line-height:1;font-weight:400;letter-spacing:-.035em;color:var(--fg)}
+.en-caption span{font-family:var(--zh);font-size:12px;letter-spacing:.2em;color:var(--mut)}
+.en-skip{position:absolute;right:28px;bottom:25px;display:flex;gap:12px;align-items:center;border:0;background:transparent;font-family:var(--ui);font-size:12px;color:var(--mut);padding:10px;cursor:pointer}
+.en-skip span{font-family:var(--la);opacity:.6}.en-skip:focus-visible{outline:1px solid var(--ac);border-radius:8px}
+@media(max-width:600px){.en-skip{right:14px;bottom:calc(14px + env(safe-area-inset-bottom))}.en-overline{font-size:9px;letter-spacing:.16em;margin-bottom:28px}.en-caption{margin-top:18px}}
+@media(prefers-reduced-motion:reduce){.en-portal{display:none}}
+
+/* 发牌和洗牌共用抽牌台，背景与牌背从开始到结束保持一致。 */
+#fnTarot.tr-arriving .fn-box{transform:none!important;transition:none;overflow:visible}
+#fnTarot.tr-arriving .tr-stage{overflow:visible}
+#fnTarot.tr-arriving .tr-card{transition:none!important;pointer-events:none}
+#fnTarot.tr-arriving .tr-in{transition:none!important;will-change:transform,opacity}
+#fnTarot.tr-arriving .tr-hint{opacity:0}
+.tr-enter-skip{position:absolute;right:12px;bottom:12px;border:0;background:transparent;color:var(--mut);font:12px var(--ui);padding:8px;cursor:pointer;z-index:30}
+.tr-enter-skip:focus-visible{outline:1px solid var(--ac);border-radius:8px}
+
+#fnTarot .tr-stage[data-phase="fan"] .tr-card:hover,#fnTarot .tr-stage[data-phase="fan"] .tr-card:focus-visible{z-index:20!important}
+
+/* 恢复原来的彩色剧场双面具与悬停摇摆，入口仍保持紧凑。 */
+#stTools #fnRuBtn .fn-mask{font-family:"Apple Color Emoji","Segoe UI Emoji",sans-serif;font-size:21px;line-height:1;pointer-events:none;transform-origin:50% 70%}
+#stTools #fnDiceBtn .fn-tcard{width:14px;height:20px;pointer-events:none}
+@media(prefers-reduced-motion:reduce){#stTools #fnRuBtn .fn-mask,#stTools #fnDiceBtn .fn-tcard i{animation:none!important}}
+
+/* 与入口 🎭 呼应的蓝金喜悲双面具。 */
+.en-object:has(.en-duet){width:min(270px,62vw)}
+.en-duet .en-surface{opacity:1}
+.en-duet .en-draw{stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.en-mask-blue .en-draw{stroke:#275b70}.en-mask-gold .en-draw{stroke:#88632f}
+.en-duet .en-eye{opacity:1;stroke-width:3}
+.en-duet .en-brow{stroke-width:2.3;opacity:.7}
+.en-duet .en-nose{stroke-width:1.5;opacity:.38}
+.en-duet .en-rim{stroke-width:1;opacity:.22}
+.en-duet .en-mouth{fill:#e6f3f3;stroke:#397082;stroke-width:1.1}
+.en-duet .en-mouth-line{stroke-width:3}
+.en-duet .en-shine{stroke:#fff;stroke-width:2;stroke-linecap:round;opacity:.22}
+.en-composition:has(.en-duet) .en-caption{margin-top:14px}

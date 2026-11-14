@@ -83,10 +83,10 @@
         '<span class="sec-no">03</span>' +
         '<span class="sec-meta"><span class="sec-en">// Manuscript</span><span class="sec-cn">书稿</span></span>' +
         '<span class="sec-right">' +
-          '<span class="chip tws-goal-chip" id="twsGoalChip">今日 0 字</span>' +
-          '<button class="mini-btn" id="twsBtnKit">工具</button>' +
-          '<button class="mini-btn" id="twsBtnExport">导出</button>' +
-          '<button class="mini-btn" id="twsBtnNewCh">新建章节</button>' +
+          '<button type="button" class="tws-ib tws-head-goal" id="twsGoalChip" aria-label="今日写作进度" data-tip="今日写作进度"></button>' +
+          '<button type="button" class="tws-ib" id="twsBtnKit" aria-label="工具" data-tip="工具"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6.2a4.1 4.1 0 0 0-5.1 5.1l-5.8 5.8a2 2 0 0 0 2.8 2.8l5.8-5.8a4.1 4.1 0 0 0 5.1-5.1l-2.6 2.1-2-2z"/></svg></button>' +
+          '<button type="button" class="tws-ib" id="twsBtnExport" aria-label="导出" data-tip="导出书稿"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4"/><path d="M5 16.5v2A2.5 2.5 0 0 0 7.5 21h9a2.5 2.5 0 0 0 2.5-2.5v-2"/></svg></button>' +
+          '<button type="button" class="tws-ib" id="twsBtnNewCh" aria-label="新建章节" data-tip="新建章节"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 3.5H6.7A1.7 1.7 0 0 0 5 5.2v13.6a1.7 1.7 0 0 0 1.7 1.7h10.6a1.7 1.7 0 0 0 1.7-1.7V9z"/><path d="M13 3.5v5.8h6M9 15h6M12 12v6"/></svg></button>' +
         '</span>' +
       '</div>' +
       '<div class="tws-book">' +
@@ -478,7 +478,7 @@
 
     var cur = T.ai.POLISH_STYLES[0].k;
     var out = m.el.querySelector('#psOut');
-    var result = '';
+    var result = '', review = null, originalContent = ta.value, originalProject = D.D.activeProject;
 
     m.el.querySelector('#psChips').addEventListener('click', function (e) {
       var c2 = e.target.closest('[data-ps]');
@@ -498,7 +498,7 @@
 
     bar.querySelector('#psRun').addEventListener('click', function () {
       this.disabled = true;
-      result = '';
+      result = ''; review = null;
       out.textContent = '';
       out.classList.add('streaming');
       T.ai.polish(target, cur, function (txt) {
@@ -507,6 +507,7 @@
       }).then(function (full) {
         result = full || out.textContent;
         out.classList.remove('streaming');
+        if (result && T.revision) review = T.revision.mount(out, target, result);
         var meta = m.el.querySelector('#psMeta');
         if (meta) {
           var longer = result.length > target.length * 1.6;
@@ -527,7 +528,8 @@
     bar.querySelector('#psReplace').addEventListener('click', function () {
       if (!result) return;
       var t = $('twsContent');
-      if (!t) return;
+      if (!t || T.currentChapter() !== c.id || D.D.activeProject !== originalProject || t.value !== originalContent) { toast('正文已变化，请重新选择后再试'); return; }
+      result = review ? review.getText() : result;
       D.saveChapterContent(c.id, t.value, 'AI 润色前');
       if (hasSel) {
         t.value = t.value.slice(0, ss) + result + t.value.slice(se);
@@ -544,7 +546,8 @@
     bar.querySelector('#psAppend').addEventListener('click', function () {
       if (!result) return;
       var t = $('twsContent');
-      if (!t) return;
+      if (!t || T.currentChapter() !== c.id || D.D.activeProject !== originalProject || t.value !== originalContent) { toast('正文已变化，请重新选择后再试'); return; }
+      result = review ? review.getText() : result;
       D.saveChapterContent(c.id, t.value, 'AI 润色前');
       t.value = (t.value ? t.value + '\n\n' : '') + result;
       t.dispatchEvent(new Event('input', { bubbles: true }));
@@ -796,8 +799,8 @@
 
     tabs.innerHTML = Object.keys(D.CARD_KINDS).map(function (k) {
       var n = D.listCards(pid, k).length;
-      return '<span class="chip' + (ui.kind === k ? ' on' : '') + '" data-kind="' + k + '">' +
-        D.CARD_KINDS[k] + (n ? ' ' + n : '') + '</span>';
+      return '<button type="button" class="chip' + (ui.kind === k ? ' on' : '') + '" data-kind="' + k + '" aria-pressed="' + (ui.kind === k) + '">' +
+        D.CARD_KINDS[k] + (n ? ' ' + n : '') + '</button>';
     }).join('');
 
     var list = D.listCards(pid, ui.kind);
@@ -882,8 +885,8 @@
     if (!tabs || !box) return;
 
     tabs.innerHTML =
-      '<span class="chip' + (ui.tab === 'thread' ? ' on' : '') + '" data-tab="thread">伏笔</span>' +
-      '<span class="chip' + (ui.tab === 'timeline' ? ' on' : '') + '" data-tab="timeline">时间线</span>';
+      '<button type="button" class="chip' + (ui.tab === 'thread' ? ' on' : '') + '" data-tab="thread" aria-pressed="' + (ui.tab === 'thread') + '">伏笔</button>' +
+      '<button type="button" class="chip' + (ui.tab === 'timeline' ? ' on' : '') + '" data-tab="timeline" aria-pressed="' + (ui.tab === 'timeline') + '">时间线</button>';
 
     if (!pid) {
       box.innerHTML = '<div class="tws-empty"><b>先建一部作品</b></div>';
@@ -1057,9 +1060,10 @@
     var el = $('twsGoalChip');
     if (!el) return;
     var today = D.todayWords(), goal = D.D.goal || 0;
-    el.textContent = goal > 0
-      ? '今日 ' + today + ' / ' + goal + ' 字'
-      : '今日 ' + today + ' 字';
+    var label = goal > 0 ? '今日 ' + today + ' / ' + goal + ' 字' : '今日 ' + today + ' 字';
+    el.setAttribute('aria-label', label + '，查看写作进度');
+    el.setAttribute('data-tip', label + ' · 查看写作进度');
+    el.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v2M5.6 5.6 7 7M3 12h2M19 12h2M17 7l1.4-1.4"/><path d="M5 17.5h14M7.5 17.5a4.5 4.5 0 1 1 9 0"/></svg><span>' + today + (goal > 0 ? ' / ' + goal : '') + '</span>';
   }
 
   function openStats() {
@@ -1652,6 +1656,8 @@
     if (!el) return;
     var c = ui.chapterId && D.getChapter(ui.chapterId);
     el.textContent = c ? c.title : '未选择章节';
+    el.setAttribute('aria-label', '切换章节 · ' + el.textContent);
+    el.title = '切换章节 · ' + el.textContent;
     el.classList.toggle('on', !!c);
   }
 
@@ -1684,7 +1690,8 @@
   function addChapterChip() {
     var right = document.querySelector('#v-chat .sec-right');
     if (!right || document.getElementById('twsChapterChip')) return;
-    var chip = document.createElement('span');
+    var chip = document.createElement('button');
+    chip.type = 'button';
     chip.className = 'chip tws-ch-chip';
     chip.id = 'twsChapterChip';
     chip.title = '当前章节 · 点击切换';

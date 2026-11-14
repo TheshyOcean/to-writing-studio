@@ -231,6 +231,11 @@
   function setHint(t) { var h = $('trHint'); h.classList.remove('on'); setTimeout(function () { h.textContent = t; h.classList.add('on'); }, 220); }
 
   function openDice() {
+    if ($('fnTarot') && $('fnTarot').classList.contains('tr-arriving')) return;
+    if (tbusy) { openModal('fnTarot'); return; }
+    openDiceNow();
+  }
+  function openDiceNow() {
     var g = modal('fnTarot', 'fn-tarot', '<div class="fn-h">命运塔罗 <span class="lat">Arcana</span></div>' +
       '<p class="fn-sub">卡文的时候，洗一次牌，凭直觉抽一张。牌面不预言什么，只给下一段一个方向。</p>' +
       '<div class="tr-stage" id="trStage" data-phase="idle"><div class="tr-glow"></div>' +
@@ -250,7 +255,10 @@
       });
     }
     if (!tbusy) { tphase = 'idle'; $('trStage').dataset.phase = 'idle'; $('trRead').classList.remove('on'); $('trGo').textContent = '洗牌'; $('trUse').disabled = true; $('trHint').textContent = '牌已备好'; $('trHint').classList.add('on'); stack(); }
-    paintDex(); openModal('fnTarot');
+    paintDex(); openModal('fnTarot'); g.classList.add('on');
+    if (T.entrance && T.entrance.tarot) T.entrance.tarot(g, function () {
+      if (!g.hidden && g.classList.contains('on') && !tbusy) { tdeal = []; roll(); }
+    });
   }
 
   function roll() {
@@ -271,7 +279,7 @@
       els.forEach(function (el, i) {
         var t = (i - (NCARD - 1) / 2) / ((NCARD - 1) / 2), a = t * 26, S = st.clientWidth < 560 ? .76 : 1, R = Math.min(360, Math.max(120, (st.clientWidth / 2 - 12 - 82 * S) / Math.sin(26 * Math.PI / 180))), r = a * Math.PI / 180;
         el.querySelector('.tr-f').innerHTML = ''; el.tabIndex = 0;
-        setTimeout(function () { pose(el, R * Math.sin(r), R * (1 - Math.cos(r)) - 8, a, S, i); }, i * 70 * T0);
+        setTimeout(function () { pose(el, R * Math.sin(r), R * (1 - Math.cos(r)) - 8, a, S, NCARD - Math.abs(i - (NCARD - 1) / 2)); }, i * 70 * T0);
       });
       return wait((NCARD * 70 + 700) * T0);
     }).then(function () {
@@ -396,9 +404,10 @@
   function mountHead() {
     var tools = $('stTools'); if (!tools || $('fnDiceBtn')) return;
     var dice = document.createElement('button'); dice.type = 'button'; dice.id = 'fnDiceBtn'; dice.className = 'fn-headbtn zhu'; dice.setAttribute('aria-label', '命运塔罗');
-    dice.innerHTML = '<span class="fn-tcard" aria-hidden="true"><i></i></span><span class="fn-swap"><span class="zh">命运塔罗</span><span class="la" aria-hidden="true">Arcana</span></span>';
+    dice.innerHTML = '<span class="fn-tcard" aria-hidden="true"><i></i></span>';
+    dice.title = '命运塔罗';
     dice.addEventListener('click', openDice);
-    var ru = document.createElement('button'); ru.type = 'button'; ru.id = 'fnRuBtn'; ru.className = 'fn-headbtn ink'; ru.innerHTML = '<span class="fn-mask" aria-hidden="true">🎭</span><span class="fn-swap"><span class="zh">入戏</span><span class="la" aria-hidden="true">Persona</span></span>'; ru.setAttribute('aria-label', '入戏');
+    var ru = document.createElement('button'); ru.type = 'button'; ru.id = 'fnRuBtn'; ru.className = 'fn-headbtn ink'; ru.innerHTML = '<span class="fn-mask" aria-hidden="true">🎭</span>'; ru.setAttribute('aria-label', '入戏'); ru.title = '入戏';
     ru.addEventListener('click', function () { if (T.persona) T.persona.open(); });
     tools.insertBefore(ru, tools.firstChild); tools.insertBefore(dice, tools.firstChild);
   }

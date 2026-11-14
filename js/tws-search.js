@@ -276,8 +276,10 @@
     if (!ex) return false;
     if (document.getElementById('twsBtnSearch')) return true;
     var b = document.createElement('button');
-    b.className = 'mini-btn'; b.id = 'twsBtnSearch'; b.type = 'button'; b.textContent = '搜索';
-    b.title = '全书搜索与替换（Ctrl / ⌘ + Shift + F）';
+    b.className = 'tws-ib'; b.id = 'twsBtnSearch'; b.type = 'button';
+    b.setAttribute('aria-label', '全书搜索与替换');
+    b.setAttribute('data-tip', '全书搜索与替换（Ctrl / ⌘ + Shift + F）');
+    b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.5 15.5 4.3 4.3"/></svg>';
     b.addEventListener('click', function () { open(); });
     ex.parentNode.insertBefore(b, ex);
     return true;

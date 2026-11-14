@@ -1,0 +1,36 @@
+/* 沿用书斋的纸面、堇紫与墨色；仅影响修订弹窗。 */
+.tws-revision-modal .tws-modal{width:min(850px,94vw);max-width:850px}
+.tws-revision-modal .tws-ai-bar{flex-wrap:wrap;gap:8px}
+.tws-ai-out.tws-revision-host{padding:0;border:0;background:transparent;white-space:normal;max-height:52vh;overflow:auto}
+.rv-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line)}
+.rv-count{font-size:14px;color:var(--fg2)}
+.rv-actions{display:flex;gap:8px;flex-wrap:wrap}
+.rv-guide{font-size:13px;line-height:1.8;color:var(--mut);margin:10px 0 14px}
+.rv-context{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--fg2);font:inherit;line-height:1.9;padding:8px 12px}
+details.rv-context{font-size:13px;color:var(--mut);border-block:1px dashed var(--line);margin:8px 0}
+.rv-context summary{cursor:pointer}
+.rv-context details,.rv-context div{color:var(--fg2)}
+.rv-change{margin:8px 0 14px;border:1px solid var(--line2);border-radius:12px;background:var(--paper);overflow:hidden}
+.rv-choice{display:flex;align-items:center;gap:9px;padding:10px 12px;font-size:13px;line-height:1.7;cursor:pointer;background:var(--soft);color:var(--fg2)}
+.rv-choice input[type="checkbox"]{appearance:auto!important;flex:none;width:16px!important;height:16px!important;margin:0!important;padding:0!important;accent-color:var(--ac)}
+.rv-choice em{margin-left:auto;font-style:normal;font-size:12px;color:var(--ink);white-space:nowrap}
+.rv-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.rv-columns>div{min-width:0;white-space:pre-wrap;overflow-wrap:anywhere;padding:12px;line-height:1.95;color:var(--fg)}
+.rv-columns>div+div{border-left:1px solid var(--line)}
+.rv-columns small{display:block;color:var(--mut);font-size:12px;margin-bottom:5px}
+.rv-columns del{color:var(--fg2);text-decoration:line-through;text-decoration-color:var(--sig-red);background:color-mix(in srgb,var(--sig-red) 7%,transparent)}
+.rv-columns ins{color:var(--ink);text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--ac);background:var(--soft)}
+.rv-empty{color:var(--mut);font-size:13px;font-style:italic}
+.rv-kept .rv-choice{background:transparent}
+.rv-kept .rv-choice em{color:var(--mut)}
+.rv-kept .rv-columns ins{background:transparent;color:var(--mut);text-decoration:none}
+.rv-kept .rv-columns del{text-decoration:none;background:transparent;color:var(--fg)}
+.rv-unchanged{color:var(--fg2);font-size:14px;padding:8px 0}
+@media(max-width:560px){
+ .tws-revision-modal .tws-modal{width:96vw}
+ .rv-columns{grid-template-columns:minmax(0,1fr)}
+ .rv-columns>div+div{border-left:0;border-top:1px solid var(--line)}
+ .rv-choice{flex-wrap:wrap}
+ .tws-revision-modal .tws-ai-bar .tws-spacer{display:none}
+ .tws-ai-out.tws-revision-host{max-height:48dvh}
+}
