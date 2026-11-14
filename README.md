@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.8.0
+# To Writing Studio 写作工作台 · Beta V3.8.1
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,8 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.8.1 · 2026-11-14**（电脑版）：修复 To Account 入口悬停时的长条高亮。账号按钮不再继承收起侧栏子项的固定 222 px 宽度：收起时命中区域为 42×42，展开时按文字内容伸展；高亮始终只包住头像，不整行铺底色。头像中心继续与导航图标对齐，文字宽度与透明度随侧栏平滑收放；兼容固定展开、长昵称、键盘聚焦和减少动态效果。修改 `js/tws-account.css`，同步版本号与离线缓存。
 
 **Beta V3.8.0 · 2026-11-14**（电脑版 + 手机版）：补上写作与修稿的几个常用环节，沿用现有纸墨界面。
 ① **AI 修订对照**：选文润色、扩写、缩写、换个说法后高亮原文与改稿，可逐处采纳或保留原文，再应用选择。写回前保留历史；作品、章节或正文已经变化时拒绝覆盖。

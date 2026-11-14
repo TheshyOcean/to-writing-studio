@@ -174,19 +174,24 @@
 
 /* ---------------- 左栏：个人资料行（在昼夜切换那行上面） ---------------- */
 /* 头像中心对齐导航图标（左栏内边距 18 + 按钮内边距 12 + 图标半宽 9 = 39px） */
-:root[data-shell] .rail .st-acct{display:flex!important;align-items:center;gap:7px;width:100%!important;height:46px!important;min-height:0!important;
-  padding:0 0 0 7px!important;margin:0!important;border:0!important;border-radius:12px!important;background:transparent!important;box-shadow:none!important;
-  color:var(--fg2)!important;text-align:left;cursor:pointer;flex:none!important;transform:none}
-:root[data-shell] .rail .st-acct:hover{background:var(--soft)!important}
+:root[data-shell] .rail #stAcct{display:flex!important;align-items:center;justify-content:flex-start!important;align-self:flex-start;gap:0;width:max-content!important;min-width:42px!important;max-width:222px!important;height:42px!important;min-height:0!important;
+  padding:0 7px!important;margin:2px 0!important;border:0!important;border-radius:12px!important;background:transparent!important;box-shadow:none!important;
+  color:var(--fg2)!important;text-align:left;cursor:pointer;flex:none!important;transform:none!important;position:relative;isolation:isolate}
+/* 高亮只落在头像的方形底座上，不再把整行涂成长条。 */
+:root[data-shell] .rail #stAcct::before{content:"";position:absolute;left:0;top:0;width:42px;height:42px;border-radius:12px;background:transparent;z-index:-1;transition:background-color .2s ease}
+:root[data-shell] .rail #stAcct:hover::before{background:var(--soft)}
+:root[data-shell] .rail #stAcct:hover .st-acct-t b{color:var(--ink)}
+:root[data-shell] .rail #stAcct:focus-visible{outline:none}
+:root[data-shell] .rail #stAcct:focus-visible::before{background:var(--soft);outline:1.5px solid var(--ac);outline-offset:2px}
 .st-acct .ac-ava.sm{width:28px;height:28px;font-size:14px}
 .st-acct .ac-ava.sm.emoji{font-size:16px}
 .st-acct .ac-ava.sm.ac-none{color:var(--fg2)}
 .st-acct.in .ac-ava{box-shadow:0 0 0 1.5px var(--card,#fff),0 0 0 2.5px color-mix(in srgb,var(--ink,#4c42c4) 45%,transparent)}
-.st-acct-t{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.st-acct-t{display:flex;flex-direction:column;min-width:0;max-width:165px;margin-left:7px;overflow:hidden;white-space:nowrap;line-height:1.25;transition:max-width .3s var(--ez,ease),margin-left .3s var(--ez,ease),opacity .18s ease}
 .st-acct-t b{font-weight:500;font-size:14px;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--ui)}
 .st-acct-t em{font-family:var(--disp);font-size:12.5px;color:var(--mut2);font-style:italic}
-:root.rail-mini[data-shell="desktop"] .st-acct-t{transition:opacity .22s ease .08s}
-:root.rail-mini:not(.rail-open)[data-shell="desktop"] .st-acct-t{opacity:0;transition-delay:0s}
+:root.rail-mini:not(.rail-open)[data-shell="desktop"] .st-acct-t{max-width:0;margin-left:0;opacity:0;pointer-events:none}
+@media(prefers-reduced-motion:reduce){#stAcct .st-acct-t,#stAcct::before{transition:none!important}}
 
 @media (max-width:520px){
   .ac-stage{padding:76px 22px 48px;align-items:flex-start}
