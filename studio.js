@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Beta V3.8.5';
+var VERSION='Beta V3.8.6';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -357,8 +357,8 @@ function buildMargin(){
     '<div class="st-mcard"><div class="st-mh">本书伏笔 <span class="lat">Vestigia</span><button type="button" data-go="v-threads">全部</button></div><div id="stThreads" style="display:flex;flex-direction:column;gap:10px"></div></div>'+
     '<div style="display:flex;flex-direction:column;gap:10px"><div class="st-mh" style="padding:0 4px">出场人物 <span class="lat">Personae</span><button type="button" data-go="v-lore">设定库</button></div><div class="st-people" id="stPeople"></div></div>';
   vp.appendChild(m);
-  var pulse=document.createElement('button'); pulse.type='button'; pulse.className='st-ink-pulse'; pulse.id='stInkPulse'; pulse.setAttribute('aria-label','墨韵：打开码字状态'); pulse.dataset.tooltip='墨韵 · 写作节奏'; pulse.innerHTML='<span class="st-ink-ring"></span><i></i>';
-  pulse.addEventListener('click',function(){ m.classList.toggle('st-margin-writing'); });
+  var pulse=document.createElement('button'); pulse.type='button'; pulse.className='st-ink-pulse'; pulse.id='stInkPulse'; pulse.setAttribute('aria-label','墨韵：打开码字状态'); pulse.dataset.tooltip='墨韵 · 写作节奏'; pulse.innerHTML='<span class="st-ink-ring"></span><span class="st-ink-wave"><b></b><b></b><b></b><b></b><b></b></span><i></i>';
+  pulse.addEventListener('click',function(){ m.classList.toggle('st-margin-collapsed'); });
   vp.appendChild(pulse);
   m.querySelectorAll('[data-go]').forEach(function(b){ b.addEventListener('click',function(){ window.showView&&window.showView(b.dataset.go); }); });
   $('stGoalBtn').addEventListener('click',function(){ var c=$('twsGoalChip'); window.showView&&window.showView('v-book'); if(c) setTimeout(function(){ c.click(); },350); });
@@ -373,8 +373,8 @@ function initWritingClock(){
     var now=Date.now(),gap=writingClock.last?now-writingClock.last:1400; writingClock.prev=writingClock.last; writingClock.last=now;
     var speed=Math.max(.48,Math.min(2.6,gap/520)); var margin=$('stMargin'),pulse=$('stInkPulse');
     if(pulse) pulse.style.setProperty('--ink-speed',speed.toFixed(2)+'s');
-    if(margin) margin.classList.add('st-margin-writing'); if(pulse) pulse.classList.add('is-awake');
-    clearTimeout(writingClock.hideTimer); writingClock.hideTimer=setTimeout(function(){ if(margin) margin.classList.remove('st-margin-writing'); if(pulse) pulse.classList.remove('is-awake'); },3200);
+    if(margin) margin.classList.add('st-margin-collapsed'); if(pulse) pulse.classList.add('is-awake');
+    clearTimeout(writingClock.hideTimer); writingClock.hideTimer=setTimeout(function(){ if(margin) margin.classList.remove('st-margin-collapsed'); if(pulse) pulse.classList.remove('is-awake'); },1100);
   });
   writingClock.timer=setInterval(function(){
     if(!writingClock.last) return;
