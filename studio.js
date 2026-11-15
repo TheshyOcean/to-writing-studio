@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Beta V3.8.4';
+var VERSION='Beta V3.8.5';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -364,13 +364,15 @@ function buildMargin(){
   $('stGoalBtn').addEventListener('click',function(){ var c=$('twsGoalChip'); window.showView&&window.showView('v-book'); if(c) setTimeout(function(){ c.click(); },350); });
   initWritingClock();
 }
-var writingClock={last:0,writing:0,idle:0,timer:null};
+var writingClock={last:0,prev:0,writing:0,idle:0,timer:null};
 function fmtClock(n){ return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0'); }
 function initWritingClock(){
   if(document.documentElement.dataset.writingClockBound) return; document.documentElement.dataset.writingClockBound='1';
   document.addEventListener('input',function(e){
     var ta=e.target&&e.target.closest&&e.target.closest('#twsContent'); if(!ta) return;
-    writingClock.last=Date.now(); var margin=$('stMargin'),pulse=$('stInkPulse');
+    var now=Date.now(),gap=writingClock.last?now-writingClock.last:1400; writingClock.prev=writingClock.last; writingClock.last=now;
+    var speed=Math.max(.48,Math.min(2.6,gap/520)); var margin=$('stMargin'),pulse=$('stInkPulse');
+    if(pulse) pulse.style.setProperty('--ink-speed',speed.toFixed(2)+'s');
     if(margin) margin.classList.add('st-margin-writing'); if(pulse) pulse.classList.add('is-awake');
     clearTimeout(writingClock.hideTimer); writingClock.hideTimer=setTimeout(function(){ if(margin) margin.classList.remove('st-margin-writing'); if(pulse) pulse.classList.remove('is-awake'); },3200);
   });
