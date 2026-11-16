@@ -46,7 +46,7 @@
   function ownChapter(id, projectId) { return chapters(projectId).filter(function (c) { return c.id === id; })[0] || null; }
   function annotations(c) { return (Array.isArray(c.annotations) ? c.annotations : []).filter(function (n) { return n && typeof n.id === 'string' && typeof n.text === 'string'; }); }
   function countTodo() { return chapters().reduce(function (s, c) { return s + annotations(c).filter(function (n) { return !n.done; }).length; }, 0); }
-  function desktop() { var m = doc.getElementById('stMargin'); return !!(m && root.innerWidth > 1240 && root.getComputedStyle(m).display !== 'none' && doc.documentElement.dataset.device !== 'phone'); }
+  function desktop() { var m = doc.getElementById('stMargin'); return !!(m && (root.innerWidth > 1240 || doc.documentElement.classList.contains('ink-enabled')) && root.getComputedStyle(m).display !== 'none' && doc.documentElement.dataset.device !== 'phone'); }
   function button(action, label, extra) { return '<button type="button" class="tws-btn sm ' + (extra || '') + '" data-desk="' + action + '">' + label + '</button>'; }
   function hint(s) { return '<p class="desk-hint">' + esc(s) + '</p>'; }
   function noteList() {

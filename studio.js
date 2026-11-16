@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Beta V3.8.8';
+var VERSION='Beta V3.8.9';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -357,32 +357,63 @@ function buildMargin(){
     '<div class="st-mcard"><div class="st-mh">本书伏笔 <span class="lat">Vestigia</span><button type="button" data-go="v-threads">全部</button></div><div id="stThreads" style="display:flex;flex-direction:column;gap:10px"></div></div>'+
     '<div style="display:flex;flex-direction:column;gap:10px"><div class="st-mh" style="padding:0 4px">出场人物 <span class="lat">Personae</span><button type="button" data-go="v-lore">设定库</button></div><div class="st-people" id="stPeople"></div></div>';
   vp.appendChild(m);
-  var pulse=document.createElement('button'); pulse.type='button'; pulse.className='st-ink-pulse'; pulse.id='stInkPulse'; pulse.setAttribute('aria-label','墨韵：打开码字状态'); pulse.dataset.tooltip='墨韵 · 写作节奏'; pulse.innerHTML='<span class="st-ink-ring"></span><span class="st-ink-wave"><b></b><b></b><b></b><b></b><b></b></span><i></i>';
-  pulse.addEventListener('click',function(){ m.classList.toggle('st-margin-collapsed'); });
-  vp.appendChild(pulse);
+  if(root.dataset.device!=='phone'){
+    root.classList.add('ink-enabled');
+    var pulse=document.createElement('button'); pulse.type='button'; pulse.id='stInkPulse';
+    pulse.setAttribute('aria-label','墨韵：展开页边'); pulse.setAttribute('aria-controls','stMargin');
+    pulse.innerHTML='<span class="st-ink-ring" aria-hidden="true"></span><span class="st-ink-core" aria-hidden="true"></span><span class="st-ink-wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>';
+    pulse.addEventListener('click',function(){ setInkPanel(true); });
+    vp.appendChild(pulse);
+    var close=document.createElement('button'); close.type='button'; close.id='stInkClose'; close.textContent='×'; close.setAttribute('aria-label','收起页边');
+    close.addEventListener('click',function(){ setInkPanel(false); pulse.focus(); }); m.appendChild(close);
+  }
   m.querySelectorAll('[data-go]').forEach(function(b){ b.addEventListener('click',function(){ window.showView&&window.showView(b.dataset.go); }); });
   $('stGoalBtn').addEventListener('click',function(){ var c=$('twsGoalChip'); window.showView&&window.showView('v-book'); if(c) setTimeout(function(){ c.click(); },350); });
   initWritingClock();
 }
-var writingClock={last:0,prev:0,writing:0,idle:0,timer:null};
-function fmtClock(n){ return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0'); }
-function initWritingClock(){
-  if(document.documentElement.dataset.writingClockBound) return; document.documentElement.dataset.writingClockBound='1';
-  document.addEventListener('input',function(e){
-    var ta=e.target&&e.target.closest&&e.target.closest('#twsContent'); if(!ta) return;
-    var now=Date.now(),gap=writingClock.last?now-writingClock.last:1400; writingClock.prev=writingClock.last; writingClock.last=now;
-    var speed=Math.max(.48,Math.min(2.6,gap/520)); var margin=$('stMargin'),pulse=$('stInkPulse');
-    if(pulse) pulse.style.setProperty('--ink-speed',speed.toFixed(2)+'s');
-    if(margin) margin.classList.add('st-margin-collapsed'); if(pulse) pulse.classList.add('is-awake');
-    clearTimeout(writingClock.hideTimer); writingClock.hideTimer=setTimeout(function(){ if(margin) margin.classList.remove('st-margin-collapsed'); if(pulse) pulse.classList.remove('is-awake'); },1100);
+/* delegated input handles chapter re-renders, chat drafts, and Chinese IME. */
+var INK_IDLE_MS=1800;
+var writingClock={started:false,last:0,tick:0,writing:0,idle:0,cadence:650,timer:null,idleTimer:null};
+function fmtClock(ms){ var n=Math.floor(ms/1000); return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0'); }
+function setInkPanel(open){
+  if(!root.classList.contains('ink-enabled')) return;
+  root.classList.toggle('ink-panel-collapsed',!open);
+  var m=$('stMargin'),p=$('stInkPulse');
+  if(m){ m.inert=!open; m.setAttribute('aria-hidden',String(!open)); }
+  if(p) p.setAttribute('aria-expanded',String(open));
+}
+function accountWritingTime(now){
+  var c=writingClock;
+  if(c.started&&!document.hidden){
+    var dt=Math.max(0,now-c.tick),active=Math.max(0,Math.min(now,c.last+INK_IDLE_MS)-c.tick);
+    c.writing+=active; c.idle+=Math.max(0,dt-active);
+  }
+  c.tick=now;
+  var w=$('stWritingTime'),i=$('stIdleTime'); if(w) w.textContent=fmtClock(c.writing); if(i) i.textContent=fmtClock(c.idle);
+}
+function setInkTempo(rate){
+  var p=$('stInkPulse'); if(!p) return;
+  p.querySelectorAll('.st-ink-wave>span').forEach(function(bar){
+    if(bar.getAnimations) bar.getAnimations().forEach(function(a){ if(a.updatePlaybackRate) a.updatePlaybackRate(rate); });
   });
-  writingClock.timer=setInterval(function(){
-    if(!writingClock.last) return;
-    var active=Date.now()-writingClock.last<1000;
-    if(active) writingClock.writing++; else writingClock.idle++;
-    var margin=$('stMargin'); if(margin) margin.classList.toggle('st-writing-active',active);
-    var w=$('stWritingTime'),i=$('stIdleTime'); if(w) w.textContent=fmtClock(writingClock.writing); if(i) i.textContent=fmtClock(writingClock.idle);
-  },1000);
+}
+function initWritingClock(){
+  if(writingClock.timer) return;
+  function activity(e){
+    if(!e.target||!e.target.matches||!e.target.matches('#twsContent,#input')) return;
+    var c=writingClock,now=performance.now(),gap=c.started?now-c.last:650;
+    accountWritingTime(now);
+    if(gap>30) c.cadence=gap>INK_IDLE_MS?650:c.cadence*.7+gap*.3;
+    c.started=true; c.last=now; c.tick=now;
+    setInkPanel(false); setInkTempo(Math.max(1,Math.min(3.2,650/c.cadence)));
+    clearTimeout(c.idleTimer);
+    c.idleTimer=setTimeout(function(){ accountWritingTime(performance.now()); setInkPanel(true); setInkTempo(1); },INK_IDLE_MS);
+  }
+  ['input','compositionstart','compositionupdate','compositionend'].forEach(function(name){ document.addEventListener(name,activity); });
+  document.addEventListener('visibilitychange',function(){ writingClock.tick=performance.now(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&root.classList.contains('ink-enabled')) setInkPanel(false); });
+  writingClock.timer=setInterval(function(){ accountWritingTime(performance.now()); },250);
+  setInkPanel(true);
 }
 function fmtK(n){ return n>=1000?(n/1000).toFixed(n>=10000?0:1)+'K':String(n); }
 function refreshMargin(st){
@@ -391,6 +422,7 @@ function refreshMargin(st){
   $('stToday').textContent=today.toLocaleString('en-US');
   $('stGoal').textContent='/ '+goal.toLocaleString('en-US')+' 字';
   $('stTodayBar').style.width=Math.min(100,today/goal*100)+'%';
+  var pulse=$('stInkPulse'); if(pulse) pulse.style.setProperty('--ink-fill',Math.max(8,Math.min(100,today/goal*100))+'%');
   $('stTodayNote').textContent=today>=goal?'今天的目标已完成':'再写 '+(goal-today).toLocaleString('en-US')+' 字完成今天的目标';
   var limit=S.limit||128000, used=S.used||0;
   if(lux){ var ex=extraContext(); used+=Math.round(ex.length*0.8); }
