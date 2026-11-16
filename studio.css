@@ -397,6 +397,8 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
   opacity:1;visibility:visible;pointer-events:auto;
   transition:opacity .24s ease .1s,visibility 0s!important;
 }
+/* Only the active conversation or a chapter editor owns the writing companion. */
+:root.ink-enabled:not(.ink-context-active) :is(#stMargin,#stInkPulse){display:none!important}
 #stInkPulse>span{pointer-events:none;box-sizing:border-box}
 #stInkPulse .st-ink-ring{
   position:absolute;inset:6px;width:auto;height:auto;border:0;border-radius:50%;

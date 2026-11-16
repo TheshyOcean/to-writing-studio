@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Beta V3.8.9';
+var VERSION='Beta V3.8.10';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -373,10 +373,23 @@ function buildMargin(){
 }
 /* delegated input handles chapter re-renders, chat drafts, and Chinese IME. */
 var INK_IDLE_MS=1800;
-var writingClock={started:false,last:0,tick:0,writing:0,idle:0,cadence:650,timer:null,idleTimer:null};
+var writingClock={started:false,last:0,tick:0,writing:0,idle:0,cadence:650,timer:null,idleTimer:null,context:''};
 function fmtClock(ms){ var n=Math.floor(ms/1000); return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0'); }
+function inkContext(){
+  var view=document.querySelector('.view.active');
+  if(!view) return '';
+  if(view.id==='v-chat') return view.id;
+  return view.id==='v-book'&&view.querySelector('#twsContent')?view.id:'';
+}
+function syncInkContext(){
+  var next=inkContext(),c=writingClock; if(next===c.context) return;
+  accountWritingTime(performance.now()); c.context=next;
+  root.classList.toggle('ink-context-active',!!next);
+  clearTimeout(c.idleTimer); setInkTempo(1); setInkPanel(true);
+}
 function setInkPanel(open){
   if(!root.classList.contains('ink-enabled')) return;
+  open=!!open&&!!writingClock.context;
   root.classList.toggle('ink-panel-collapsed',!open);
   var m=$('stMargin'),p=$('stInkPulse');
   if(m){ m.inert=!open; m.setAttribute('aria-hidden',String(!open)); }
@@ -384,7 +397,7 @@ function setInkPanel(open){
 }
 function accountWritingTime(now){
   var c=writingClock;
-  if(c.started&&!document.hidden){
+  if(c.started&&c.context&&!document.hidden){
     var dt=Math.max(0,now-c.tick),active=Math.max(0,Math.min(now,c.last+INK_IDLE_MS)-c.tick);
     c.writing+=active; c.idle+=Math.max(0,dt-active);
   }
@@ -401,6 +414,9 @@ function initWritingClock(){
   if(writingClock.timer) return;
   function activity(e){
     if(!e.target||!e.target.matches||!e.target.matches('#twsContent,#input')) return;
+    syncInkContext();
+    var context=writingClock.context;
+    if((context!=='v-chat'||!e.target.matches('#input'))&&(context!=='v-book'||!e.target.matches('#twsContent'))) return;
     var c=writingClock,now=performance.now(),gap=c.started?now-c.last:650;
     accountWritingTime(now);
     if(gap>30) c.cadence=gap>INK_IDLE_MS?650:c.cadence*.7+gap*.3;
@@ -410,10 +426,13 @@ function initWritingClock(){
     c.idleTimer=setTimeout(function(){ accountWritingTime(performance.now()); setInkPanel(true); setInkTempo(1); },INK_IDLE_MS);
   }
   ['input','compositionstart','compositionupdate','compositionend'].forEach(function(name){ document.addEventListener(name,activity); });
+  var scopeObserver=new MutationObserver(syncInkContext);
+  document.querySelectorAll('.view').forEach(function(view){ scopeObserver.observe(view,{attributes:true,attributeFilter:['class']}); });
+  var book=$('v-book'); if(book) scopeObserver.observe(book,{childList:true,subtree:true});
   document.addEventListener('visibilitychange',function(){ writingClock.tick=performance.now(); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&root.classList.contains('ink-enabled')) setInkPanel(false); });
   writingClock.timer=setInterval(function(){ accountWritingTime(performance.now()); },250);
-  setInkPanel(true);
+  syncInkContext(); setInkPanel(true);
 }
 function fmtK(n){ return n>=1000?(n/1000).toFixed(n>=10000?0:1)+'K':String(n); }
 function refreshMargin(st){
