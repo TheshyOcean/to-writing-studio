@@ -141,6 +141,16 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 :root[data-shell] :is(.seg,.tws-tabs) button{border:0!important;border-radius:999px!important;color:var(--mut)!important;padding:7px 16px!important;height:auto!important}
 :root[data-shell] :is(.seg,.tws-tabs) button:hover{color:var(--fg)!important;background:transparent!important}
 :root[data-shell] :is(.seg button.on,.seg .on,.tws-tabs .on){background:var(--card)!important;color:var(--ink)!important;box-shadow:var(--shadow)!important}
+/* Two content-sized choices, sharing the definition page's soft capsule. */
+:root[data-shell] #v-threads #twsThreadTabs{
+  align-self:flex-start!important;width:max-content!important;max-width:calc(100% - 40px);
+  margin:0 0 10px clamp(28px,4vw,52px);background:var(--soft)!important;
+}
+:root[data-shell] #v-threads #twsThreadTabs button.tws-action-icon{
+  width:auto!important;min-width:0!important;height:36px!important;flex:none;gap:7px;
+  padding:0 12px!important;font-size:13px!important;line-height:1.2!important;white-space:nowrap;
+}
+:root[data-shell] #v-threads #twsThreadTabs .tws-action-glyph{order:-1;width:17px;height:17px}
 
 /* ---------- 5. 输入 ---------- */
 :root[data-shell] :is(input:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=color]):not([type=file]),textarea,select,.fld,.tws-ta){
@@ -397,6 +407,21 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
   opacity:1;visibility:visible;pointer-events:auto;
   transition:opacity .24s ease .1s,visibility 0s!important;
 }
+:root.ink-enabled #v-chat .composer{position:relative!important;overflow:visible!important}
+:root.ink-enabled #stInkPulse.ink-at-composer{
+  top:auto;right:0;bottom:calc(100% + 20px);width:52px;height:52px;
+  transform:none!important;
+}
+:root.ink-enabled #v-book .tws-ch-head{position:relative}
+:root.ink-enabled #v-book .tws-ch-title{width:calc(100% - 76px)}
+:root.ink-enabled #stInkPulse.ink-at-chapter{
+  top:20px;right:30px;bottom:auto;width:52px;height:52px;transform:none!important;
+}
+#stInkPulse:is(.ink-at-composer,.ink-at-chapter) .st-ink-ring{inset:2px}
+#stInkPulse:is(.ink-at-composer,.ink-at-chapter) .st-ink-core{inset:22%}
+#stInkPulse:is(.ink-at-composer,.ink-at-chapter) .st-ink-wave{inset:0;gap:2px}
+#stInkPulse:is(.ink-at-composer,.ink-at-chapter) .st-ink-wave>span{flex-basis:2px;width:2px;height:6px}
+@media(max-width:720px){:root.ink-enabled #stInkPulse.ink-at-chapter{right:16px}}
 /* Only the active conversation or a chapter editor owns the writing companion. */
 :root.ink-enabled:not(.ink-context-active) :is(#stMargin,#stInkPulse){display:none!important}
 #stInkPulse>span{pointer-events:none;box-sizing:border-box}

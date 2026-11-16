@@ -15,19 +15,25 @@ function session(){
   const root={classList:{contains:n=>classes.has(n),toggle(n,on){on?classes.add(n):classes.delete(n);}}};
   let rate=1;
   const margin={setAttribute(){},inert:false};
-  const pulse={setAttribute(){},querySelectorAll:()=>[{getAnimations:()=>[{updatePlaybackRate:r=>{rate=r;}}]}]};
+  const pulseClasses=new Set();
+  const pulse={setAttribute(){},classList:{toggle(n,on){on?pulseClasses.add(n):pulseClasses.delete(n);}},querySelectorAll:()=>[{getAnimations:()=>[{updatePlaybackRate:r=>{rate=r;}}]}]};
+  Object.defineProperty(pulse,'docked',{get:()=>pulseClasses.has('ink-at-composer')});
+  const composer={appendChild(p){p.parentNode=composer;}},viewport={appendChild(p){p.parentNode=viewport;}};
+  let chapter={appendChild(p){p.parentNode=chapter;els.stInkPulse=p;}};
   const els={stMargin:margin,stInkPulse:pulse,stWritingTime:{textContent:''},stIdleTime:{textContent:''}};
-  const document={hidden:false,addEventListener(n,f){events[n]=f;},querySelector(){return view?{id:view,querySelector:()=>hasEditor?{}:null}:null;},querySelectorAll:()=>[]};
+  const document={hidden:false,addEventListener(n,f){events[n]=f;},querySelector(selector){if(selector==='#v-chat .composer')return composer;if(selector==='#v-book .tws-ch-head')return chapter;if(selector==='.viewport')return viewport;return view?{id:view,querySelector:()=>hasEditor?{}:null}:null;},querySelectorAll:()=>[]};
   const timeout=(f,dt,repeat)=>{const id=++seq;jobs.set(id,{f,due:now+dt,repeat});return id;};
   const ctx={root,document,performance:{now:()=>now},$:id=>els[id],MutationObserver:class{observe(){}},
     setInterval:(f,dt)=>timeout(f,dt,dt),setTimeout:(f,dt)=>timeout(f,dt,0),clearTimeout:id=>jobs.delete(id)};
   vm.createContext(ctx);
   vm.runInContext(source.slice(source.indexOf('var INK_IDLE_MS='),source.indexOf('function fmtK(')),ctx);
   ctx.initWritingClock();
+  ctx.inkPulseNode=pulse;
   function advance(dt){const end=now+dt;while(true){let entry=[...jobs].filter(([,j])=>j.due<=end).sort((a,b)=>a[1].due-b[1].due)[0];if(!entry)break;let [id,j]=entry;now=j.due;if(j.repeat)j.due+=j.repeat;else jobs.delete(id);j.f();}now=end;ctx.accountWritingTime(now);}
   function input(id='input',kind='input'){events[kind]({target:{matches:q=>q.split(',').includes('#'+id)}});}
   function setView(id,editor=true){view=id;hasEditor=editor;ctx.syncInkContext();}
-  return {ctx,document,els,classes,advance,input,events,setView,get rate(){return rate;}};
+  function redrawChapter(){delete els.stInkPulse;chapter={appendChild(p){p.parentNode=chapter;els.stInkPulse=p;}};ctx.syncInkContext();return chapter;}
+  return {ctx,document,els,classes,advance,input,events,setView,composer,viewport,redrawChapter,get chapter(){return chapter;},get rate(){return rate;}};
 }
 
 test('typing collapses the full margin; stopping restores it with elapsed-time accounting',()=>{
@@ -76,6 +82,20 @@ test('definition, lore, timeline and empty book views cannot awaken the companio
   }
   s.setView('v-book',false);s.input('twsContent');assert.ok(!s.classes.has('ink-context-active'));
   s.setView('v-book',true);s.input('twsContent');assert.ok(s.classes.has('ink-context-active'));assert.ok(s.classes.has('ink-panel-collapsed'));
+});
+test('chat companion follows the composer and detaches when leaving the chat',()=>{
+  const s=session();assert.equal(s.els.stInkPulse.parentNode,s.composer);assert.equal(s.els.stInkPulse.docked,true);
+  s.setView('v-book');assert.equal(s.els.stInkPulse.parentNode,s.chapter);assert.equal(s.els.stInkPulse.docked,false);
+  s.setView('v-chat');assert.equal(s.els.stInkPulse.parentNode,s.composer);assert.equal(s.els.stInkPulse.docked,true);
+});
+test('chapter redraws retain the same companion instead of destroying or duplicating it',()=>{
+  const s=session();s.setView('v-book');const pulse=s.els.stInkPulse;
+  const newHeader=s.redrawChapter();assert.equal(s.els.stInkPulse,pulse);assert.equal(pulse.parentNode,newHeader);
+  s.input('twsContent');assert.ok(s.classes.has('ink-panel-collapsed'));
+});
+test('moving the chapter into fullscreen focus keeps writing time active',()=>{
+  const s=session();s.classes.add('tws-focus');s.els.twsContent={};s.setView('v-book',false);
+  s.input('twsContent');s.advance(1000);assert.equal(s.ctx.writingClock.writing,1000);
 });
 test('rhythm keyframes cannot collide with the theme transition that scales to 80x',()=>{
   const ink=css.slice(css.indexOf('/* 墨韵:'),css.indexOf('.st-thr{'));

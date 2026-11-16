@@ -35,6 +35,7 @@
     plot:'<path d="M4 19V5M4 19h16M6 16l4-5 3 2 5-7"/><circle cx="18" cy="6" r="1"/>',
     film:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9h4M17 9h4M3 15h4M17 15h4M10 9l5 3-5 3z"/>',
     library:'<path d="M4 5h5v14H4zM10 4h5v15h-5zM16 6l3-1 3 13-3 1z"/>',
+    world:'<circle cx="10" cy="13" r="7.5"/><ellipse cx="10" cy="13" rx="3" ry="7.5"/><path d="M2.5 13h15M18 2l.8 2.7L21.5 5.5l-2.7.8L18 9l-.8-2.7-2.7-.8 2.7-.8z"/>',
     template:'<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>',
     on:'<circle cx="12" cy="12" r="8"/><path d="m8 12 2.5 2.5L16.5 9"/>', off:'<circle cx="12" cy="12" r="8"/><path d="M8 12h8"/>'
   };
@@ -49,7 +50,7 @@
     '返回':'back','返回 ESC':'back','开启':'on','登录':'person','查看摘要':'library','看看效果':'view','指令':'term','模板':'template','+ 新建智能体':'add','+ 添加技能':'add','启用':'on','使用中':'on','ON':'on','OFF':'off','开始润色':'magic','开始构思':'magic','保存批注':'save','撤销':'undo','继续自动备份':'refresh','现在备份一次':'download','现在备份':'download','先备份现在的':'download','写入所选':'check','忽略':'close','重生成':'refresh','仍然定稿':'check','好，加进去':'check','先不用':'close','把标点修正写回正文':'check','存档':'save','读档':'upload','AI 扩写':'magic','直接用':'check','回到戏里':'back','回到书桌':'back','在设定库里管理':'library','去书稿新建':'addfile','用它生成情节图':'plot','生成全部缺少的':'magic','选择文件夹':'folder','换个文件夹':'folder','停用':'off','彻底删除':'trash','清空回收站':'trash','进本章草稿':'addfile','存为备用素材':'save','只更新设定':'library','查看摘要':'library','润色':'magic','扩写':'add','缩写':'off','换个说法':'refresh','替换选中':'check','替换全文':'check','追加到末尾':'add'
   };
   var ids = {twsBtnNewCard:'add',twsBtnExtract:'extract',twsBtnNewThread:'add',dfNewChar:'person',btnMore:'more',twsChapterChip:'library',btnCfgBack:'back',twsBtnPrompts:'term',twsBtnTpl:'template',btnNewAgent:'add',btnNewSkill:'add'};
-  var kind = {character:'person',person:'person',location:'place',place:'place',term:'term',concept:'term',item:'term',relation:'relation',thread:'thread',timeline:'timeline',char:'person',chars:'person',rel:'relation',plot:'plot',film:'film',template:'template',tpl:'template',lore:'library',world:'library'};
+  var kind = {character:'person',person:'person',location:'place',place:'place',term:'term',concept:'term',item:'term',relation:'relation',thread:'thread',timeline:'timeline',char:'person',chars:'person',rel:'relation',plot:'plot',film:'film',template:'template',tpl:'template',lore:'library',world:'world'};
   var selector='#btnMore,#twsChapterChip,button.mini-btn,button.tws-btn,button.btn.ghost,button.tws-tpl-btn,.tws-ai-bar button,.tws-sel-bar button,.df-bar button,.br-seg button,#themeSeg button,#stNight button,button[data-pact=addvol],#twsLoreTabs [data-kind],#twsThreadTabs [data-tab],#dfTabs [data-t]';
   function convert(el) {
     if (el.classList.contains('tws-ib') || el.classList.contains('tws-head-goal')) return;

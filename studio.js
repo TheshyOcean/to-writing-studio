@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Beta V3.8.10';
+var VERSION='Beta V3.8.11';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -360,6 +360,7 @@ function buildMargin(){
   if(root.dataset.device!=='phone'){
     root.classList.add('ink-enabled');
     var pulse=document.createElement('button'); pulse.type='button'; pulse.id='stInkPulse';
+    inkPulseNode=pulse;
     pulse.setAttribute('aria-label','墨韵：展开页边'); pulse.setAttribute('aria-controls','stMargin');
     pulse.innerHTML='<span class="st-ink-ring" aria-hidden="true"></span><span class="st-ink-core" aria-hidden="true"></span><span class="st-ink-wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>';
     pulse.addEventListener('click',function(){ setInkPanel(true); });
@@ -373,19 +374,30 @@ function buildMargin(){
 }
 /* delegated input handles chapter re-renders, chat drafts, and Chinese IME. */
 var INK_IDLE_MS=1800;
+var inkPulseNode=null;
 var writingClock={started:false,last:0,tick:0,writing:0,idle:0,cadence:650,timer:null,idleTimer:null,context:''};
 function fmtClock(ms){ var n=Math.floor(ms/1000); return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0'); }
 function inkContext(){
   var view=document.querySelector('.view.active');
   if(!view) return '';
   if(view.id==='v-chat') return view.id;
-  return view.id==='v-book'&&view.querySelector('#twsContent')?view.id:'';
+  return view.id==='v-book'&&(view.querySelector('#twsContent')||(root.classList.contains('tws-focus')&&$('twsContent')))?view.id:'';
 }
 function syncInkContext(){
-  var next=inkContext(),c=writingClock; if(next===c.context) return;
+  var next=inkContext(),c=writingClock; if(next===c.context){ dockInkPulse(); return; }
   accountWritingTime(performance.now()); c.context=next;
   root.classList.toggle('ink-context-active',!!next);
+  dockInkPulse();
   clearTimeout(c.idleTimer); setInkTempo(1); setInkPanel(true);
+}
+function dockInkPulse(){
+  var p=$('stInkPulse')||inkPulseNode; if(!p) return;
+  var composer=writingClock.context==='v-chat'?document.querySelector('#v-chat .composer'):null;
+  var chapter=writingClock.context==='v-book'?document.querySelector('#v-book .tws-ch-head'):null;
+  var host=composer||chapter||document.querySelector('.viewport');
+  if(host&&p.parentNode!==host) host.appendChild(p);
+  p.classList.toggle('ink-at-composer',!!composer);
+  p.classList.toggle('ink-at-chapter',!!chapter);
 }
 function setInkPanel(open){
   if(!root.classList.contains('ink-enabled')) return;
