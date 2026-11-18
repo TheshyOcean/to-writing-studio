@@ -1,4 +1,4 @@
-# To Writing Studio 写作工作台 · Beta V3.8.1
+# To Writing Studio 写作工作台 · Beta V3.8.12
 
 > **English** · An AI-powered novel-writing workbench that helps people who have never used AI write a whole book with it.
 > Purely static — no Node, no server, no build step. Open `index.html` (or the [live demo](https://theshyocean.github.io/to-writing-studio/)) and start writing.
@@ -25,6 +25,8 @@
 > - **6 · 小版本号**：优化、调整、修复（如换字体、改动画、修 Bug）都只升这一位。
 >
 > 升前面的号时，后面的号归零（如 V3.4.6 → V3.5.0）。
+
+**Beta V3.8.12 · 2026-11-18**：墨韵页边改为手动开合，记住上次使用的页签。写作时墨点轻亮，外圈显示今日字数进度，输入统计收进页边底部。世界设定改用地球图标，更新书稿、设定库和伏笔入口，选文工具恢复中文文字。
 
 **Beta V3.8.11 · 2026-11-16**：墨韵按写作位置停靠：创作对话中贴在输入框右上方，直径 52px、间距 20px；书稿中移到章节标题右侧，与正文右沿对齐，切换章节后仍可使用。世界设定页签换为地球与星芒图标；伏笔／时间线改为随两项内容收拢的切换器，恢复文字标签，沿用现有圆角和主题色。保留计时、动效、按页面隐藏与移动端布局。
 

@@ -31,11 +31,12 @@
     moon:'<path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z"/>',
     sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/>',
     help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4.2 1.8c-1 .8-1.7 1.3-1.7 2.7M12 17h.01"/>',
-    magic:'<path d="m5 19 9-9M13 5l.8 2.2L16 8l-2.2.8L13 11l-.8-2.2L10 8l2.2-.8zM18 12l.5 1.5L20 14l-1.5.5L18 16l-.5-1.5L16 14l1.5-.5z"/>',
+    nib:'<path d="m5 19 2-7 7.5-7.5 5 5L12 17zM5 19l6-6"/><circle cx="12" cy="12" r="1.5"/>',
     plot:'<path d="M4 19V5M4 19h16M6 16l4-5 3 2 5-7"/><circle cx="18" cy="6" r="1"/>',
     film:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9h4M17 9h4M3 15h4M17 15h4M10 9l5 3-5 3z"/>',
     library:'<path d="M4 5h5v14H4zM10 4h5v15h-5zM16 6l3-1 3 13-3 1z"/>',
-    world:'<circle cx="10" cy="13" r="7.5"/><ellipse cx="10" cy="13" rx="3" ry="7.5"/><path d="M2.5 13h15M18 2l.8 2.7L21.5 5.5l-2.7.8L18 9l-.8-2.7-2.7-.8 2.7-.8z"/>',
+    indexbox:'<rect x="3.5" y="8.5" width="17" height="11" rx="1.4"/><path d="M6.5 8.5V5h11v3.5M9.5 13h5"/>',
+    world:'<circle cx="12" cy="12" r="8.5"/><ellipse cx="12" cy="12" rx="3.6" ry="8.5"/><path d="M3.5 12h17"/>',
     template:'<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>',
     on:'<circle cx="12" cy="12" r="8"/><path d="m8 12 2.5 2.5L16.5 9"/>', off:'<circle cx="12" cy="12" r="8"/><path d="M8 12h8"/>'
   };
@@ -46,20 +47,20 @@
     '编辑':'edit','修改':'edit','输入':'edit','取消':'close','关闭':'close','删除':'trash','移除':'trash','移除图片':'trash',
     '刷新模型':'refresh','刷新':'refresh','拉取':'refresh','重试':'refresh','重新生成':'refresh','从头':'refresh','按情节图重新生成':'refresh',
     '设置':'settings','切换':'settings','改地址':'edit','测试':'check','查看':'view','复制':'copy','播放':'play','暂停':'pause',
-    '生成关系图':'magic','✦ 生成关系图':'magic','✦ 生成情节图':'magic','✦ 生成形象':'magic','✦ AI 补全人设':'magic',
-    '返回':'back','返回 ESC':'back','开启':'on','登录':'person','查看摘要':'library','看看效果':'view','指令':'term','模板':'template','+ 新建智能体':'add','+ 添加技能':'add','启用':'on','使用中':'on','ON':'on','OFF':'off','开始润色':'magic','开始构思':'magic','保存批注':'save','撤销':'undo','继续自动备份':'refresh','现在备份一次':'download','现在备份':'download','先备份现在的':'download','写入所选':'check','忽略':'close','重生成':'refresh','仍然定稿':'check','好，加进去':'check','先不用':'close','把标点修正写回正文':'check','存档':'save','读档':'upload','AI 扩写':'magic','直接用':'check','回到戏里':'back','回到书桌':'back','在设定库里管理':'library','去书稿新建':'addfile','用它生成情节图':'plot','生成全部缺少的':'magic','选择文件夹':'folder','换个文件夹':'folder','停用':'off','彻底删除':'trash','清空回收站':'trash','进本章草稿':'addfile','存为备用素材':'save','只更新设定':'library','查看摘要':'library','润色':'magic','扩写':'add','缩写':'off','换个说法':'refresh','替换选中':'check','替换全文':'check','追加到末尾':'add'
+    '生成关系图':'nib','✦ 生成关系图':'nib','✦ 生成情节图':'nib','✦ 生成形象':'nib','✦ AI 补全人设':'nib',
+    '返回':'back','返回 ESC':'back','开启':'on','登录':'person','查看摘要':'library','看看效果':'view','指令':'term','模板':'template','+ 新建智能体':'add','+ 添加技能':'add','启用':'on','使用中':'on','ON':'on','OFF':'off','开始润色':'nib','开始构思':'nib','保存批注':'save','撤销':'undo','继续自动备份':'refresh','现在备份一次':'download','现在备份':'download','先备份现在的':'download','写入所选':'check','忽略':'close','重生成':'refresh','仍然定稿':'check','好，加进去':'check','先不用':'close','把标点修正写回正文':'check','存档':'save','读档':'upload','AI 扩写':'nib','直接用':'check','回到戏里':'back','回到书桌':'back','在设定库里管理':'indexbox','去书稿新建':'addfile','用它生成情节图':'plot','生成全部缺少的':'nib','选择文件夹':'folder','换个文件夹':'folder','停用':'off','彻底删除':'trash','清空回收站':'trash','进本章草稿':'addfile','存为备用素材':'save','只更新设定':'library','查看摘要':'library','润色':'nib','扩写':'add','缩写':'off','换个说法':'refresh','替换选中':'check','替换全文':'check','追加到末尾':'add'
   };
   var ids = {twsBtnNewCard:'add',twsBtnExtract:'extract',twsBtnNewThread:'add',dfNewChar:'person',btnMore:'more',twsChapterChip:'library',btnCfgBack:'back',twsBtnPrompts:'term',twsBtnTpl:'template',btnNewAgent:'add',btnNewSkill:'add'};
   var kind = {character:'person',person:'person',location:'place',place:'place',term:'term',concept:'term',item:'term',relation:'relation',thread:'thread',timeline:'timeline',char:'person',chars:'person',rel:'relation',plot:'plot',film:'film',template:'template',tpl:'template',lore:'library',world:'world'};
-  var selector='#btnMore,#twsChapterChip,button.mini-btn,button.tws-btn,button.btn.ghost,button.tws-tpl-btn,.tws-ai-bar button,.tws-sel-bar button,.df-bar button,.br-seg button,#themeSeg button,#stNight button,button[data-pact=addvol],#twsLoreTabs [data-kind],#twsThreadTabs [data-tab],#dfTabs [data-t]';
+  var selector='#btnMore,#twsChapterChip,button.mini-btn,button.tws-btn,button.btn.ghost,button.tws-tpl-btn,.tws-ai-bar button,.df-bar button,.br-seg button,#themeSeg button,#stNight button,button[data-pact=addvol],#twsLoreTabs [data-kind],#twsThreadTabs [data-tab],#dfTabs [data-t]';
   function convert(el) {
-    if (el.classList.contains('tws-ib') || el.classList.contains('tws-head-goal')) return;
+    if (el.classList.contains('tws-ib') || el.classList.contains('tws-head-goal') || el.closest('.tws-sel-bar')) return;
     if (el.closest('#stNight')) { var name=Array.from(el.childNodes).filter(function(n){return n.nodeType===3;}).map(function(n){return n.nodeValue;}).join('').trim(); if(name){el.setAttribute('aria-label',name);el.title=name;} el.classList.add('tws-theme-icon'); return; }
     var old=el.querySelector(':scope > svg.tws-action-glyph');
     var text=Array.from(el.childNodes).filter(function(n){return n.nodeType===3;}).map(function(n){return n.nodeValue;}).join('').trim();
     var attr=el.dataset.kind||el.dataset.tab||el.dataset.t;
     var key=ids[el.id]||kind[attr]||labels[text];
-    if(el.closest('#brMode')) key={auto:'magic',semi:'plot',ask:'help',off:'off'}[el.dataset.m]||key;
+    if(el.closest('#brMode')) key={auto:'nib',semi:'plot',ask:'help',off:'off'}[el.dataset.m]||key;
     if(el.closest('#themeSeg')) key={dark:'moon',light:'sun',auto:'settings'}[el.dataset.t]||key;
     if (!key || !paths[key]) { if(old)old.remove(); el.classList.remove('tws-action-icon'); return; }
     /* Only simple controls and the known tabs; never turn cards, menus or rich labels into icons. */

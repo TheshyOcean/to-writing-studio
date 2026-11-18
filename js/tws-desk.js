@@ -33,6 +33,7 @@
   if (typeof module === 'object' && module.exports) module.exports = core;
   if (!root || !root.document) return;
   var T = root.TWS = root.TWS || {}, doc = root.document;
+  var TAB_KEY = 'tws_desk_tab';
   var mode = 'overview', filter = 'todo', scope = 'book', drawer = null, panel = null, tabs = null;
   var lastHTML = '', refreshTimer = null, hooked = false, priorFocus = null;
   function D() { return T.data; }
@@ -126,6 +127,12 @@
   function queueRefresh() { clearTimeout(refreshTimer); refreshTimer = setTimeout(function () { render(); }, 90); }
   function installMargin() {
     var m = doc.getElementById('stMargin'); if (!m || tabs) return;
+    if (doc.documentElement.dataset.device !== 'phone') {
+      try {
+        var savedTab = root.localStorage.getItem(TAB_KEY);
+        if (savedTab === 'notes' || savedTab === 'reference') mode = savedTab;
+      } catch (e) {}
+    }
     tabs = doc.createElement('div'); tabs.className = 'desk-tabs'; tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', '页边内容');
     tabs.innerHTML = '<button type="button" role="tab" data-desk-tab="overview">页边</button><button type="button" role="tab" data-desk-tab="notes">旁批 <span data-desk-count></span></button><button type="button" role="tab" data-desk-tab="reference">参考</button>';
     m.insertBefore(tabs, m.firstChild);
@@ -153,7 +160,10 @@
     if (T.flushSave) T.flushSave();
     if (drawer) closeDrawer(false);
     mode = which; lastHTML = '';
-    if (which !== 'overview' && !desktop()) {
+    if (desktop()) {
+      try { root.localStorage.setItem(TAB_KEY, which); } catch (e) {}
+      if (T.openInkMargin) T.openInkMargin();
+    } else if (which !== 'overview') {
       priorFocus = doc.activeElement;
       drawer = doc.createElement('div'); drawer.className = 'desk-drawer-wrap';
       drawer.innerHTML = '<section class="desk-drawer" role="dialog" aria-modal="true" aria-label="' + (which === 'notes' ? '旁批与待改' : '固定参考') + '"><div class="desk-drawer-head"><span>' + (which === 'notes' ? '旁批 · Marginalia' : '参考 · Ad marginem') + '</span><button type="button" class="tws-x" data-desk-close aria-label="关闭">✕</button></div><div class="desk-drawer-body"></div></section>';
@@ -262,8 +272,7 @@
       hooked = true; D().onSave(queueRefresh);
       doc.addEventListener('click', queueRefresh);
       root.addEventListener('resize', function () {
-        if (!drawer && mode !== 'overview' && !desktop()) open(mode);
-        else if (drawer && desktop()) { var old = mode; closeDrawer(false); mode = old; render(true); }
+        if (drawer && desktop()) open(mode);
       });
       root.addEventListener('storage', queueRefresh);
     }

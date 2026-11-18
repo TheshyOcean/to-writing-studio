@@ -58,6 +58,7 @@
 .tws-sel-bar button{padding:6px 11px!important;border:0!important;border-radius:10px!important;background:none!important;color:var(--fg,var(--tx-1))!important;
   font-size:13.5px!important;cursor:pointer;white-space:nowrap;height:auto!important;box-shadow:none!important}
 .tws-sel-bar button:hover{background:var(--soft,rgba(120,110,200,.12))!important;color:var(--ink,var(--ac))!important}
+.tws-sel-bar{max-width:calc(100% - 16px);flex-wrap:wrap}
 .tws-sel-bar em{font-style:normal;font-size:11.5px;color:var(--mut,var(--tx-3));padding:0 8px 0 6px;white-space:nowrap}
 @media (max-width:720px){.tws-sel-bar button{padding:8px 9px!important;font-size:13px!important}.tws-sel-bar em{display:none}}
 

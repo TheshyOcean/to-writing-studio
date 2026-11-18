@@ -88,6 +88,7 @@ html,body{background:var(--bg)!important;color:var(--fg)}
 html{font-synthesis:style;font-synthesis:style small-caps}
 body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";transition:background .6s var(--ez),color .6s var(--ez)}
 ::selection{background:color-mix(in srgb,var(--ac) 24%,transparent)}
+:root[data-shell] #twsContent::selection{color:var(--fg)}
 .lat{font-family:var(--disp)!important;font-style:italic}
 .bg-layer,.frame,.rail-vert,.studio-stamp,.statusbar,.topbar,.writing-intel,.sec-en,.sec-no,.res,.res-sep,.clock,.rec,
 .sheet-head .en,.dr-head .en,.ctx-pop-head em,.studio-readbar small,.studio-version,.ctx-strip,#twsTempBtn,.msg .mini{display:none!important}
@@ -366,92 +367,69 @@ body{-webkit-font-smoothing:antialiased;font-feature-settings:"kern","liga";tran
 .st-ring .fg{stroke:var(--ac);transition:stroke-dashoffset 1s var(--ez)}
 .st-ring .bgc{stroke:var(--track)}
 .st-ring b{font-family:var(--disp)!important;font-weight:600;font-size:28px;line-height:1;color:var(--fg);font-variant-numeric:lining-nums tabular-nums}
-/* 墨韵: fixed-size, paint-contained glyph; never share theme-wave keyframes. */
-.st-session-times{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.st-session-times>div{padding:11px 12px;border-radius:14px;background:color-mix(in srgb,var(--soft) 58%,transparent);display:flex;flex-direction:column;gap:5px}
-.st-session-times small{font-family:var(--ui);font-size:11px;color:var(--mut)}
-.st-session-times b{font-family:var(--disp);font-size:20px;font-weight:500;letter-spacing:.04em;color:var(--fg);font-variant-numeric:tabular-nums}
+/* 页边由用户开关，输入仅改变墨点颜色。 */
+.st-session-card{display:block}
+.st-session-card summary{cursor:pointer;color:var(--mut);font-size:13px}
+.st-session-times{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.st-session-times>div{padding:10px;border-radius:12px;background:var(--soft)}
+.st-session-times small,.st-session-times b{display:block}
+.st-session-times small{font-size:11px;color:var(--mut)}
+.st-session-times b{margin-top:4px;font-size:16px;font-variant-numeric:tabular-nums}
 
-/* Overlay the original cards and tabs without moving or resizing the manuscript. */
 :root.ink-enabled[data-shell="desktop"] .viewport{grid-template-columns:var(--rail-w) minmax(0,1fr) 0!important;position:relative}
 :root.ink-enabled #stMargin{
-  grid-column:1/-1;
-  position:absolute;inset:24px 18px 24px auto;width:300px;max-width:calc(100% - var(--rail-w) - 32px);
+  grid-column:1/-1;position:absolute;inset:24px 18px 24px auto;
+  width:300px;max-width:calc(100% - 36px);
   display:flex!important;padding:18px 18px 24px;background:var(--bg);border-radius:24px;
-  box-shadow:var(--shadow-lg);z-index:20;animation:none!important;
-  opacity:1;visibility:visible;transform:translateX(0);
-  transition:opacity .24s ease,transform .36s var(--ez),visibility 0s;
+  box-shadow:var(--shadow-lg);z-index:20;animation:none!important;transition:none;
 }
-:root.ink-enabled.ink-panel-collapsed #stMargin{
-  opacity:0;visibility:hidden;pointer-events:none;transform:translateX(16px);
-  transition:opacity .2s ease,transform .32s var(--ez),visibility 0s .32s;
+:root.ink-enabled.ink-panel-collapsed #stMargin{visibility:hidden;pointer-events:none}
+@media (min-width:980px){
+  :root.ink-enabled.ink-context-active:not(.ink-panel-collapsed)[data-shell="desktop"] .viewport{
+    grid-template-columns:var(--rail-w) minmax(0,1fr) min(300px,27vw)!important;
+  }
+  :root.ink-enabled.ink-context-active:not(.ink-panel-collapsed)[data-shell="desktop"] #stMargin{
+    grid-column:3;position:relative;inset:auto;width:auto;max-width:none;
+    margin:14px 14px 14px 10px;padding:14px 8px 14px 2px;border-radius:0;box-shadow:none;
+  }
 }
 :root.ink-enabled #stMargin .desk-tabs{padding-right:24px}
 :root.ink-enabled #stMargin #stInkClose{
-  display:grid!important;place-items:center;position:absolute;right:14px;top:22px;
-  width:26px;height:26px;padding:0!important;border:0!important;border-radius:50%!important;
-  font-size:20px;color:var(--mut);background:transparent!important;
+  display:grid!important;place-items:center;position:absolute;right:10px;top:16px;
+  width:28px;height:28px;padding:0!important;border:0!important;border-radius:50%!important;
+  font-size:19px;color:var(--mut);background:transparent!important;
 }
-:root.ink-enabled #stInkClose:hover{color:var(--ink);background:var(--soft)!important}
+:root.ink-enabled #stMargin #stInkClose:hover{color:var(--ink);background:var(--soft)!important}
 
 :root.ink-enabled #stInkPulse{
-  position:absolute;right:24px;top:50%;width:88px;height:88px;min-width:0;min-height:0;
-  padding:0!important;border:0!important;border-radius:50%!important;
-  background:transparent!important;box-shadow:none!important;display:grid;place-items:center;
-  transform:translateY(-50%)!important;z-index:21;cursor:pointer;
-  overflow:hidden!important;contain:paint;isolation:isolate;
-  opacity:0;visibility:hidden;pointer-events:none;
-  transition:opacity .24s ease,visibility 0s .24s!important;
+  position:absolute;right:16px;top:16px;z-index:10;
+  min-height:36px;padding:0 8px!important;border:0!important;border-radius:10px!important;
+  background:transparent!important;box-shadow:none!important;color:var(--mut);
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  font-size:12px!important;line-height:1;white-space:nowrap;cursor:pointer;
 }
-:root.ink-enabled.ink-panel-collapsed #stInkPulse{
-  opacity:1;visibility:visible;pointer-events:auto;
-  transition:opacity .24s ease .1s,visibility 0s!important;
-}
+:root.ink-enabled #stInkPulse:is(:hover,[aria-expanded="true"]){background:var(--soft)!important;color:var(--ink)}
 :root.ink-enabled #v-chat .composer{position:relative!important;overflow:visible!important}
-:root.ink-enabled #stInkPulse.ink-at-composer{
-  top:auto;right:0;bottom:calc(100% + 20px);width:52px;height:52px;
-  transform:none!important;
-}
+:root.ink-enabled #stInkPulse.ink-at-composer{top:auto;right:0;bottom:calc(100% + 8px)}
 :root.ink-enabled #v-book .tws-ch-head{position:relative}
-:root.ink-enabled #v-book .tws-ch-title{width:calc(100% - 76px)}
-:root.ink-enabled #stInkPulse.ink-at-chapter{
-  top:20px;right:30px;bottom:auto;width:52px;height:52px;transform:none!important;
-}
-#stInkPulse:is(.ink-at-composer,.ink-at-chapter) .st-ink-ring{inset:2px}
-#stInkPulse:is(.ink-at-composer,.ink-at-chapter) .st-ink-core{inset:22%}
-#stInkPulse:is(.ink-at-composer,.ink-at-chapter) .st-ink-wave{inset:0;gap:2px}
-#stInkPulse:is(.ink-at-composer,.ink-at-chapter) .st-ink-wave>span{flex-basis:2px;width:2px;height:6px}
-@media(max-width:720px){:root.ink-enabled #stInkPulse.ink-at-chapter{right:16px}}
-/* Only the active conversation or a chapter editor owns the writing companion. */
+:root.ink-enabled #v-book .tws-ch-title{width:calc(100% - 80px)}
+:root.ink-enabled #stInkPulse.ink-at-chapter{top:22px;right:30px}
+@media (max-width:720px){:root.ink-enabled #stInkPulse.ink-at-chapter{right:16px}}
 :root.ink-enabled:not(.ink-context-active) :is(#stMargin,#stInkPulse){display:none!important}
-#stInkPulse>span{pointer-events:none;box-sizing:border-box}
-#stInkPulse .st-ink-ring{
-  position:absolute;inset:6px;width:auto;height:auto;border:0;border-radius:50%;
-  background:conic-gradient(var(--ac) var(--ink-fill,8%),color-mix(in srgb,var(--ac) 14%,transparent) 0);
-  -webkit-mask:radial-gradient(circle,transparent 60%,#000 62%);
-  mask:radial-gradient(circle,transparent 60%,#000 62%);
-  box-shadow:none;animation:none;
+#stInkPulse .st-ink-mark{
+  display:grid;place-items:center;width:18px;height:18px;flex:none;border-radius:50%;
+  background:conic-gradient(var(--ac) var(--ink-fill,0%),var(--line2) 0);
+  pointer-events:none;
 }
-#stInkPulse .st-ink-core{
-  position:absolute;inset:21px;border-radius:50%;background:var(--paper);
-  animation:twsInkRhythmBreath 3s ease-in-out infinite;
+#stInkPulse .st-ink-mark::before,
+#stInkPulse .st-ink-mark::after{content:"";grid-area:1/1;border-radius:50%}
+#stInkPulse .st-ink-mark::before{width:15px;height:15px;background:var(--paper)}
+#stInkPulse .st-ink-mark::after{
+  width:6px;height:6px;background:var(--mut);transition:background-color .15s ease;
 }
-#stInkPulse .st-ink-wave{position:absolute;inset:32px 29px;display:flex;align-items:center;justify-content:center;gap:3px}
-#stInkPulse .st-ink-wave>span{
-  display:block;flex:0 0 3px;width:3px;height:8px;margin:0;padding:0;border:0;border-radius:2px;
-  background:var(--ac);transform-origin:center;
-  animation:twsInkRhythmBars 2.6s ease-in-out infinite;
-}
-#stInkPulse .st-ink-wave>span:nth-child(2){animation-delay:-.18s}
-#stInkPulse .st-ink-wave>span:nth-child(3){animation-delay:-.36s}
-#stInkPulse .st-ink-wave>span:nth-child(4){animation-delay:-.54s}
-#stInkPulse .st-ink-wave>span:nth-child(5){animation-delay:-.72s}
-#stInkPulse:focus-visible{outline:2px solid var(--ac);outline-offset:3px}
-@keyframes twsInkRhythmBreath{0%,100%{transform:scale(.97)}50%{transform:scale(1)}}
-@keyframes twsInkRhythmBars{0%,100%{transform:scaleY(.65)}50%{transform:scaleY(1.35)}}
-@media(prefers-reduced-motion:reduce){
-  #stInkPulse .st-ink-core,#stInkPulse .st-ink-wave>span{animation:none}
-  :root.ink-enabled #stMargin,:root.ink-enabled #stInkPulse{transition:none!important}
+#stInkPulse:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+@media(prefers-reduced-motion:no-preference){
+  #stInkPulse.ink-writing .st-ink-mark::after{background:var(--ac);transition:none}
 }
 
 .st-thr{display:flex;align-items:center;gap:10px;font-family:var(--ui)!important;font-size:14px;color:var(--fg2);min-width:0}

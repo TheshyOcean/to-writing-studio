@@ -386,7 +386,7 @@
 
   /* 编辑器工具条：图标按钮，悬停时浮出文字（data-tip），读屏读 aria-label */
   var IB_ICON = {
-    polish: '<path d="M12 3.5l1.7 4.1 4.1 1.7-4.1 1.7L12 15.1l-1.7-4.1-4.1-1.7 4.1-1.7z"/><path d="M18.5 14.5l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z"/><path d="M5.5 15.5l.6 1.4 1.4.6-1.4.6-.6 1.4-.6-1.4-1.4-.6 1.4-.6z"/>',
+    polish: '<path d="m5 19 2-7 7.5-7.5 5 5L12 17zM5 19l6-6"/><circle cx="12" cy="12" r="1.5"/>',
     idea: '<path d="M9.5 18h5M10.5 21h3"/><path d="M12 3.2a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1v.4h5v-.4c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3.2z"/>',
     focus: '<path d="M4 9V5.5A1.5 1.5 0 0 1 5.5 4H9M15 4h3.5A1.5 1.5 0 0 1 20 5.5V9M20 15v3.5a1.5 1.5 0 0 1-1.5 1.5H15M9 20H5.5A1.5 1.5 0 0 1 4 18.5V15"/><circle cx="12" cy="12" r="2.6"/>',
     read: '<path d="M4 9.6h3.4L12 5.6v12.8l-4.6-4H4z"/><path d="M15.6 9.2a4 4 0 0 1 0 5.6M18.2 6.6a7.6 7.6 0 0 1 0 10.8"/>',
@@ -1465,7 +1465,7 @@
     b.className = 'rail-btn';
     b.id = id;
     b.title = label;
-    b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">' + svgPath + '</svg>' +
+    b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + svgPath + '</svg>' +
       '<span>' + label + '</span><small>' + num + '</small>';
     return b;   /* 点击由调用方绑定，避免重复触发 */
   }
@@ -1475,9 +1475,9 @@
     if (!rail || document.getElementById('railBook')) return;
 
     var defs = [
-      ['railBook', '书稿', '03', '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v18H6.5A2.5 2.5 0 0 0 4 23z"/><path d="M8 7h7M8 11h7"/>', 'v-book'],
-      ['railLore', '设定库', '04', '<path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/>', 'v-lore'],
-      ['railThreads', '伏笔', '05', '<circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="18" r="2.2"/><path d="M6 8.2V18h9.8"/>', 'v-threads']
+      ['railBook', '书稿', '03', '<path d="M6 3.5h8l4 4v13H6zM14 3.5v5h4M9 12h6M9 16h6"/>', 'v-book'],
+      ['railLore', '设定库', '04', '<rect x="3.5" y="8.5" width="17" height="11" rx="1.4"/><path d="M6.5 8.5V5h11v3.5M9.5 13h5"/>', 'v-lore'],
+      ['railThreads', '伏笔', '05', '<path d="M6.5 4h11v16l-5.5-3.5L6.5 20zM10 8h4"/>', 'v-threads']
     ];
 
     var cfg = rail.querySelector('.rail-btn[data-go="v-cfg"]');

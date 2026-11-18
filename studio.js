@@ -15,7 +15,7 @@ if(root.dataset.shell!=='desktop') return;
 var api=window.__ENDF__;
 if(!api) return;
 var S=api.S;
-var VERSION='Beta V3.8.11';
+var VERSION='Beta V3.8.12';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -353,29 +353,31 @@ function buildMargin(){
     '<div class="st-mcard"><div class="st-mh">上下文 <span class="lat">Memoria</span></div>'+
       '<div class="st-ring"><svg width="66" height="66" viewBox="0 0 66 66" role="img" aria-label="上下文用量"><circle class="bgc" cx="33" cy="33" r="27" fill="none" stroke-width="6"/><circle class="fg" id="stRingFg" cx="33" cy="33" r="27" fill="none" stroke-width="6" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="169.6" transform="rotate(-90 33 33)"/></svg>'+
       '<div style="display:flex;flex-direction:column;gap:4px"><b id="stCtxPct">0%</b><span class="st-note" id="stCtxTok"></span></div></div></div>'+
-    '<div class="st-mcard st-session-card"><div class="st-mh">码字状态 <span class="lat">Session</span></div><div class="st-session-times"><div><small>码字时间</small><b id="stWritingTime">00:00</b></div><div><small>空闲时间</small><b id="stIdleTime">00:00</b></div></div></div>'+
     '<div class="st-mcard"><div class="st-mh">本书伏笔 <span class="lat">Vestigia</span><button type="button" data-go="v-threads">全部</button></div><div id="stThreads" style="display:flex;flex-direction:column;gap:10px"></div></div>'+
-    '<div style="display:flex;flex-direction:column;gap:10px"><div class="st-mh" style="padding:0 4px">出场人物 <span class="lat">Personae</span><button type="button" data-go="v-lore">设定库</button></div><div class="st-people" id="stPeople"></div></div>';
+    '<div style="display:flex;flex-direction:column;gap:10px"><div class="st-mh" style="padding:0 4px">出场人物 <span class="lat">Personae</span><button type="button" data-go="v-lore">设定库</button></div><div class="st-people" id="stPeople"></div></div>'+
+    '<details class="st-mcard st-session-card"><summary>本次输入统计</summary><div class="st-session-times"><div><small>输入活跃</small><b id="stWritingTime">00:00</b></div><div><small>其他时间</small><b id="stIdleTime">00:00</b></div></div></details>';
   vp.appendChild(m);
   if(root.dataset.device!=='phone'){
-    root.classList.add('ink-enabled');
+    root.classList.add('ink-enabled','ink-panel-collapsed');
     var pulse=document.createElement('button'); pulse.type='button'; pulse.id='stInkPulse';
     inkPulseNode=pulse;
-    pulse.setAttribute('aria-label','墨韵：展开页边'); pulse.setAttribute('aria-controls','stMargin');
-    pulse.innerHTML='<span class="st-ink-ring" aria-hidden="true"></span><span class="st-ink-core" aria-hidden="true"></span><span class="st-ink-wave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>';
-    pulse.addEventListener('click',function(){ setInkPanel(true); });
+    pulse.setAttribute('aria-controls','stMargin');
+    pulse.innerHTML='<span class="st-ink-mark" aria-hidden="true"></span><span>页边</span>';
+    pulse.addEventListener('click',function(){ setInkPanel(pulse.getAttribute('aria-expanded')!=='true'); });
     vp.appendChild(pulse);
     var close=document.createElement('button'); close.type='button'; close.id='stInkClose'; close.textContent='×'; close.setAttribute('aria-label','收起页边');
-    close.addEventListener('click',function(){ setInkPanel(false); pulse.focus(); }); m.appendChild(close);
+    close.addEventListener('click',function(){ setInkPanel(false); pulse.focus({preventScroll:true}); }); m.appendChild(close);
+    window.TWS.openInkMargin=function(){ setInkPanel(true); };
+    setInkPanel(false);
   }
   m.querySelectorAll('[data-go]').forEach(function(b){ b.addEventListener('click',function(){ window.showView&&window.showView(b.dataset.go); }); });
   $('stGoalBtn').addEventListener('click',function(){ var c=$('twsGoalChip'); window.showView&&window.showView('v-book'); if(c) setTimeout(function(){ c.click(); },350); });
   initWritingClock();
 }
-/* delegated input handles chapter re-renders, chat drafts, and Chinese IME. */
-var INK_IDLE_MS=1800;
+/* Input activity only affects the ink mark and the session counters. */
+var INK_ACTIVITY_WINDOW_MS=1800;
 var inkPulseNode=null;
-var writingClock={started:false,last:0,tick:0,writing:0,idle:0,cadence:650,timer:null,idleTimer:null,context:''};
+var writingClock={started:false,last:0,tick:0,writing:0,idle:0,timer:null,pulseTimer:null,context:''};
 function fmtClock(ms){ var n=Math.floor(ms/1000); return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0'); }
 function inkContext(){
   var view=document.querySelector('.view.active');
@@ -388,7 +390,9 @@ function syncInkContext(){
   accountWritingTime(performance.now()); c.context=next;
   root.classList.toggle('ink-context-active',!!next);
   dockInkPulse();
-  clearTimeout(c.idleTimer); setInkTempo(1); setInkPanel(true);
+  clearTimeout(c.pulseTimer);
+  if(inkPulseNode) inkPulseNode.classList.remove('ink-writing');
+  if(!next) setInkPanel(false);
 }
 function dockInkPulse(){
   var p=$('stInkPulse')||inkPulseNode; if(!p) return;
@@ -405,46 +409,53 @@ function setInkPanel(open){
   root.classList.toggle('ink-panel-collapsed',!open);
   var m=$('stMargin'),p=$('stInkPulse');
   if(m){ m.inert=!open; m.setAttribute('aria-hidden',String(!open)); }
-  if(p) p.setAttribute('aria-expanded',String(open));
+  if(p){
+    p.setAttribute('aria-expanded',String(open));
+    p.title=open?'收起页边':'打开页边';
+  }
 }
 function accountWritingTime(now){
   var c=writingClock;
   if(c.started&&c.context&&!document.hidden){
-    var dt=Math.max(0,now-c.tick),active=Math.max(0,Math.min(now,c.last+INK_IDLE_MS)-c.tick);
+    var dt=Math.max(0,now-c.tick),active=Math.max(0,Math.min(now,c.last+INK_ACTIVITY_WINDOW_MS)-c.tick);
     c.writing+=active; c.idle+=Math.max(0,dt-active);
   }
   c.tick=now;
-  var w=$('stWritingTime'),i=$('stIdleTime'); if(w) w.textContent=fmtClock(c.writing); if(i) i.textContent=fmtClock(c.idle);
-}
-function setInkTempo(rate){
-  var p=$('stInkPulse'); if(!p) return;
-  p.querySelectorAll('.st-ink-wave>span').forEach(function(bar){
-    if(bar.getAnimations) bar.getAnimations().forEach(function(a){ if(a.updatePlaybackRate) a.updatePlaybackRate(rate); });
-  });
+  var w=$('stWritingTime'),i=$('stIdleTime'),writing=fmtClock(c.writing),idle=fmtClock(c.idle);
+  if(w&&w.textContent!==writing) w.textContent=writing;
+  if(i&&i.textContent!==idle) i.textContent=idle;
 }
 function initWritingClock(){
   if(writingClock.timer) return;
   function activity(e){
     if(!e.target||!e.target.matches||!e.target.matches('#twsContent,#input')) return;
-    syncInkContext();
+    if(e.isComposing||(e.type==='compositionend'&&!e.data)) return;
     var context=writingClock.context;
     if((context!=='v-chat'||!e.target.matches('#input'))&&(context!=='v-book'||!e.target.matches('#twsContent'))) return;
-    var c=writingClock,now=performance.now(),gap=c.started?now-c.last:650;
+    var c=writingClock,now=performance.now();
     accountWritingTime(now);
-    if(gap>30) c.cadence=gap>INK_IDLE_MS?650:c.cadence*.7+gap*.3;
     c.started=true; c.last=now; c.tick=now;
-    setInkPanel(false); setInkTempo(Math.max(1,Math.min(3.2,650/c.cadence)));
-    clearTimeout(c.idleTimer);
-    c.idleTimer=setTimeout(function(){ accountWritingTime(performance.now()); setInkPanel(true); setInkTempo(1); },INK_IDLE_MS);
+    var pulse=inkPulseNode; if(!pulse) return;
+    pulse.classList.add('ink-writing');
+    clearTimeout(c.pulseTimer);
+    c.pulseTimer=setTimeout(function(){ pulse.classList.remove('ink-writing'); },220);
   }
-  ['input','compositionstart','compositionupdate','compositionend'].forEach(function(name){ document.addEventListener(name,activity); });
+  document.addEventListener('input',activity);
+  document.addEventListener('compositionend',activity);
   var scopeObserver=new MutationObserver(syncInkContext);
   document.querySelectorAll('.view').forEach(function(view){ scopeObserver.observe(view,{attributes:true,attributeFilter:['class']}); });
   var book=$('v-book'); if(book) scopeObserver.observe(book,{childList:true,subtree:true});
   document.addEventListener('visibilitychange',function(){ writingClock.tick=performance.now(); });
-  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&root.classList.contains('ink-enabled')) setInkPanel(false); });
-  writingClock.timer=setInterval(function(){ accountWritingTime(performance.now()); },250);
-  syncInkContext(); setInkPanel(true);
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Escape'||e.defaultPrevented||e.isComposing||document.querySelector('.tws-modal-wrap')) return;
+    var pulse=inkPulseNode;
+    if(!pulse||pulse.getAttribute('aria-expanded')!=='true') return;
+    var focusInMargin=$('stMargin').contains(document.activeElement);
+    setInkPanel(false);
+    if(focusInMargin) pulse.focus({preventScroll:true});
+  });
+  writingClock.timer=setInterval(function(){ accountWritingTime(performance.now()); },1000);
+  syncInkContext();
 }
 function fmtK(n){ return n>=1000?(n/1000).toFixed(n>=10000?0:1)+'K':String(n); }
 function refreshMargin(st){
@@ -453,8 +464,12 @@ function refreshMargin(st){
   $('stToday').textContent=today.toLocaleString('en-US');
   $('stGoal').textContent='/ '+goal.toLocaleString('en-US')+' 字';
   $('stTodayBar').style.width=Math.min(100,today/goal*100)+'%';
-  var pulse=$('stInkPulse'); if(pulse) pulse.style.setProperty('--ink-fill',Math.max(8,Math.min(100,today/goal*100))+'%');
-  $('stTodayNote').textContent=today>=goal?'今天的目标已完成':'再写 '+(goal-today).toLocaleString('en-US')+' 字完成今天的目标';
+  var progress=today>=goal?'今天的目标已完成':'再写 '+(goal-today).toLocaleString('en-US')+' 字完成今天的目标';
+  var pulse=$('stInkPulse'); if(pulse){
+    pulse.style.setProperty('--ink-fill',Math.min(100,today/goal*100)+'%');
+    pulse.setAttribute('aria-label','页边。今天已写 '+today.toLocaleString('en-US')+' 字。'+progress);
+  }
+  $('stTodayNote').textContent=progress;
   var limit=S.limit||128000, used=S.used||0;
   if(lux){ var ex=extraContext(); used+=Math.round(ex.length*0.8); }
   var pct=Math.min(100,Math.round(used/limit*100));

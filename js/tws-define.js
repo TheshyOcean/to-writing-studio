@@ -571,7 +571,7 @@
   function filmJump(i) { film.i = i; film.t = 0; showShot(i); if (film.on) speak(film.shots[i]); paintProg(); }
 
   /* ---------------- 导航入口 ---------------- */
-  var ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M17 4.5l.9 1.9 2.1.3-1.5 1.5.4 2.1-1.9-1-1.9 1 .4-2.1-1.5-1.5 2.1-.3z"/></svg>';
+  var ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" rx="1.5"/><circle cx="8.5" cy="10" r="1.7"/><path d="M6 15c.3-1.2 1.1-2 2.5-2s2.2.8 2.5 2M14 10h3M14 14h3"/></svg>';
   function addNav() {
     var rail = document.querySelector('.rail');
     if (!rail || $('railDef')) return !!$('railDef');
